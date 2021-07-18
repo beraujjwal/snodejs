@@ -1,0 +1,12 @@
+{
+   "OK": "OK",
+   "LOGIN_SUCCESS": "आप सफलता पूर्वक प्रवेश कर चुके हैं।",
+   "LOGIN_INVALID_PASSWORD": "Invalid Password!",
+   "LOGIN_USER_NOT_FOUND": "User Not found!",
+   "LOGIN_INVALID_USERSNAME_PASSWORD": "Invalid Username & Password",
+   "You have %s message": {
+      "one": "You have %s message",
+      "other": "You have %s messages"
+   },
+   "USER_PERMISSION_DENIED": "उपयोगकर्ता अनुमति अस्वीकृत"
+}

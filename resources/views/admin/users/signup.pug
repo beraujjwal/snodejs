@@ -1,0 +1,90 @@
+extends ../../layout/admin/login
+
+block content
+    div
+        div
+            a.logo.text-start(href='index.html')
+                img.img-fluid.for-light(src='../assets/images/logo/login.png' alt='looginpage')
+                img.img-fluid.for-dark(src='../assets/images/logo/logo_dark.png' alt='looginpage')
+        .login-main
+            - var messages = getMessages()
+            - var errors = [];
+            form(class= (messages.validation) ? "was-validated theme-form" : "theme-form" action='/auth/signup', method='POST', enctype='multipart/form-data', novalidate)
+                h4 Create your account
+                p Enter your personal details to create account
+                
+                      
+                if messages.notify
+                    each msg in messages.notify
+                        .alert.alert-info.dark.alert-dismissible.fade.show(role='alert')
+                            strong= msg
+                            button.btn-close(type='button' data-bs-dismiss='alert' aria-label='Close')
+                
+                            
+                if messages.error
+                    each msg in messages.error
+                        .alert.alert-danger.dark.alert-dismissible.fade.show(role='alert')
+                            strong= msg
+                            button.btn-close(type='button' data-bs-dismiss='alert' aria-label='Close')
+                
+                            
+                if messages.validation
+                    - errors = messages.validation[0].errors;                    
+                    .alert.alert-danger.dark.alert-dismissible.fade.show(role='alert')
+                        strong Holy ! 
+                        |  Validation Error
+                        button.btn-close(type='button' data-bs-dismiss='alert' aria-label='Close')
+
+                div(class= ( errors.name ) ? 'form-group was-invalid' : 'form-group')
+                    label.col-form-label.pt-0 Your Name
+                    input(class= ( errors.name ) ? 'form-control is-invalid' : 'form-control' type='text' name='name' placeholder='Your Name' required value=( formData && formData.name ) ? formData.name : '')
+                    if (errors.name )
+                        each error in errors.name
+                            .invalid-feedback= error
+                
+                div(class= ( errors.phone ) ? 'form-group was-invalid' : 'form-group')
+                    label.col-form-label Mobile Number
+                    input(class= (errors.phone ) ? 'form-control is-invalid' : 'form-control' type='tel' name='phone' placeholder='Mobile Number' required value=( formData && formData.phone ) ? formData.phone : '')
+                    if (errors.phone )
+                        each error in errors.phone
+                            .invalid-feedback= error
+                div(class= ( errors.email ) ? 'form-group was-invalid' : 'form-group')
+                    label.col-form-label Email Address
+                    input(class= ( errors.email ) ? 'form-control is-invalid' : 'form-control' type='email' name='email' placeholder='Email Address' required value=( formData && formData.email ) ? formData.email : '')
+                    if (messages.validation && errors.email )
+                        each error in errors.email
+                            .invalid-feedback= error
+                div(class= ( errors.password ) ? 'form-group was-invalid' : 'form-group')
+                    label.col-form-label Password
+                    .form-input.position-relative
+                        input(class= ( errors.password ) ? 'form-control is-invalid' : 'form-control' type='password' name='password' placeholder='Password' required value=( formData && formData.password ) ? formData.password : '')
+                        if (messages.validation && errors.password )
+                            each error in errors.password
+                                .invalid-feedback= error
+                        .show-hide
+                            span.show
+                div(class= ( errors.password ) ? 'form-group mb-0 was-invalid' : 'form-group mb-0')
+                    .checkbox.p-0.form-check
+                        input#checkbox1(class= ( errors.agree ) ? 'form-check-input is-invalid' : 'form-check-input' type='checkbox' name='agree' required)
+                        label.form-check-label(for='checkbox1')
+                            | Agree with
+                            a.ms-2(href='#') Privacy Policy
+                        if (messages.validation && errors.agree )
+                            each error in errors.agree
+                                .invalid-feedback= error
+                    button.btn.btn-primary.btn-block.w-100(type='submit') Create Account
+                h6.text-muted.mt-4.or Or signup with
+                .social.mt-4
+                    .btn-showcase
+                        a.btn.btn-light(href='https://www.linkedin.com/login' target='_blank')
+                            i.txt-linkedin(data-feather='linkedin')
+                            | LinkedIn
+                        a.btn.btn-light(href='https://twitter.com/login?lang=en' target='_blank')
+                            i.txt-twitter(data-feather='twitter')
+                            | twitter
+                        a.btn.btn-light(href='https://www.facebook.com/' target='_blank')
+                            i.txt-fb(data-feather='facebook')
+                            | facebook
+                p.mt-4.mb-0.text-center
+                    | Already have an account?
+                    a.ms-2(href='/auth/signin') Sign in

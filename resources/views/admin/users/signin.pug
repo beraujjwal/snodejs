@@ -1,0 +1,92 @@
+extends ../../layout/admin/login
+
+block content
+  div
+    div
+      a.logo.text-start(href='index.html')
+        img.img-fluid.for-light(src='../assets/images/logo/login.png' alt='looginpage')
+        img.img-fluid.for-dark(src='../assets/images/logo/logo_dark.png' alt='looginpage')
+    .login-main
+      - var messages = getMessages();
+      - var errors = [];
+      form(class= (messages.validation) ? "was-validated theme-form" : "theme-form" action='/auth/signin', method='POST', enctype='multipart/form-data', novalidate)
+        h4 Sign in to account
+        p Enter your email/mobile &amp; password to login
+        
+        if messages.notify
+          each msg in messages.notify
+            .alert.alert-info.dark.alert-dismissible.fade.show(role='alert')
+              strong= msg
+              button.btn-close(type='button' data-bs-dismiss='alert' aria-label='Close')
+        
+                      
+        if messages.error
+          each msg in messages.error
+            .alert.alert-danger.dark.alert-dismissible.fade.show(role='alert')
+              strong= msg
+              button.btn-close(type='button' data-bs-dismiss='alert' aria-label='Close')
+        
+                      
+        if messages.validation
+          each msg in messages.validation
+            .alert.alert-danger.dark.alert-dismissible.fade.show(role='alert')
+              strong Holy ! 
+              |  Validation Error
+              button.btn-close(type='button' data-bs-dismiss='alert' aria-label='Close')
+
+
+        div(class= ( errors.username ) ? 'form-group was-invalid' : 'form-group')
+          label.col-form-label Email/Mobile
+          input(class= ( errors.username ) ? 'form-control is-invalid' : 'form-control' type='text' name='username' placeholder='Email/Mobile' required value=( formData && formData.username ) ? formData.username : '')
+          if (messages.validation && errors.username )
+            each error in errors.username
+              .invalid-feedback= error
+        div(class= ( errors.password ) ? 'form-group was-invalid' : 'form-group')
+          label.col-form-label Password
+          .form-input.position-relative
+            input(class= ( errors.password ) ? 'form-control is-invalid' : 'form-control' type='password' name='password' placeholder='Password' required value=( formData && formData.password ) ? formData.password : '')
+            if (messages.validation && errors.password )
+              each error in errors.password
+                .invalid-feedback= error
+            .show-hide
+              span.show                          
+        .form-group.mb-0
+          .checkbox.p-0
+            input#checkbox1(type='checkbox')
+            label.text-muted(for='checkbox1') Remember password
+          a.link(href='/auth/forget-password') Forgot password?
+          .text-end.mt-3
+            button.btn.btn-primary.btn-block.w-100(type='submit') Sign in
+        h6.text-muted.mt-4.or Or Sign in with
+        .social.mt-4
+          .btn-showcase
+            a.btn.btn-light(href='https://www.linkedin.com/login' target='_blank')
+              i.txt-linkedin(data-feather='linkedin')
+              | LinkedIn
+            a.btn.btn-light(href='https://twitter.com/login?lang=en' target='_blank')
+              i.txt-twitter(data-feather='twitter')
+              | twitter
+            a.btn.btn-light(href='https://www.facebook.com/' target='_blank')
+              i.txt-fb(data-feather='facebook')
+              | facebook
+        p.mt-4.mb-0.text-center
+          | Don&apos;t have account?
+          a.ms-2(href='/auth/signup') Create Account
+  script.
+    (function() {
+    'use strict';
+    window.addEventListener('load', function() {
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.getElementsByClassName('needs-validation');
+    // Loop over them and prevent submission
+    var validation = Array.prototype.filter.call(forms, function(form) {
+    form.addEventListener('submit', function(event) {
+    if (form.checkValidity() === false) {
+    event.preventDefault();
+    event.stopPropagation();
+    }
+    form.classList.add('was-validated');
+    }, false);
+    });
+    }, false);
+    })();

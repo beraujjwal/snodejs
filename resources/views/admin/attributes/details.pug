@@ -1,0 +1,111 @@
+extends ../../layout/admin/main
+
+block content
+  .page-body
+    .container-fluid
+      .page-title
+        .row
+          .col-6
+            h3
+              | Attribute
+          .col-6
+            ol.breadcrumb
+              li.breadcrumb-item
+                a(href='/admin/dashboard')
+                  i(data-feather='home')
+              li.breadcrumb-item
+                a(href='/admin/attributes')
+                | Attributes
+              li.breadcrumb-item.active Details
+    // Container-fluid starts
+    .container-fluid
+      .row.size-column
+        .col-sm-6
+          .card
+            .card-body
+              .product-page-details
+                h3=data.name  
+              hr
+              div
+                table.product-page-width
+                  tbody
+                    tr
+                      td
+                        b
+                          | Code &nbsp;&nbsp;&nbsp;:
+                      td=data.code
+                    tr
+                      td
+                        b
+                          | Type &nbsp;&nbsp;&nbsp;:
+                      td=data.type
+                    tr
+                      td
+                        b
+                          | Validation &nbsp;&nbsp;&nbsp;:
+                      td=data.validation
+                    tr
+                      td
+                        b
+                          | Position &nbsp;&nbsp;&nbsp;:
+                      td=data.position
+                    tr
+                      td
+                        b
+                          | Required &nbsp;&nbsp;&nbsp;:
+                      td=data.is_required
+                    tr
+                      td
+                        b
+                          | Unique &nbsp;&nbsp;&nbsp;:
+                      td=data.is_unique
+                    tr
+                      td
+                        b
+                          | Filterable &nbsp;&nbsp;&nbsp;:
+                      td=data.is_filterable
+                    tr
+                      td
+                        b
+                          | Configurable &nbsp;&nbsp;&nbsp;:
+                      td=data.is_configurable
+                    tr
+                      td
+                        b
+                          | Visible &nbsp;&nbsp;&nbsp;:
+                      td=data.is_visible
+                    tr
+                      td
+                        b
+                          | User defined &nbsp;&nbsp;&nbsp;:
+                      td=data.is_user_defined
+                    tr
+                      td
+                        b
+                          | Comparable &nbsp;&nbsp;&nbsp;:
+                      td=data.is_comparable
+                    tr
+                      td
+                        b
+                          | Deleted &nbsp;&nbsp;&nbsp;:
+                      td=data.deleted_at
+                    tr
+                      td
+                        b
+                          | Status &nbsp;&nbsp;&nbsp;:
+                      td=data.status
+                    tr
+                      td
+                        b
+                          | Regx &nbsp;&nbsp;&nbsp;:
+                      td=data.regx
+                    tr
+                      td
+                        b
+                          | Created at &nbsp;&nbsp;&nbsp;:
+                      td=data.created_at
+                    tr
+                      td
+                        b
+                          | Updated at &nbsp;&nbsp;&nbsp;:
+                      td=data.updated_at

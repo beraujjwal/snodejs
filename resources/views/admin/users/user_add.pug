@@ -1,0 +1,74 @@
+extends ../../layout/admin/main
+
+block content
+  .page-header
+    .row.align-items-end
+      .col-lg-8
+        .page-header-title
+          .d-inline
+            h4 Add user
+            span
+              | Lorem ipsum dolor sit 
+              code amet
+              | , consectetur
+              |                                                             adipisicing elit
+      .col-lg-4
+        .page-header-breadcrumb
+          ul.breadcrumb-title
+            li.breadcrumb-item(style='float: left;')
+              a(href='/admin/dashboard')
+                i.feather.icon-home
+            li.breadcrumb-item(style='float: left;')
+              a(href='/admin/users') Users
+            li.breadcrumb-item(style='float: left;')
+              a(href='#') Add
+  // Page-header end
+  // Page body start
+  .page-body
+    .row
+      .col-sm-12
+        // Basic Inputs Validation start
+        .card
+          .card-header
+            h5 Add user
+            span
+              | Add class of 
+              code .form-control
+              |  with 
+              code &lt;input&gt;
+              |  tag
+          .card-block
+            form#main(method='post' action='/admin/user/add/' novalidate='')
+              .form-group.row
+                label.col-sm-2.col-form-label Name
+                .col-sm-10
+                  ul.nav.nav-tabs.tabs(role='tablist')
+                    each lang, index in languages
+                      li.nav-item
+                        a(class= index === 'en' ? "active nav-link" : "nav-link" data-toggle='tab' href='#' + index role='tab')= lang
+
+                  .tab-content.tabs.card-block
+                    each lang, index in languages
+                      - var blankField = true
+                      div(id=index class= index === 'en' ? "active tab-pane" : "tab-pane" role='tabpanel')
+                        input#name.form-control(type='text' name='name['+index+']' placeholder='Name' )
+
+              .form-group.row
+                label.col-sm-2.col-form-label Phone Number
+                .col-sm-10
+                  input#name.form-control(type='tel' name='phone' placeholder='Enter your valid phone number')
+                  span.messages
+              .form-group.row
+                label.col-sm-2.col-form-label Email-Id
+                .col-sm-10
+                  input#name.form-control(type='email' name='email' placeholder='Enter your valid e-mail address')
+                  span.messages
+              .form-group.row
+                label.col-sm-2.col-form-label Password
+                .col-sm-10
+                  input#password.form-control(type='password' name='password' placeholder='Enter your account password')
+                  span.messages   
+              .form-group.row
+                label.col-sm-2
+                .col-sm-10
+                  button.btn.btn-primary.m-b-0(type='submit') Submit
