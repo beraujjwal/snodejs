@@ -26,7 +26,7 @@ This README would normally document whatever steps are necessary to get your app
 
 ### How do I get set up? ###
 
-* git clone https://ujjwalbera@bitbucket.org/ushadigital/snode.git
+* git clone https://github.com/beraujjwal/snode.git
 * npm install
 * npm install --save-dev sequelize-cli
 * npx sequelize-cli db:migrate
