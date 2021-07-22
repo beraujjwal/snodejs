@@ -18,13 +18,11 @@ This README would normally document whatever steps are necessary to get your app
 
 * Structure node application
 * Version 0.5
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ### Requirments ###
 
 * Node.Js 12.x or upper
 * Mysql or Postgres
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ### How do I get set up? ###
 
@@ -35,6 +33,14 @@ This README would normally document whatever steps are necessary to get your app
 * npx sequelize-cli db:seed:all
 * npx nodemon server
 
+### Helpfull Command Line Interface for file create ###
+
+* node cli make:controller product
+* node cli make:model product
+* node cli make:service product
+* node cli make:validation product
+* node cli make:module product
+
 ### Contribution guidelines ###
 
 * Writing tests
@@ -43,5 +49,6 @@ This README would normally document whatever steps are necessary to get your app
 
 ### Who do I talk to? ###
 
-* [Ujibaba](https://bitbucket.org/ushadigital/)
-* pratimmallick, Chandan Mondal
+* [Ujjwal Bera](https://github.com/beraujjwal)
+* [Pratim Mallick](#)
+* [Chandan Mondal](#)
