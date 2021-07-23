@@ -39,7 +39,6 @@ This README would normally document whatever steps are necessary to get your app
 * node cli make:model product
 * node cli make:service product
 * node cli make:validation product
-* node cli make:module product
 
 ### Contribution guidelines ###
 
