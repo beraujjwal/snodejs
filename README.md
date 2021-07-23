@@ -1,4 +1,4 @@
-![SNode](https://www.freelogoservices.com/api/main/images/1j+ojVVCOMkX9Wyrexe4hGfK8KnU+W0MjkLP2ig3M2RE...QxumCgphfBr47hlc1xFtFwKhRYKdsQ5iSZ8R9FL00QsomDIeoZC)
+![SNode](https://github.com/beraujjwal/snode/blob/main/SNode.png?raw=true)
 
 ## About SNode
 
