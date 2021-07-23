@@ -5,10 +5,9 @@
 SNode is a application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. SNode takes the pain out of development by easing common tasks used in many web projects, such as:
 
 - Simple, fast routing engine.
-- Multiple back-ends for session and cache storage.
 - Expressive, intuitive [database ORM](https://sequelize.org/).
 - Database migrations.
-- Real-time event broadcasting.
+- Intregrated Auth & User role permission management.
 
 SNode is accessible, powerful, and provides tools required for large, robust applications.
 
