@@ -15,8 +15,8 @@ module.exports = (sequelize, DataTypes) => {
 
     isUnique = function(modelName, field) {
       return function(value, next) {
-        var Model = require("../models")[modelName];
-        var query = {};
+        let Model = require("../models")[modelName];
+        let query = {};
         query[field] = value;
         Model.find({where: query, attributes: ["id"]}).then(function(obj) {
           if (obj) {

@@ -32,13 +32,13 @@ class PermissionsController extends Controller {
    */
   async adminPermissions( req, res, next ) {
 
-      var name = 'name';
-      var order = 'name';
-      var ordering = 'ASC';
-      var queries = req.query;
-      var offset = 0;
-      var limit = 100;
-      const query = [];
+    let name = 'name';
+    let order = 'name';
+    let ordering = 'ASC';
+    let queries = req.query;
+    let offset = 0;
+    let limit = 100;
+    let query = [];
 
       if(req.query.limit) {
         limit = req.query.limit
@@ -104,7 +104,7 @@ class PermissionsController extends Controller {
 
 
   async adminStorePermission( req, res, next ) {
-    console.log(req.user.phone);
+    
     this.Permission.create({
       name:             req.body.name,
       slug:             req.body.slug,
@@ -129,8 +129,8 @@ class PermissionsController extends Controller {
    */
   async adminDetailsPermission( req, res, next ) {
     
-      var id = req.params.id;
-      console.log(id)
+    let id = req.params.id;
+    
       this.Permission.findOne({
         where: {
           [this.Op.and]: [
@@ -162,7 +162,7 @@ class PermissionsController extends Controller {
 
 
   async adminUpdatePermission( req, res, next ) {
-    var id = req.params.id;
+    let id = req.params.id;
     this.Permission.update({
       code:             req.body.code,
       name:             req.body.name,
@@ -200,7 +200,7 @@ class PermissionsController extends Controller {
    */
   async adminDeletePermission( req, res, next ) {
     
-      var id = req.params.id;
+    let id = req.params.id;
       console.log(id)
       this.Permission.findOne({
         where: {

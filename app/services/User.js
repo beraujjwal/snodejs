@@ -2,8 +2,8 @@
 const autoBind = require( 'auto-bind' );
 const { Services } = require( './Services' );
 const nodemailer = require('nodemailer');
-var jwt = require("jsonwebtoken");
-var bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 
 
@@ -34,18 +34,18 @@ class User extends Services {
 
   async usersListService (req, res) {
     // Save User to Database
-    var lang =  getLocale();
+    let lang =  getLocale();
 
     try {
 
-      var name = 'name';
-      var order = 'id';
-      var ordering = 'ASC';
-      var queries = req.query;
-      var offset = 0;
-      var limit = 100;
-      const query = [];
-      const innerQuery = [];
+      let name = 'name';
+      let order = 'id';
+      let ordering = 'ASC';
+      let queries = req.query;
+      let offset = 0;
+      let limit = 100;
+      let query = [];
+      let innerQuery = [];
 
       if(req.query.limit) {
         limit = req.query.limit
@@ -143,7 +143,7 @@ class User extends Services {
   async usersDetailsService (req, res) {
 
     try {      
-      var lang =  getLocale();
+      let lang =  getLocale();
       return await this.User.findOne({
         where: {          
           id: req.params.id
@@ -169,7 +169,7 @@ class User extends Services {
 
   async userUpdate (req, res) {
     
-    var lang =  getLocale();
+    let lang =  getLocale();
 
     const t = await this.db.sequelize.transaction();
 
@@ -185,9 +185,9 @@ class User extends Services {
         returning: true, // needed for affectedRows to be populated
         plain: true // makes sure that the returned instances are just plain objects
       });
-      var namesData = req.body.name;
+      let namesData = req.body.name;
       for (let index of Object.keys(namesData)) {
-        var userTranslation = await this.UserTranslation.findOne({where: {user_id: req.params.id, lang: index}});
+        let userTranslation = await this.UserTranslation.findOne({where: {user_id: req.params.id, lang: index}});
         console.log(JSON.parse(JSON.stringify(userTranslation)))
         if(userTranslation.id) {
           await this.UserTranslation.update(
@@ -228,7 +228,7 @@ class User extends Services {
         created_at: new Date(), 
         updated_at: new Date()
       });
-      var namesData = req.body.name;
+      let namesData = req.body.name;
       for (let index of Object.keys(namesData)) {
         await this.UserTranslation.create({ name: namesData[index], lang: index, user_id: user.id, status: true, created_at: new Date(), updated_at: new Date() });
       };

@@ -1,5 +1,5 @@
 'use strict';
-var Validator = require('validatorjs');
+let Validator = require('validatorjs');
 class ReqValidator  {
 
 

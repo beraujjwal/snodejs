@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         isLowercase: true,
         async isUnique(value) {
-          var role = await sequelize.models.Role.findOne({ where: { slug: value }});
+          let role = await sequelize.models.Role.findOne({ where: { slug: value }});
           if (role != null) {
             throw new Error('Permission name already used.');
           }

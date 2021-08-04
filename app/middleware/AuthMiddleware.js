@@ -114,8 +114,8 @@ class AuthMiddleware extends Middleware {
 
   async isAdmin(req, res, next) {
     
-    var user = req.user;  
-    var roles = user.roles;
+    let user = req.user;  
+    let roles = user.roles;
     if(roles.find(x => x.slug === 'admin')) {
       next();
       return;
@@ -128,8 +128,8 @@ class AuthMiddleware extends Middleware {
 
   async isVendor(req, res, next) {
     
-    var user = req.user;  
-    var roles = user.roles;
+    let user = req.user;  
+    let roles = user.roles;
     if(roles.find(role => role.slug === 'vendor')) {
       next();
       return;
@@ -141,8 +141,8 @@ class AuthMiddleware extends Middleware {
   };
 
   async isVendorOrAdmin(req, res, next) {
-    var user = req.user;  
-    var roles = user.roles;
+    let user = req.user;  
+    let roles = user.roles;
     if(roles.find(role => role.slug === 'admin')) {
       next();
       return;

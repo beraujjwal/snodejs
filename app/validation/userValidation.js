@@ -53,7 +53,7 @@ class userValidation extends Middleware {
     async signupWebValidation(req, res, next) {
         validator(req.body, this.signupRule, {}, (err, status) => {
             if (!status) {
-                var data = err
+                let data = err
                 req.flash('validation', data)
                 res.redirect('/auth/signup')
             } else {

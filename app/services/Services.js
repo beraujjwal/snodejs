@@ -1,8 +1,8 @@
 'use strict';
 const autoBind = require( 'auto-bind' );
 const { BaseService } = require("../../system/core/services/BaseService");
-var mailer =  require('../../config/mailer');
-var crypto = require('crypto');
+const mailer =  require('../../config/mailer');
+const crypto = require('crypto');
 const { Response } = require("../helpers/Response");
 
 class Services extends BaseService {
@@ -24,7 +24,7 @@ class Services extends BaseService {
 
 
     async isUnique(model, key, value, id=null) {
-      const query = [];
+      let query = [];
 
       value = value.toLowerCase();
       value = value.replace(/[^a-zA-Z ]/g, "");

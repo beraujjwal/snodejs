@@ -18,21 +18,21 @@ class AclMiddleware extends Middleware {
 
 
   haveAccess(action, access) {
-    var userModel = this.db.User;
-    var roleModel = this.db.Role;
-    var permissionModel = this.db.Permission;
+    const userModel = this.db.User;
+    const roleModel = this.db.Role;
+    const permissionModel = this.db.Permission;
     return function(req, res, next) {
       
-      var user = req.user;
-      var havePermission = false;
-      var permissionSet = {};
+      let user = req.user;
+      let havePermission = false;
+      let permissionSet = {};
       if(access == 'READ') {
         permissionSet = ['READ', 'READ_WRITE'];
       } else {
         permissionSet = ['READ_WRITE'];
       }
 
-      var data = userModel.findOne({
+      let data = userModel.findOne({
         //raw: true,
         where: {
           phone: req.user.phone,
@@ -63,8 +63,8 @@ class AclMiddleware extends Middleware {
         ]
       }).then(user => {
 
-        var roles = JSON.parse(JSON.stringify(user.roles));
-        var permissions = JSON.parse(JSON.stringify(user.permissions));
+        let roles = JSON.parse(JSON.stringify(user.roles));
+        let permissions = JSON.parse(JSON.stringify(user.permissions));
 
         let permissionValue = [];
         permissionValue['READ'] = 0;
@@ -79,7 +79,7 @@ class AclMiddleware extends Middleware {
         });
       
         roles.forEach(role => {
-          var permissions = JSON.parse(JSON.stringify(role.permissions));
+          let permissions = JSON.parse(JSON.stringify(role.permissions));
           permissions.forEach(permission => {          
             if(permissionValue[access] <= permissionValue[permission.RolePermission.permission]) {
               havePermission = true;
@@ -100,21 +100,21 @@ class AclMiddleware extends Middleware {
 
   
   hasPermission(action, access) {
-    var userModel = this.db.User;
-    var roleModel = this.db.Role;
-    var permissionModel = this.db.Permission;
+    const userModel = this.db.User;
+    const roleModel = this.db.Role;
+    const permissionModel = this.db.Permission;
     return function(req, res, next) {
       
-      var user = req.user;
-      var havePermission = false;
-      var permissionSet = {};
+      let user = req.user;
+      let havePermission = false;
+      let permissionSet = {};
       if(access == 'READ') {
         permissionSet = ['READ', 'READ_WRITE'];
       } else {
         permissionSet = ['READ_WRITE'];
       }
 
-      var data = userModel.findOne({
+      let data = userModel.findOne({
         //raw: true,
         where: {
           phone: req.user.phone,
@@ -145,8 +145,8 @@ class AclMiddleware extends Middleware {
         ]
       }).then(user => {
 
-        var roles = JSON.parse(JSON.stringify(user.roles));
-        var permissions = JSON.parse(JSON.stringify(user.permissions));
+        let roles = JSON.parse(JSON.stringify(user.roles));
+        let permissions = JSON.parse(JSON.stringify(user.permissions));
 
         let permissionValue = [];
         permissionValue['READ'] = 0;
@@ -161,7 +161,7 @@ class AclMiddleware extends Middleware {
         });
       
         roles.forEach(role => {
-          var permissions = JSON.parse(JSON.stringify(role.permissions));
+          let permissions = JSON.parse(JSON.stringify(role.permissions));
           permissions.forEach(permission => {          
             if(permissionValue[access] <= permissionValue[permission.RolePermission.permission]) {
               havePermission = true;

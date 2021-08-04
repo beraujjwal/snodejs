@@ -10,7 +10,7 @@ module.exports = function(app, router) {
         if((file.indexOf('.') !== 0)  && (file.slice(-3) === '.js')) {
             return file;
         }
-        var innerDirPath = basepath + file + '/';
+        let innerDirPath = basepath + file + '/';
         fs.readdirSync(innerDirPath).filter(innerFile => {
             return (innerFile.indexOf('.') !== 0) && (innerFile.slice(-3) === '.js');
         }).forEach(innerFile => {

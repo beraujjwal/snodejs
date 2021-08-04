@@ -33,10 +33,10 @@ class UtilitiesController extends Controller {
    */
   async get_countries( req, res, next ) {
     
-      var name = 'name';
-      var order = 'name';
-      var ordering = 'ASC';
-      const query = []
+    let name = 'name';
+    let order = 'name';
+    let ordering = 'ASC';
+    let query = []
 
       if(req.query.orderby) {
         order = req.query.orderby
@@ -89,10 +89,10 @@ class UtilitiesController extends Controller {
    */
   async get_states( req, res, next ) {
     
-      var name = 'name';
-      var order = 'name';
-      var ordering = 'ASC';
-      const query = []
+    let name = 'name';
+    let order = 'name';
+    let ordering = 'ASC';
+    let query = []
 
       if(req.query.orderby) {
         order = req.query.orderby
@@ -152,10 +152,10 @@ class UtilitiesController extends Controller {
    */
   async get_cities( req, res, next ) {
     
-      var name = 'name';
-      var order = 'name';
-      var ordering = 'ASC';
-      const query = [];
+    let name = 'name';
+    let order = 'name';
+    let ordering = 'ASC';
+    let query = [];
 
       if(req.query.orderby) {
         order = req.query.orderby
@@ -245,8 +245,8 @@ class UtilitiesController extends Controller {
    */
   async adminDetailsAttribute( req, res, next ) {
     
-      var id = req.params.id;
-      console.log(id)
+    let id = req.params.id;
+    
       this.Country.findOne({
         where: {
           [this.Op.and]: [
@@ -278,7 +278,7 @@ class UtilitiesController extends Controller {
 
 
   async adminUpdateAttribute( req, res, next ) {
-    var id = req.params.id;
+    let id = req.params.id;
     this.Country.update({
       code:             req.body.code,
       name:             req.body.name,
@@ -316,7 +316,7 @@ class UtilitiesController extends Controller {
    */
   async adminDeleteAttribute( req, res, next ) {
     
-      var id = req.params.id;
+    let id = req.params.id;
       console.log(id)
       this.Country.findOne({
         where: {

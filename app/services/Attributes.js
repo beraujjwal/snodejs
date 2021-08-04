@@ -31,13 +31,13 @@ class Attributes extends Services {
    */
   async adminAttributes( req, res, next ) {
 
-      var name = 'name';
-      var order = 'name';
-      var ordering = 'ASC';
-      var queries = req.query;
-      var offset = 0;
-      var limit = 15;
-      var page = 1;
+      let name = 'name';
+      let order = 'name';
+      let ordering = 'ASC';
+      let queries = req.query;
+      let offset = 0;
+      let limit = 15;
+      let page = 1;
       const query = [];
       try {
         if(req.query.limit) {
@@ -107,7 +107,7 @@ class Attributes extends Services {
           })
         }
 
-        var attributes = await this.Attribute.findAll({
+        let attributes = await this.Attribute.findAll({
           where: {          
             [this.Op.and]: query
           },
@@ -145,8 +145,8 @@ class Attributes extends Services {
   async adminAttributeDetails( req, res, next ) {
     
     try {
-      var id = req.params.id;      
-      var attribute = await this.Attribute.findOne({
+      let id = req.params.id;      
+      let attribute = await this.Attribute.findOne({
         where: {
           [this.Op.and]: [
             {
@@ -173,7 +173,7 @@ class Attributes extends Services {
 
   async adminStoreAttribute( req, res, next ) {
     try {
-      var attribute = await this.Attribute.create({
+      let attribute = await this.Attribute.create({
         code:             req.body.code,
         name:             req.body.name,
         type:             req.body.type,
@@ -208,7 +208,7 @@ class Attributes extends Services {
    */
   async adminDetailsAttribute( req, res, next ) {
     
-      var id = req.params.id;
+    let id = req.params.id;
       console.log(id)
       this.Attribute.findOne({
         where: {
@@ -241,7 +241,7 @@ class Attributes extends Services {
 
 
   async adminUpdateAttribute( req, res, next ) {
-    var id = req.params.id;
+    let id = req.params.id;
     this.Attribute.update({
       code:             req.body.code,
       name:             req.body.name,
@@ -279,7 +279,7 @@ class Attributes extends Services {
    */
   async adminDeleteAttribute( req, res, next ) {
     
-      var id = req.params.id;
+    let id = req.params.id;
       console.log(id)
       this.Attribute.findOne({
         where: {

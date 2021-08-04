@@ -1,9 +1,9 @@
 'use strict';
 require( 'dotenv' ).config();
-var _ = require('lodash');	
-var nodemailer = require('nodemailer');
+let _ = require('lodash');	
+let nodemailer = require('nodemailer');
 
-var config = {
+let config = {
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
     secure: false, // true for 465, false for other ports
@@ -13,9 +13,9 @@ var config = {
     }
 };
     
-var transporter = nodemailer.createTransport(config);
+let transporter = nodemailer.createTransport(config);
 
-var defaultMail = {
+let defaultMail = {
     from: process.env.DEFAULT_EMAIL,
     subject: process.env.DEFAULT_SUBJECT,
 };

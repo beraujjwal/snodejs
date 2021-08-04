@@ -71,7 +71,7 @@ class attributeValidation extends Middleware {
 
         validator(req.body, this.attributeRule, {}, (err, status) => {
             if (!status) {
-                var data = err
+                let data = err
                 req.flash('validation', data)
                 res.redirect('/admin/attribute/add')
             } else {
@@ -83,7 +83,7 @@ class attributeValidation extends Middleware {
 
 
     async attributeWebUpdateValidation(req, res, next) {
-        var id = req.params.id;
+        let id = req.params.id;
         this.attributeRule = {
             "name":         'required|string',
             "code":         'required|unique:Attribute,code,id,'+ id,        
@@ -98,9 +98,8 @@ class attributeValidation extends Middleware {
             "status":       'required'
         }
         validator(req.body, this.attributeRule, {}, (err, status) => {
-            if (!status) {
-                
-                var data = err
+            if (!status) {                
+                let data = err
                 req.flash('validation', data)
                 res.redirect('/admin/attribute/edit/' + id)
             } else {

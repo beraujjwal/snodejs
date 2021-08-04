@@ -34,7 +34,7 @@ class AttributesController extends Controller {
    */
   async adminShowAttributesList(req, res, next) {
     try {
-      var result = await this.Attributes.adminAttributes(req, res);
+      let result = await this.Attributes.adminAttributes(req, res);
       console.log(result);
       res.render('admin/attributes/attributes', { title: 'Attributes', msg: 'Attribute List', result: result });
     } catch ( err ) {
@@ -55,7 +55,7 @@ class AttributesController extends Controller {
    */
   async adminAttributeDetails(req, res, next) {
     try {
-      var data = await this.Attributes.adminAttributeDetails(req, res);
+      let data = await this.Attributes.adminAttributeDetails(req, res);
       res.render('admin/attributes/details', { title: 'Attributes', msg: 'Attribute Details', data: data });
     } catch ( err ) {
       req.flash('error', err.message)
@@ -95,7 +95,7 @@ class AttributesController extends Controller {
    */
   async adminStoreAttribute(req, res, next) {
     try {
-      var data = await this.Attributes.adminStoreAttribute(req, res);
+      let data = await this.Attributes.adminStoreAttribute(req, res);
       req.flash('success', 'Attribute stored successfully')
       res.redirect("/admin/attributes");
     } catch ( err ) {
@@ -116,7 +116,7 @@ class AttributesController extends Controller {
    */
   async adminEditAttribute(req, res, next) {
     try {
-      var data = await this.Attributes.adminAttributeDetails(req, res);
+      let data = await this.Attributes.adminAttributeDetails(req, res);
       let formData = req.locals.formData;
       res.render('admin/attributes/edit', { title: 'Attributes', msg: 'Attribute Edit', data: data, error: false, formData: formData });
     } catch ( err ) {
@@ -137,7 +137,7 @@ class AttributesController extends Controller {
    */
   async adminUpdateAttribute(req, res, next) {
     try {
-      var data = await this.Attributes.adminUpdateAttribute(req, res);
+      let data = await this.Attributes.adminUpdateAttribute(req, res);
       req.flash('success', 'Attribute updated successfully')
       res.redirect("/admin/attributes");
     } catch ( err ) {
@@ -158,7 +158,7 @@ class AttributesController extends Controller {
    */
   async adminDeleteAttribute(req, res, next) {
     try {
-      var data = await this.Attributes.adminDeleteAttribute(req, res);
+      let data = await this.Attributes.adminDeleteAttribute(req, res);
       req.flash('success', 'Attribute deleted successfully')
       res.redirect("/admin/attributes");
     } catch ( err ) {
@@ -179,7 +179,7 @@ class AttributesController extends Controller {
    */
   async adminAttributesListApi(req, res, next) {
     try {
-      var datas = await this.Attributes.adminAttributes(req, res);
+      let datas = await this.Attributes.adminAttributes(req, res);
       if(datas.length) {
         res.status(200).json(this.Response.success(`OK`, { count: datas.length, datas: datas }, res.statusCode));
       } else {
@@ -202,7 +202,7 @@ class AttributesController extends Controller {
    */
   async adminAttributeDetailsApi(req, res, next) {
     try {
-      var data = await this.Attributes.adminAttributeDetails(req, res);
+      let data = await this.Attributes.adminAttributeDetails(req, res);
       res.render('admin/attributes/details', { title: 'Attributes', msg: 'Attribute Details', data: data });
     } catch ( err ) {
       req.flash('error', err.message)

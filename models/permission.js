@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         isLowercase: true,
         async isUnique(value) {
-          var permission = await sequelize.models.Permission.findOne({ where: { slug: value }});
+          let permission = await sequelize.models.Permission.findOne({ where: { slug: value }});
           if (permission != null) {
             throw new Error('Permission name already used.');
           }
@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       afterCreate: (async (permission, options) => {
 
-        var admins = await sequelize.models.Role.findAll({ where: {slug: 'admin'}});
+        let admins = await sequelize.models.Role.findAll({ where: {slug: 'admin'}});
 
         admins.forEach(admin => {
         	//console.log(admin); // Logs each 'Admin #'

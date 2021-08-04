@@ -1,8 +1,8 @@
 'use strict';
 const autoBind = require( 'auto-bind' );
 const { Services } = require( './Services' );
-var jwt = require("jsonwebtoken");
-var bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 
 
@@ -109,14 +109,14 @@ class Auth extends Services {
    */
   async signinService(req, res) {
     //logger.info("Request recieved at /test", req.body)
-    var lang =  getLocale();
+    let lang =  getLocale();
     let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
     try {
       const { username, password } = req.body;
-      var criteria = (username.match(regexEmail)) ? {email: username, status: true, verified: true} : {phone: username, status: true,verified: true};
+      let criteria = (username.match(regexEmail)) ? {email: username, status: true, verified: true} : {phone: username, status: true,verified: true};
 
-      var user = await this.User.findOne({
+      let user = await this.User.findOne({
         where: criteria,
         include: [
           {
@@ -141,7 +141,7 @@ class Auth extends Services {
         throw new Error(__('LOGIN_INVALID_USERSNAME_PASSWORD'))
       }
 
-      var passwordIsValid = bcrypt.compareSync(
+      let passwordIsValid = bcrypt.compareSync(
         req.body.password,
         user.password
       );
@@ -160,7 +160,7 @@ class Auth extends Services {
         algorithm: 'HS256'
       })
 
-      var loginRes = { user: user, accessToken: token, expiresIn: this.env.JWT_EXPIRES_IN, refreshToken: refreshToken }
+      let loginRes = { user: user, accessToken: token, expiresIn: this.env.JWT_EXPIRES_IN, refreshToken: refreshToken }
       return loginRes;
     } catch (ex) {
       throw new Error(ex);
@@ -177,13 +177,13 @@ class Auth extends Services {
   async activateService(req, res) {
 
 
-    var username = req.params.username;
-    var token =  req.params.token;
+    let username = req.params.username;
+    let token =  req.params.token;
     let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    var criteria = (username.match(regexEmail)) ? {email: username} : {phone: username};
+    let criteria = (username.match(regexEmail)) ? {email: username} : {phone: username};
 
     try {
-      var user = await this.User.findOne({
+      let user = await this.User.findOne({
         where: criteria,
       });
 
@@ -195,7 +195,7 @@ class Auth extends Services {
         throw new Error(`User already verified.`);
       }
 
-      var foundToken = await this.VerificationToken.findOne({
+      let foundToken = await this.VerificationToken.findOne({
         where: { token: token, type: 'signup', status: true }
       });
 
@@ -213,7 +213,7 @@ class Auth extends Services {
 
       //`User with ${inputDetails.field} ${inputDetails.value} has been verified`
 
-      var activateRes = { status: true, message: `Your Account has been activated successfully.` }
+      let activateRes = { status: true, message: `Your Account has been activated successfully.` }
       return activateRes;
 
     } catch (ex) {
@@ -227,9 +227,9 @@ class Auth extends Services {
   async resetPasswordService(req, res) {
     const username = req.body.username
     let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    var criteria = (username.match(regexEmail)) ? {email: username} : {phone: username};
+    let criteria = (username.match(regexEmail)) ? {email: username} : {phone: username};
     try {
-      var user = await this.User.findOne({
+      let user = await this.User.findOne({
         where: criteria, //checking if the email address or phone sent by client is present in the db(valid)
       });
 
@@ -237,7 +237,7 @@ class Auth extends Services {
         throw new Error(`User not found.`);
       }
 
-      var verificationToken = await this.VerificationToken.findOne({
+      let verificationToken = await this.VerificationToken.findOne({
         where: {user_id: user.id, type: 'reset_password'},
       })
 
@@ -249,10 +249,10 @@ class Auth extends Services {
         })
       }
 
-      var token = this.crypto.randomBytes(64).toString('hex'); //creating the token to be sent to the forgot password form (react)
+      let token = this.crypto.randomBytes(64).toString('hex'); //creating the token to be sent to the forgot password form (react)
       await bcrypt.hash(token, null, null, function (err, hash) {//hashing the password to store in the db node.js
         console.log(this.env.RESET_PASSWORD_TOKEN_EXPIRES_IN)
-        var dt = new Date();
+        let dt = new Date();
         dt.setSeconds( dt.getSeconds() + parseInt(this.env.RESET_PASSWORD_TOKEN_EXPIRES_IN) );
         this.VerificationToken.create({
               user_id: user.id,

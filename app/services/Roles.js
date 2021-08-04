@@ -32,13 +32,13 @@ class RolesController extends Controller {
    */
   async adminRoles( req, res, next ) {
 
-      var name = 'id';
-      var order = 'id';
-      var ordering = 'ASC';
-      var queries = req.query;
-      var offset = 0;
-      var limit = 100;
-      const query = [];
+    let name = 'id';
+    let order = 'id';
+    let ordering = 'ASC';
+    let queries = req.query;
+    let offset = 0;
+    let limit = 100;
+    let query = [];
 
       if(req.query.limit) {
         limit = req.query.limit
@@ -127,40 +127,40 @@ class RolesController extends Controller {
    */
   async adminDetailsRole( req, res, next ) {
     
-      var id = req.params.id;
-      console.log(id)
-      this.Role.findOne({
-        where: {
-          [this.Op.and]: [
-            {
-              id: {
-                [this.Op.eq]: id
-              }
-            },
-            {
-              deleted_at: {
-                [this.Op.eq]: null
-              }
+    let id = req.params.id;
+    console.log(id)
+    this.Role.findOne({
+      where: {
+        [this.Op.and]: [
+          {
+            id: {
+              [this.Op.eq]: id
             }
-          ]
-        }
-      })
-      .then(data => {
-        if(data) {
-          res.status(200).json(this.Response.success("OK", { data: data }, res.statusCode));
-        } else {
-          res.status(500).json(this.Response.error("Role Not found.", res.statusCode));
-        }
-      })
-      .catch(err => {
-          res.status(500).json(this.Response.error(err.message || "Some error occurred while retrieving tutorials.", res.statusCode));
-      });
+          },
+          {
+            deleted_at: {
+              [this.Op.eq]: null
+            }
+          }
+        ]
+      }
+    })
+    .then(data => {
+      if(data) {
+        res.status(200).json(this.Response.success("OK", { data: data }, res.statusCode));
+      } else {
+        res.status(500).json(this.Response.error("Role Not found.", res.statusCode));
+      }
+    })
+    .catch(err => {
+        res.status(500).json(this.Response.error(err.message || "Some error occurred while retrieving tutorials.", res.statusCode));
+    });
   }
 
 
 
   async adminUpdateRole( req, res, next ) {
-    var id = req.params.id;
+    let id = req.params.id;
     this.Role.update({
       code:             req.body.code,
       name:             req.body.name,
@@ -198,7 +198,7 @@ class RolesController extends Controller {
    */
   async adminDeleteRole( req, res, next ) {
     
-      var id = req.params.id;
+    let id = req.params.id;
       console.log(id)
       this.Role.findOne({
         where: {

@@ -33,10 +33,10 @@ class Utilities extends Services {
    */
   async get_countries( req, res, next ) {
     
-      var name = 'name';
-      var order = 'name';
-      var ordering = 'ASC';
-      const query = []
+      let name = 'name';
+      let order = 'name';
+      let ordering = 'ASC';
+      let query = []
 
       if(req.query.orderby) {
         order = req.query.orderby
@@ -89,10 +89,10 @@ class Utilities extends Services {
    */
   async get_states( req, res, next ) {
     
-      var name = 'name';
-      var order = 'name';
-      var ordering = 'ASC';
-      const query = []
+    let name = 'name';
+    let order = 'name';
+    let ordering = 'ASC';
+    let query = []
 
       if(req.query.orderby) {
         order = req.query.orderby
@@ -152,10 +152,10 @@ class Utilities extends Services {
    */
   async get_cities( req, res, next ) {
     
-      var name = 'name';
-      var order = 'name';
-      var ordering = 'ASC';
-      const query = [];
+    let name = 'name';
+    let order = 'name';
+    let ordering = 'ASC';
+    let query = [];
 
       if(req.query.orderby) {
         order = req.query.orderby
@@ -220,8 +220,8 @@ class Utilities extends Services {
    */
   async getLanguages(  ) {
     
-      var langs = {en: 'English', bn: 'Bengali', hi: 'Hindi'};
-      return langs;
+    const langs = {en: 'English', bn: 'Bengali', hi: 'Hindi'};
+    return langs;
       
   }
 }

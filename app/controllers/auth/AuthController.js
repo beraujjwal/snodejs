@@ -35,7 +35,7 @@ class AuthController extends Controller {
     
     try {
 
-      var signupRes = await this.Auth.signupService(req, res);
+      let signupRes = await this.Auth.signupService(req, res);
       res.status(res.statusCode).json(this.Response.success( __('REGISTER_SUCCESS'), signupRes, res.statusCode));
 
     } catch ( err ) {
@@ -57,7 +57,7 @@ class AuthController extends Controller {
   async signupProcess(req, res, next) {
 
     try {      
-      var signupRes = await this.Auth.signupService(req, res);
+      let signupRes = await this.Auth.signupService(req, res);
       if(signupRes) {
         req.flash('success', __('SIGNUP_SUCCESS'))
         res.redirect("/auth/signin");
@@ -84,7 +84,7 @@ class AuthController extends Controller {
 
     try {
 
-      var signinRes = await this.Auth.signinService(req, res);
+      let signinRes = await this.Auth.signinService(req, res);
       if(signinRes) {
         req.session.loggedin = true;
 				req.session.user = signinRes.user;
@@ -109,7 +109,7 @@ class AuthController extends Controller {
 
     try {
 
-      var loginRes = await this.Auth.signinService(req, res);
+      let loginRes = await this.Auth.signinService(req, res);
       res.status(res.statusCode).json(this.Response.success( __('LOGIN_SUCCESS'), loginRes, res.statusCode));
 
     } catch ( err ) {
@@ -124,7 +124,7 @@ class AuthController extends Controller {
 
     try {
 
-      var activate = await this.Auth.activateService(req, res);
+      let activate = await this.Auth.activateService(req, res);
       if(activate.status) {
         req.flash('success', activate.message)
         res.redirect("/auth/signin");
@@ -146,7 +146,7 @@ class AuthController extends Controller {
 
     try {
 
-      var activate = await this.Auth.activateService(req, res);
+      let activate = await this.Auth.activateService(req, res);
       res.status(res.statusCode).json(this.Response.success( __('LOGIN_SUCCESS'), activate, res.statusCode));
 
     } catch ( err ) {
@@ -168,7 +168,7 @@ class AuthController extends Controller {
   async reset_password(req, res) {
     const username = req.body.username
     let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    var criteria = (username.match(regexEmail)) ? {email: username} : {phone: username};
+    let criteria = (username.match(regexEmail)) ? {email: username} : {phone: username};
 
     this.User.findOne({
       where: criteria, //checking if the email address or phone sent by client is present in the db(valid)
@@ -188,10 +188,10 @@ class AuthController extends Controller {
             }
           })
         }
-        var token = this.crypto.randomBytes(64).toString('hex'); //creating the token to be sent to the forgot password form (react)
+        let token = this.crypto.randomBytes(64).toString('hex'); //creating the token to be sent to the forgot password form (react)
         bcrypt.hash(token, null, null, function (err, hash) {//hashing the password to store in the db node.js
           console.log(this.env.RESET_PASSWORD_TOKEN_EXPIRES_IN)
-          var dt = new Date();
+          let dt = new Date();
           dt.setSeconds( dt.getSeconds() + this.env.RESET_PASSWORD_TOKEN_EXPIRES_IN );
           this.VerificationToken.create({
                 user_id: user.id,

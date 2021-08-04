@@ -5,8 +5,8 @@ const { User } = require('../services/User');
 const { Utilities } = require('../services/Utilities');
 const autoBind = require( 'auto-bind' );
 const nodemailer = require('nodemailer');
-var jwt = require("jsonwebtoken");
-var bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 
 
@@ -42,8 +42,8 @@ class UsersController extends Controller {
   async adminUsers(req, res) {
     try {
       //logger.debug('This is the "/" route.')
-      var usersList = await this.User.usersListService(req, res);
-      var userDatas = JSON.parse(JSON.stringify(usersList));
+      let usersList = await this.User.usersListService(req, res);
+      let userDatas = JSON.parse(JSON.stringify(usersList));
       //console.log(userDatas)
       if(userDatas) {
         res.render('admin/users/users', {userDatas: userDatas});
@@ -60,7 +60,7 @@ class UsersController extends Controller {
 
   async adminAddUser(req, res) {
     try {
-      var languages = await this.Utilities.getLanguages();
+      let languages = await this.Utilities.getLanguages();
       res.render('admin/users/user_add', { title: 'User add', msg: 'Add New Users', error: false, languages: languages })
     } catch ( err ) {
       console.log(err);
@@ -71,12 +71,12 @@ class UsersController extends Controller {
 
 
   async adminStoreUser(req, res) {
-    var languages = await this.Utilities.getLanguages();
+    let languages = await this.Utilities.getLanguages();
     try {
-      var userStore = await this.User.userStore(req, res);
+      let userStore = await this.User.userStore(req, res);
       res.redirect('/admin/users')
     } catch ( err ) {
-      console.log(err);
+      
       res.render('admin/users/user_add', {error: true, message: err, languages: languages});
     }
   }
@@ -84,11 +84,11 @@ class UsersController extends Controller {
 
 
   async adminEditUser(req, res) {
-    var languages = await this.Utilities.getLanguages();
+    let languages = await this.Utilities.getLanguages();
     try {
-      var userDetails = await this.User.usersDetailsService(req, res);
+      let userDetails = await this.User.usersDetailsService(req, res);
 
-      var userDatas = JSON.parse(JSON.stringify(userDetails));
+      let userDatas = JSON.parse(JSON.stringify(userDetails));
       res.render('admin/users/user_edit', { title: 'User Edit', msg: 'Edit Users', error: false, userDatas: userDatas, languages: languages })
     } catch ( err ) {
       console.log(err);
@@ -101,7 +101,7 @@ class UsersController extends Controller {
   async adminUpdateUser(req, res) {
     try {
       console.log(req.body);
-      var updateUser = await this.User.userUpdate(req, res);
+      let updateUser = await this.User.userUpdate(req, res);
       res.redirect('/admin/users')
     } catch ( err ) {
       console.log(err);
@@ -113,8 +113,8 @@ class UsersController extends Controller {
 
   async adminDeleteUser(req, res) {
     try {
-      var usersList = await this.User.usersListService(req, res);
-      var userDatas = JSON.parse(JSON.stringify(usersList));
+      let usersList = await this.User.usersListService(req, res);
+      let userDatas = JSON.parse(JSON.stringify(usersList));
       if(userDatas) {
         res.render('admin/users/users', {userDatas: userDatas});
       }else {
