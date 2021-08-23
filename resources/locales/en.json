@@ -3,7 +3,7 @@
 	"LOGIN_SUCCESS": "You have successfully logged in.",
 	"LOGIN_INVALID_PASSWORD": "Invalid Password!",
 	"LOGIN_USER_NOT_FOUND": "User Not found!",
-	"LOGIN_INVALID_USERSNAME_PASSWORD": "Invalid Username & Password",
+	"LOGIN_INVALID_USERNAME_PASSWORD": "Invalid Username & Password",
 	"You have %s message": {
 		"one": "You have %s message",
 		"other": "You have %s messages"

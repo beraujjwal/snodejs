@@ -5,12 +5,12 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const db = {};
-const basepath = __dirname + '/../../../models/';
+const basePath = __dirname + '/../../../models/';
 
 
 let sequelize;
 
-const database = process.env.DB_DATABASE || 'nodeapp';
+const database = process.env.DB_DATABASE || 'node';
 const user = process.env.DB_USERNAME || 'root';
 const password = process.env.DB_PASSWORD || '';
 const host = process.env.DB_HOST || '127.0.0.1';
@@ -29,12 +29,12 @@ sequelize = new Sequelize(database, user, password, {
 });
 
 fs
-  .readdirSync(basepath)
+  .readdirSync(basePath)
   .filter(file => {
     return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
   })
   .forEach(file => {
-    const model = require(path.join(basepath, file))(sequelize, Sequelize.DataTypes);
+    const model = require(path.join(basePath, file))(sequelize, Sequelize.DataTypes);
     //console.log(model);
     db[model.name] = model;
   });

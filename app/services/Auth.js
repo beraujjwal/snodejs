@@ -108,7 +108,7 @@ class Auth extends Services {
    * @returns {Promise<{success: boolean, error: *}|{success: boolean, data: *}>}
    */
   async signinService(req, res) {
-    //logger.info("Request recieved at /test", req.body)
+    //logger.info("Request received at /test", req.body)
     var lang =  getLocale();
     let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -138,7 +138,7 @@ class Auth extends Services {
       });
 
       if (!user) {
-        throw new Error(__('LOGIN_INVALID_USERSNAME_PASSWORD'))
+        throw new Error(__('LOGIN_INVALID_USERNAME_PASSWORD'))
       }
 
       var passwordIsValid = bcrypt.compareSync(
@@ -155,12 +155,7 @@ class Auth extends Services {
         algorithm: 'HS256'
       });
 
-      const refreshToken = jwt.sign({ id: user.id, phone: user.phone, email: user.email }, this.env.JWT_REFRESH_TOKEN_SECRET, { 
-        expiresIn: this.env.JWT_REFRESH_IN, // expiresIn time
-        algorithm: 'HS256'
-      })
-
-      var loginRes = { user: user, accessToken: token, expiresIn: this.env.JWT_EXPIRES_IN, refreshToken: refreshToken }
+      var loginRes = { user: user, accessToken: token, expiresIn: this.env.JWT_EXPIRES_IN }
       return loginRes;
     } catch (ex) {
       throw new Error(ex);

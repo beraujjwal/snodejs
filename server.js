@@ -51,15 +51,6 @@ app.use(session({
 app.use(i18n);
 
 app.use(flash());
-
-
-/*app.use(function(req, res, next){
-  if(req.method == 'POST' || req.method == 'PUT') {
-    req.session.formData = req.body;    
-  }
-  next();
-});*/
-
 //app.use(logger);
 
 app.use(cors(corsOptions));
@@ -84,7 +75,7 @@ app.use(express.static(path.join(__dirname, './public')));
 
 // simple route
 /*app.get("/", (req, res) => {
-  res.json({ message: "Welcome to ujjwal bera application." });
+  res.json({ message: "Welcome to Ujjwal Bera application." });
 });*/
 
 const PORT = parseInt(process.env.APP_PORT) || 8080;

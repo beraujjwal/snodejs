@@ -6,12 +6,12 @@ const moduleGenerator = require('./system/core/generator/module-generator');
 
 async function main() {
     try {
-        const arrgumentsArr = process.argv.slice(2);
-        if(arrgumentsArr.length === 2 && arrgumentsArr[ 0 ].indexOf(':') === 4) {
-            let processAction = arrgumentsArr[0].slice(5);
+        const argumentsArr = process.argv.slice(2);
+        if(argumentsArr.length === 2 && argumentsArr[ 0 ].indexOf(':') === 4) {
+            let processAction = argumentsArr[0].slice(5);
             let actionArr = ['controller', 'model', 'service', 'validation', 'module'];
             if(actionArr.includes(processAction)) {
-                await moduleGenerator(arrgumentsArr);
+                await moduleGenerator(argumentsArr);
             } else {
                 log(chalk.bgRed.bold('Invalid Make Command'));
             }

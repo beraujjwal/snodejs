@@ -10,7 +10,8 @@ class AttributesController extends Controller {
 
 
   /**
-   * Controller constructor
+   * @desc Controller constructor
+   * 
    * @author Ujjwal Bera
    * @param null
    */
@@ -25,7 +26,7 @@ class AttributesController extends Controller {
 
 
   /**
-   * @desc   Get list of attribute for admin user
+   * @desc Get list of attribute for admin user
    *
    * @param req : request
    * @param res : response
@@ -46,7 +47,7 @@ class AttributesController extends Controller {
 
 
   /**
-   * @desc   Get attribute details for admin user
+   * @desc Get attribute details for admin user
    *
    * @param req : request
    * @param res : response
@@ -66,7 +67,7 @@ class AttributesController extends Controller {
 
 
   /**
-   * @desc   Add attribute form for admin user
+   * @desc Add attribute form for admin user
    *
    * @param req : request
    * @param res : response

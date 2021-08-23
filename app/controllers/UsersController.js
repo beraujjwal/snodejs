@@ -34,7 +34,7 @@ class UsersController extends Controller {
 
   async dashboard (req, res) {
     // Save User to Database
-    res.render('admin/users/dashboard', { title: 'User Authention', msg: 'Uh oh snap! You are drive to the wrong way', error: false })
+    res.render('admin/users/dashboard', { title: 'User Authentic', msg: 'Uh oh snap! You are drive to the wrong way', error: false })
   }
 
 
