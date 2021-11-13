@@ -49,5 +49,3 @@ This README would normally document whatever steps are necessary to get your app
 ### Who do I talk to? ###
 
 * [Ujjwal Bera](https://github.com/beraujjwal)
-* [Pratim Mallick](#)
-* [Chandan Mondal](#)
