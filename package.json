@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx nodemon index.js"
+    "dev": "npx nodemon index.js",
+	"migrate": "npx sequelize-cli db:migrate"
   },
   "keywords": [
     "SNode"
@@ -21,18 +22,24 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-flash-messages": "^0.1.1",
+    "express-router-group": "^0.1.4",
     "express-session": "^1.17.2",
     "express-validator": "^6.12.1",
     "fs": "^0.0.1-security",
     "i18n": "^0.13.2",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
+    "module-alias": "^2.2.2",
+    "morgan": "^1.10.0",
     "multer": "^1.4.3",
+    "mysql2": "^2.3.3",
     "nodemailer": "^6.5.0",
     "nodemon": "^2.0.7",
+    "otp-generator": "^4.0.0",
     "path": "^0.12.7",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.3",
+    "pluralize": "^8.0.0",
     "pug": "^3.0.2",
     "sequelize": "^6.6.2",
     "validator": "^13.6.0",
@@ -40,9 +47,22 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "case": "^1.6.3",
-    "chalk": "^4.1.2",
-    "pluralize": "^8.0.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.11.0",
+    "faker": "^5.1.0",
+    "jest": "^27.5.1",
+    "mocha": "^9.2.2",
+    "nodemon": "^2.0.14",
     "sequelize-cli": "^6.2.0"
+  },
+  "_moduleAliases": {
+    "@root": ".",
+    "@core": "system/core",
+    "@model": "models",
+    "@controller": "app/controllers",
+    "@middleware": "app/middlewares",
+    "@service": "app/services",
+    "@helper": "app/helpers",
+    "@validation": "app/validations"
   }
 }

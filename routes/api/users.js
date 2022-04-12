@@ -1,77 +1,77 @@
-const AuthMiddleware = require("../../app/middleware/AuthMiddleware");
-const UserValidation = require("../../app/validation/userValidation");
-const AuthController = require("../../app/controllers/auth/AuthController");
-const UsersController = require("../../app/controllers/UsersController");
+const express = require('express');
+require('express-router-group');
+const usersController = require('../../app/controllers/users.controller');
+const authController = require('../../app/controllers/auth/auth.controller');
+const userValidation = require('../../app/validations/user.validation');
+const authMiddleware = require('../../app/middlewares/auth.middleware');
+const aclMiddleware = require('../../app/middlewares/acl.middleware');
 
-module.exports = function(app, router) {
+const router = express.Router();
 
-  app.use(function(req, res, next) {
-    res.header(
-      "Access-Control-Allow-Headers",
-      "x-access-token, Origin, Content-Type, Accept"
+router.group('/v1.0', (router) => {
+  router.group('/auth', (router) => {
+    router.post('/signup', [userValidation.signup], authController.register);
+
+    router.post('/signin', [userValidation.signin], authController.login);
+
+    router.post(
+      '/forgot-password',
+      [userValidation.forgotPassword],
+      authController.forgotPassword,
     );
-    next();
+
+    router.post(
+      '/reset-password',
+      [userValidation.forgotPassword],
+      authController.resetPassword,
+    );
   });
 
-  app.use('/api/v1', router);
+  router.get('/profile', usersController.profile);
 
-  router.post(
-    "/auth/signup",
-    [
-      UserValidation.signupValidation,
-      AuthMiddleware.checkDuplicateUsernameOrEmail,
-      AuthMiddleware.checkRolesExisted
-    ],
-    AuthController.signup
-  );
-
-
-  router.post(
-    "/auth/signin",
-    [
-      UserValidation.signinValidation
-    ],
-    AuthController.signin
-  );
-
-  /*router.get(
-    "/auth/active/:username/:token",
-    AuthController.activate
-  );*/
-
-  router.get(
-    "/admin/dashboard", 
-    UsersController.dashboard
-  );
-
-  router.get(
-    "/admin/users", 
-    UsersController.adminUsers
-  );
-
-  router.get(
-    "/admin/user/add", 
-    UsersController.adminAddUser
+  router.put(
+    '/profile',
+    [userValidation.profile],
+    usersController.updateProfile,
   );
 
   router.post(
-    "/admin/user/add", 
-    UsersController.adminStoreUser
+    '/change-password',
+    [userValidation.changePassword],
+    usersController.changePassword,
   );
+
+  router.group('/user', authMiddleware.verifyToken, (router) => {
+    router.post(
+      '',
+      [aclMiddleware.hasPermission('create', 'users')],
+      usersController.userStore,
+    );
+
+    router.get(
+      '/:id',
+      [aclMiddleware.hasPermission('read', 'users')],
+      usersController.userDetails,
+    );
+
+    router.put(
+      '/:id',
+      [aclMiddleware.hasPermission('update', 'users')],
+      usersController.userUpdate,
+    );
+
+    router.delete(
+      '/:id',
+      [aclMiddleware.hasPermission('delete', 'users')],
+      usersController.userDelete,
+    );
+  });
 
   router.get(
-    "/admin/user/edit/:id", 
-    UsersController.adminEditUser
+    '/users',
+    [authMiddleware.verifyToken, aclMiddleware.hasPermission('read', 'users')],
+    usersController.userList,
   );
+});
 
-  router.post(
-    "/admin/user/edit/:id", 
-    UsersController.adminUpdateUser
-  );
-
-  router.get(
-    "/admin/user/delete/:id", 
-    UsersController.adminDeleteUser
-  );
-  
-};
+module.exports = router;

@@ -1,15 +1,32 @@
-const AuthMiddleware = require("../app/middleware/AuthMiddleware");
-const UserValidation = require("../app/validation/userValidation");
-const AuthController = require("../app/controllers/auth/AuthController");
-const UsersController = require("../app/controllers/UsersController");
-let formData = require('../system/helpers/formData');
+const express = require('express');
+
+//const usersController = require('../app/controllers/users.controller');
+const authController = require('../app/controllers/auth/auth.controller');
+const userValidation = require('../app/validations/user.validation');
+//let formData = require('../system/helpers/formData');
+
+const router = express.Router();
+router.post('/auth/signup', [userValidation.signup], authController.register);
+router.post('/auth/signin', [userValidation.signin], authController.login);
+
+router.get('/auth/verify/:user_id/:token', [], authController.verify);
+router.get('/auth/reset/:user_id/:token', [], authController.reset);
+
+module.exports = router;
+
+
+
+
+
+
+/*
 
 module.exports = function(app, router) {
   app.use(function(req, res, next) {
     res.header(
       "Access-Control-Allow-Headers",
       "x-access-token, Origin, Content-Type, Accept"
-    );    
+    );
     next();
   });
 
@@ -30,7 +47,7 @@ module.exports = function(app, router) {
   );
 
   app.post(
-    "/auth/signup",    
+    "/auth/signup",
     [UserValidation.signupWebValidation],
     AuthController.signupProcess
   );
@@ -102,3 +119,4 @@ module.exports = function(app, router) {
 
 
 };
+*/

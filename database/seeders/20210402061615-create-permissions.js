@@ -14,48 +14,48 @@ module.exports = {
 
     await queryInterface.bulkInsert('permissions', [
       {
-        name: 'Users',
-        slug: 'users',
+        name: 'Full',
+        slug: 'full',
         status:true,
         created_by:1,
         created_at: new Date(),
         updated_at: new Date()
       },
       {
-        name: 'Roles',
-        slug: 'roles',
+        name: 'Create',
+        slug: 'create',
         status:true,
         created_by:1,
         created_at: new Date(),
         updated_at: new Date()
       },
       {
-        name: 'Permissions',
-        slug: 'permissions',
+        name: 'Read',
+        slug: 'eead',
         status:true,
         created_by:1,
         created_at: new Date(),
         updated_at: new Date()
       },
       {
-        name: 'Product Attributes',
-        slug: 'attributes',
+        name: 'Update',
+        slug: 'update',
         status:true,
         created_by:1,
         created_at: new Date(),
         updated_at: new Date()
       },
       {
-        name: 'Product Attribute Family',
-        slug: 'attribute_families',
+        name: 'Delete',
+        slug: 'delete',
         status:true,
         created_by:1,
         created_at: new Date(),
         updated_at: new Date()
       },
       {
-        name: 'Product Attribute Group',
-        slug: 'attribute_group',
+        name: 'Deny',
+        slug: 'deny',
         status:true,
         created_by:1,
         created_at: new Date(),
