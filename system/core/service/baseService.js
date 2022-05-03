@@ -24,61 +24,105 @@ class baseService extends base {
 
   async getAll(
     {
-      orderby = 'name',
-      order = 'asc',
+      orderby = 'id',
+      order = 'DESC',
       limit = this.dataPerPage,
       page = 1,
       ...search
     },
     filter = null,
+	include = null
   ) {
     try {
-      if (filter === null) {
-        for (const field in search) {
-          let filterValue;
-          if (typeof search[field] === 'number') {
-            filterValue = parseInt(search[field]);
-          } else if (typeof search[field] === 'string') {
-            filterValue = new RegExp(search[field], 'i');
-          } else if (typeof search[field] === 'boolean') {
-            filterValue = parseInt(search[field]);
-          } else {
-            filterValue = search[field];
-          }
-          filter = { ...filter, [field]: filterValue };
-        }
-      }
-      filter = { ...filter, deleted: false, deletedAt: null };
-      let ordering = 1;
-      if (order == 'desc') {
-        ordering = -1;
-      }
-      let skip = parseInt(page) * parseInt(limit) - parseInt(limit);
-      const items = await this.model
-        .find(filter)
-        .sort({ [orderby]: ordering })
-        .skip(skip)
-        .limit(parseInt(limit));
-      const total = await this.model.countDocuments(filter);
-      return { items, totalCount: total };
+
+		if(page) {
+			if(page > 1) {
+			  offset = page * limit - limit;
+			  page = page;
+			}
+		}
+
+
+    	if (filter === null) {
+			for (const field in search) {
+				let filterValue;
+				if (typeof search[field] === 'number') {
+					filterValue = parseInt(search[field]);
+				} else if (typeof search[field] === 'string') {
+					filterValue = new RegExp(search[field], 'i');
+				} else if (typeof search[field] === 'boolean') {
+					filterValue = parseInt(search[field]);
+				} else {
+					filterValue = search[field];
+				}
+				query.push({
+					[this.Op.and]: {
+						[field]: {
+						[this.Op.eq]: filterValue
+						}
+					}
+				});
+			}
+		}
+
+		const items = await this.model.findAll({
+			where: {
+			  [this.Op.and]: query
+			},
+			include: [include],
+			order: [
+				[orderby, order],
+			],
+			offset: offset, limit: limit,
+		});
+		const total = await this.model.count({
+			where: {
+			  [this.Op.and]: query
+			},
+			include: [include],
+		});
+
+    	return { items, totalCount: total };
     } catch (ex) {
-      let error = new Error(ex.message);
-      error.statusCode = 400;
-      throw error;
+		let error = new Error(ex.message);
+		error.statusCode = 400;
+		throw error;
     }
   }
 
   async get(id) {
     try {
-      const item = await this.model.findById(id);
-      if (item) {
-        return item;
-      }
-      throw new Error(`This ${this.name} not found.`);
+		const item = await this.model.findOne({
+			where: {
+				id: id
+			}
+		});
+		if (item) {
+			return item;
+		}
+		throw new Error(`This ${this.name} not found.`);
     } catch (ex) {
-      let error = new Error(ex.message);
-      error.statusCode = 400;
-      throw error;
+		let error = new Error(ex.message);
+		error.statusCode = 400;
+		throw error;
+    }
+  }
+
+  async get(id) {
+    try {
+		const item = await this.model.findOne({
+			where: {
+				id: id
+			}
+		});
+		if (item) {
+			return item;
+		}
+		throw new Error(`This ${this.name} not found.`);
+    } catch (ex) {
+		let error = new Error(ex.message);
+		error.statusCode = 400;
+		throw error;
     }
   }
 

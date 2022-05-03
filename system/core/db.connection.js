@@ -3,12 +3,8 @@ require( 'dotenv' ).config();
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
-const basename = path.basename(__filename);
 const db = {};
 const basePath = __dirname + '/../../models/';
-
-
-let sequelize;
 
 const database = process.env.DB_DATABASE || 'node';
 const user = process.env.DB_USERNAME || 'root';
@@ -18,7 +14,7 @@ const port = process.env.DB_PORT || '3306';
 const dialect = process.env.DB_CONNECTION || 'mysql';
 const log = process.env.APP_DEBUG || 'true';
 
-sequelize = new Sequelize(database, user, password, {
+const sequelize = new Sequelize(database, user, password, {
   host,
   port,
   dialect: dialect,
@@ -31,7 +27,7 @@ sequelize = new Sequelize(database, user, password, {
 fs
   .readdirSync(basePath)
   .filter(file => {
-    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
+    return (file.indexOf('.') !== 0) && (file !== 'index.js') && (file.slice(-3) === '.js');
   })
   .forEach(file => {
     const model = require(path.join(basePath, file))(sequelize, Sequelize.DataTypes);
