@@ -1,104 +1,55 @@
-const AuthMiddleware = require("../app/middleware/AuthMiddleware");
-const UserValidation = require("../app/validation/userValidation");
-const AuthController = require("../app/controllers/auth/AuthController");
-const UsersController = require("../app/controllers/UsersController");
-let formData = require('../system/helpers/formData');
+const express = require('express');
+require('express-router-group');
+const usersController = require('../app/controllers/users.controller');
+const authController = require('../app/controllers/auth.controller');
+const userValidation = require('../app/validations/user.validation');
+const authMiddleware = require('../app/middlewares/auth.middleware');
+const aclMiddleware = require('../app/middlewares/acl.middleware');
 
-module.exports = function(app, router) {
-  app.use(function(req, res, next) {
-    res.header(
-      "Access-Control-Allow-Headers",
-      "x-access-token, Origin, Content-Type, Accept"
-    );    
-    next();
+const { exceptionHandler } = require('../app/middlewares/exceptionHandler.middleware');
+
+const router = express.Router();
+
+router.group('/v1.0', (versionRouter) => {
+  versionRouter.group('/auth', (authRouter) => {
+
+    authRouter.post('/sign-up', [userValidation.signup], exceptionHandler(authController.register));
+    authRouter.post('/sign-in', [userValidation.signin], exceptionHandler(authController.login));
+    authRouter.post('/otp-resend', [userValidation.signin], exceptionHandler(authController.otpResend));
+    authRouter.post('/otp-verify', [userValidation.signin], exceptionHandler(authController.otpVerify));
+    authRouter.post('/email-verify', exceptionHandler(authController.emailVerify));
+    authRouter.post('/phone-verify',  exceptionHandler(authController.phoneVerify));
+
+    authRouter.post(
+      '/forgot-password',
+      [userValidation.forgotPassword],
+      exceptionHandler(authController.forgotPassword)
+    );
+
+    authRouter.post(
+      '/reset-password',
+      [userValidation.forgotPassword],
+      exceptionHandler(authController.resetPassword)
+    );
   });
 
-  // add flushSystem as middleware
-  app.use(formData());
+  versionRouter.get('/profile', authMiddleware.verifyiNCompletedToken, exceptionHandler(usersController.profile));
 
-  //app.use('/v1', router);
-
-  app.all('/', function (req, res, next) {
-    console.log('Accessing the secret section ...');
-    res.render('index', { title: 'Home Page', msg: 'Welcome to e-Shop Admin' })
-  });
-
-
-  app.get(
-    "/auth/signup",
-    AuthController.signupForm
+  versionRouter.put(
+    '/profile',
+    [authMiddleware.verifyiNCompletedToken, userValidation.profile],
+    exceptionHandler(usersController.updateProfile)
   );
 
-  app.post(
-    "/auth/signup",    
-    [UserValidation.signupWebValidation],
-    AuthController.signupProcess
+  versionRouter.post(
+    '/change-password',
+    [authMiddleware.verifyiNCompletedToken, userValidation.changePassword],
+    exceptionHandler(usersController.changePassword)
   );
 
-  app.get(
-    "/auth/signin",
-    AuthController.signinForm
-  );
-
-  app.post(
-    "/auth/signin",
-    [
-      UserValidation.signinWebValidation
-    ],
-    AuthController.signinProcess
-  );
-
-  app.get(
-    "/auth/active/:username/:token",
-    AuthController.activateProcess
-  );
-
-  app.get(
-    "/auth/forget-password",
-    AuthController.forgetPasswordForm
-  );
-
-  app.get(
-    "/admin/dashboard",
-    [AuthMiddleware.isLoggedIn],
-    UsersController.dashboard
-  );
-
-  app.get(
-    "/admin/users",
-    [AuthMiddleware.isLoggedIn],
-    UsersController.adminUsers
-  );
-
-  app.get(
-    "/admin/user/add",
-    [AuthMiddleware.isLoggedIn],
-    UsersController.adminAddUser
-  );
-
-  app.post(
-    "/admin/user/add",
-    [AuthMiddleware.isLoggedIn],
-    UsersController.adminStoreUser
-  );
-
-  app.get(
-    "/admin/user/edit/:id",
-    [AuthMiddleware.isLoggedIn],
-    UsersController.adminEditUser
-  );
-
-  app.post(
-    "/admin/user/edit/:id",
-    [AuthMiddleware.isLoggedIn],
-    UsersController.adminUpdateUser
-  );
-
-  app.get(
-    "/admin/user/delete/:id",
-    [AuthMiddleware.isLoggedIn],
-    UsersController.adminDeleteUser
-  );
+  versionRouter.post('/create-carrier-user', exceptionHandler(usersController.createNewCarrierUser));
 
 
-};
+});
+
+module.exports = router;

@@ -14,43 +14,23 @@ module.exports = {
       code: {
         type: Sequelize.STRING
       },
-      phone_code: {
+      phoneCode: {
         type: Sequelize.INTEGER
       },
       status: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
       },
-      created_by: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: {
-            tableName: 'users',
-            modelName: 'User'
-          },
-          key: 'id'
-        },
-        allowNull: false
-      },
-      updated_by: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: {
-            tableName: 'users',
-            modelName: 'User'
-          },
-          key: 'id'
-        },
-        allowNull: true
-      },
-      deleted_at: {
+      deletedAt: {
         type: Sequelize.DATE,
         allowNull: true
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
       }

@@ -11,7 +11,7 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
-      country_id: {
+      countryId: {
         type: Sequelize.INTEGER,
         references: {
           model: {
@@ -25,39 +25,19 @@ module.exports = {
         onDelete: 'cascade'
       },
       status: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
       },
-      created_by: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: {
-            tableName: 'users',
-            modelName: 'User'
-          },
-          key: 'id'
-        },
-        allowNull: false
-      },
-      updated_by: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: {
-            tableName: 'users',
-            modelName: 'User'
-          },
-          key: 'id'
-        },
-        allowNull: true
-      },
-      deleted_at: {
+      deletedAt: {
         type: Sequelize.DATE,
         allowNull: true
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
       }

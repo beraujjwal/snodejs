@@ -14,150 +14,93 @@ module.exports = {
 
     await queryInterface.bulkInsert('permissions', [
       {
-        name: 'Users',
-        slug: 'users',
+        name: 'Full Access',
+        slug: 'fullAccess',
         status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
-        name: 'Roles',
-        slug: 'roles',
+        name: 'List View',
+        slug: 'listView',
         status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
-        name: 'Permissions',
-        slug: 'permissions',
+        name: 'Drop-down List',
+        slug: 'drop-downList',
         status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
-        name: 'Product Attributes',
-        slug: 'attributes',
+        name: 'Single Details View',
+        slug: 'singleDetailsView',
         status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
-        name: 'Product Attribute Family',
-        slug: 'attribute_families',
+        name: 'Create New',
+        slug: 'createNew',
         status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
-        name: 'Product Attribute Group',
-        slug: 'attribute_group',
+        name: 'Update Existing',
+        slug: 'updateExisting',
         status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'Delete Existing',
+        slug: 'deleteExisting',
+        status:true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'Download Single Details',
+        slug: 'downloadSingleDetails',
+        status:true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'Download List',
+        slug: 'downloadList',
+        status:true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'Manage Columns',
+        slug: 'manageColumns',
+        status:true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'Full Deny',
+        slug: 'fullDeny',
+        status:true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'Others',
+        slug: 'others',
+        status:true,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ], {});
 
 
 
-    await queryInterface.bulkInsert('role_permissions', [
-      {
-        permission_id: 1,
-        role_id: 1,
-        permission: 'READ_WRITE',
-        status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        permission_id: 2,
-        role_id: 1,
-        permission: 'READ_WRITE',
-        status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        permission_id: 3,
-        role_id: 1,
-        permission: 'READ_WRITE',
-        status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        permission_id: 4,
-        role_id: 1,
-        permission: 'READ_WRITE',
-        status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        permission_id: 5,
-        role_id: 1,
-        permission: 'READ_WRITE',
-        status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        permission_id: 6,
-        role_id: 1,
-        permission: 'READ_WRITE',
-        status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        permission_id: 4,
-        role_id: 2,
-        permission: 'READ',
-        status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        permission_id: 5,
-        role_id: 2,
-        permission: 'READ',
-        status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
-      },
-      {
-        permission_id: 6,
-        role_id: 2,
-        permission: 'READ',
-        status:true,
-        created_by:1,
-        created_at: new Date(),
-        updated_at: new Date()
-      }
-    ], {});
-
-    await queryInterface.bulkInsert('user_permissions', [{
-      permission_id: 1,
-      user_id: 2,
-      permission: 'OWN_READ_WRITE',
-      status:true,
-      created_by:1,
-      created_at: new Date(),
-      updated_at: new Date()
-    }], {});
 
     //await queryInterface.sequelize.query('CREATE TRIGGER...')
   },
@@ -171,8 +114,6 @@ module.exports = {
      */
 
      //await queryInterface.sequelize.query('DROP TRIGGER...')
-     await queryInterface.bulkDelete('role_permissions', null, {});
-     await queryInterface.bulkDelete('user_permissions', null, {});
      await queryInterface.bulkDelete('permissions', null, {});
   }
 };

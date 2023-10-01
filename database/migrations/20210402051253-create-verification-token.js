@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      user_id: {
+      userId: {
         type: Sequelize.INTEGER
       },
       token: {
@@ -22,32 +22,36 @@ module.exports = {
         defaultValue: true,
         allowNull: false
       },
-      expire_at: {
+      expireAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      created_at: {
+      deletedAt: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
       }
     }).then(() => {
       //console.log('created VerificationToken table');
-      /*return queryInterface.sequelize.query(`
-        CREATE EVENT expire_token
-          ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL  1 DAY 
-          DO
-          DELETE FROM verification_tokens WHERE created_at < DATE_SUB(NOW(), INTERVAL 1 DAY);
-      `)*/
+      // return queryInterface.sequelize.query(`
+      //   CREATE EVENT expire_token
+      //     ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL  1 DAY
+      //     DO
+      //     DELETE FROM verification_tokens WHERE created_at < DATE_SUB(NOW(), INTERVAL 1 DAY);
+      // `)
     }).then(() => { console.log('expireToken event created') });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('verification_tokens').then(() => {
 	    //resconsole.log(`VericationTokens table dropped`)
-	    /*return queryInterface.sequelize.query(`DROP EVENT IF EXISTS expire_token`);*/
-    }).then(() => { /*console.log(`expireToken event dropped`)*/ })
+	    return queryInterface.sequelize.query(`DROP EVENT IF EXISTS expire_token`);
+    }).then(() => { console.log(`expireToken event dropped`) })
   }
 };

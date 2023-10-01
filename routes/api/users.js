@@ -1,77 +1,55 @@
-const AuthMiddleware = require("../../app/middleware/AuthMiddleware");
-const UserValidation = require("../../app/validation/userValidation");
-const AuthController = require("../../app/controllers/auth/AuthController");
-const UsersController = require("../../app/controllers/UsersController");
+const express = require('express');
+require('express-router-group');
+const usersController = require('../../app/controllers/users.controller');
+const authController = require('../../app/controllers/auth.controller');
+const userValidation = require('../../app/validations/user.validation');
+const authMiddleware = require('../../app/middlewares/auth.middleware');
+const aclMiddleware = require('../../app/middlewares/acl.middleware');
 
-module.exports = function(app, router) {
+const { exceptionHandler } = require('../../app/middlewares/exceptionHandler.middleware');
 
-  app.use(function(req, res, next) {
-    res.header(
-      "Access-Control-Allow-Headers",
-      "x-access-token, Origin, Content-Type, Accept"
+const router = express.Router();
+
+router.group('/v1.0', (versionRouter) => {
+  versionRouter.group('/auth', (authRouter) => {
+
+    authRouter.post('/sign-up', [userValidation.signup], exceptionHandler(authController.register));
+    authRouter.post('/sign-in', [userValidation.signin], exceptionHandler(authController.login));
+    authRouter.post('/otp-resend', [userValidation.signin], exceptionHandler(authController.otpResend));
+    authRouter.post('/otp-verify', [userValidation.signin], exceptionHandler(authController.otpVerify));
+    authRouter.post('/email-verify', exceptionHandler(authController.emailVerify));
+    authRouter.post('/phone-verify',  exceptionHandler(authController.phoneVerify));
+
+    authRouter.post(
+      '/forgot-password',
+      [userValidation.forgotPassword],
+      exceptionHandler(authController.forgotPassword)
     );
-    next();
+
+    authRouter.post(
+      '/reset-password',
+      [userValidation.forgotPassword],
+      exceptionHandler(authController.resetPassword)
+    );
   });
 
-  app.use('/api/v1', router);
+  versionRouter.get('/profile', authMiddleware.verifyiNCompletedToken, exceptionHandler(usersController.profile));
 
-  router.post(
-    "/auth/signup",
-    [
-      UserValidation.signupValidation,
-      AuthMiddleware.checkDuplicateUsernameOrEmail,
-      AuthMiddleware.checkRolesExisted
-    ],
-    AuthController.signup
+  versionRouter.put(
+    '/profile',
+    [authMiddleware.verifyiNCompletedToken, userValidation.profile],
+    exceptionHandler(usersController.updateProfile)
   );
 
-
-  router.post(
-    "/auth/signin",
-    [
-      UserValidation.signinValidation
-    ],
-    AuthController.signin
+  versionRouter.post(
+    '/change-password',
+    [authMiddleware.verifyiNCompletedToken, userValidation.changePassword],
+    exceptionHandler(usersController.changePassword)
   );
 
-  /*router.get(
-    "/auth/active/:username/:token",
-    AuthController.activate
-  );*/
+  versionRouter.post('/create-carrier-user', exceptionHandler(usersController.createNewCarrierUser));
 
-  router.get(
-    "/admin/dashboard", 
-    UsersController.dashboard
-  );
 
-  router.get(
-    "/admin/users", 
-    UsersController.adminUsers
-  );
+});
 
-  router.get(
-    "/admin/user/add", 
-    UsersController.adminAddUser
-  );
-
-  router.post(
-    "/admin/user/add", 
-    UsersController.adminStoreUser
-  );
-
-  router.get(
-    "/admin/user/edit/:id", 
-    UsersController.adminEditUser
-  );
-
-  router.post(
-    "/admin/user/edit/:id", 
-    UsersController.adminUpdateUser
-  );
-
-  router.get(
-    "/admin/user/delete/:id", 
-    UsersController.adminDeleteUser
-  );
-  
-};
+module.exports = router;

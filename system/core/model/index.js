@@ -1,42 +1,26 @@
 'use strict';
-require( 'dotenv' ).config();
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
-const basename = path.basename(__filename);
+const pluralize = require('pluralize');
+const changeCase = require('case');
+
+const modelsPath = __dirname + '/../../../models/';
+const basename = 'index.js';
+
+
 const db = {};
-const basePath = __dirname + '/../../../models/';
 
-
-let sequelize;
-
-const database = process.env.DB_DATABASE || 'node';
-const user = process.env.DB_USERNAME || 'root';
-const password = process.env.DB_PASSWORD || '';
-const host = process.env.DB_HOST || '127.0.0.1';
-const port = process.env.DB_PORT || '3306';
-const dialect = process.env.DB_CONNECTION || 'mysql';
-const log = process.env.APP_DEBUG || 'true';
-
-sequelize = new Sequelize(database, user, password, {
-  host,
-  port,
-  dialect: dialect,
-  logging: process.env.APP_ENV === 'production' ? false : console.log,
-  logging: function (str) {
-    console.log('\x1b[32m%s\x1b[0m', str);
-  }
-});
-
-fs
-  .readdirSync(basePath)
-  .filter(file => {
-    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
+fs.readdirSync(modelsPath)
+  .filter((file) => {
+    return (
+      file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.js'
+    );
   })
-  .forEach(file => {
-    const model = require(path.join(basePath, file))(sequelize, Sequelize.DataTypes);
-    //console.log(model);
-    db[model.name] = model;
+  .forEach((file) => {
+    let modelName = changeCase.pascal(pluralize.singular(file.slice(0, -8)));
+    db[modelName] = require(path.join(modelsPath, file));
   });
 
 Object.keys(db).forEach(modelName => {
@@ -44,8 +28,5 @@ Object.keys(db).forEach(modelName => {
     db[modelName].associate(db);
   }
 });
-
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
 
 module.exports = db;
