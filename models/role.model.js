@@ -1,6 +1,6 @@
 'use strict';
-const { Sequelize, Model, DataTypes } = require('sequelize');
-const { sequelize } = require('../system/core/db.connection');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../system/core/db.connection');
 
 const Role = sequelize.define("Role",
     {
@@ -9,6 +9,13 @@ const Role = sequelize.define("Role",
         primaryKey: true,
         autoIncrement: true,
         allowNull: false
+      },
+      parentId: {
+        type: DataTypes.INTEGER,
+        references: {
+           model: 'roles',
+           key: 'id',
+        }
       },
       name: {
         type: DataTypes.STRING,
@@ -40,12 +47,63 @@ const Role = sequelize.define("Role",
       sequelize,
       modelName: 'Role',
       tableName: 'roles',
+      indexes: [ { unique: true, fields: [ 'name', 'slug'] } ],
+      defaultScope: {
+        attributes: {
+          // include: [[Sequelize.fn("COUNT", Sequelize.col("users.id")), "UsersCount"]],
+          exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
+        },
+        // include: [
+        //   {
+            // model: User,
+            // as: 'users',
+            // attributes: { include: [] },
+            // through:{
+            //   where: {
+            //     status: true,
+            //   },
+            //   attributes: []
+            // },
+            // where: {
+            //   status: true,
+            // },
+        //   }
+        // ],
+      },
+      scopes: {
+        withPermissions: {
+          attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] }
+        }
+      },
+      instanceMethods: {
+        // async generateHash(password) {
+        //   const salt = await bcrypt.genSalt(saltRounds);
+        //   return bcrypt.hashSync(user.password, salt);
+        // },
+        // async validPassword(password) {
+        //     return bcrypt.compareSync(password, this.password);
+        // }
+      },
+      hooks: {
+        beforeCreate: async (user) => {
+          // if (user.password) {
+          //   const salt = await bcrypt.genSalt(saltRounds);
+          //   user.password = bcrypt.hashSync(user.password, salt);
+          // }
+        },
+        beforeUpdate:async (user) => {
+          // if (user.password) {
+          //   const salt = await bcrypt.genSalt(saltRounds);
+          //   user.password = bcrypt.hashSync(user.password, salt);
+          // }
+        }
+      }
     }
 );
 
 Role.associate = function(models) {
-  this.belongsToMany(models.User, {through: 'UserRole', foreignKey: 'roleId', as: 'users'});
-  this.belongsToMany(models.Permission, {through: 'RolePermission', foreignKey: 'roleId', as: 'permissions'});
+  Role.belongsToMany(models.User, {through: 'UserRole', foreignKey: 'roleId', as: 'users'});
+  Role.belongsToMany(models.Permission, {through: 'RolePermission', foreignKey: 'roleId', as: 'permissions'});
 };
 
 module.exports = Role;

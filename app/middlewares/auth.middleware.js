@@ -2,8 +2,9 @@
 const jwt = require('jsonwebtoken');
 const autoBind = require('auto-bind');
 const { middleware } = require('./middleware');
-const { baseError } = require('@error/baseError');
-const redisClient = require('../../libraries/redis.library');
+const { baseError } = require('../../system/core/error/baseError');
+const redisClient = require('../../libraries/redis.library'); //Enable this line if you want to config redis also with line no 56
+const User = require('../../models/user.model');
 
 class authMiddleware extends middleware {
   /**
@@ -29,7 +30,7 @@ class authMiddleware extends middleware {
 
     let userRole = req.params.role;
     req.role = userRole;
-    
+
     if( !bearerHeader ){
       throw new baseError(`Authorization token not found.`, 401);
     }
@@ -43,7 +44,7 @@ class authMiddleware extends middleware {
       let decoded = await jwt.verify(token, this.env.JWT_SECRET);
       if (!decoded) {
         throw new baseError(`Invalid authorization token2.`, 401);
-      }      
+      }
       const userId = decoded.id;
 
       let isCompleted = decoded.isCompleted;
@@ -52,7 +53,8 @@ class authMiddleware extends middleware {
         throw new baseError(`Unauthorized to access this section.`, 401);
       }
 
-      const userData = await redisClient.getValue(userId);
+        //const userData = await redisClient.getValue(userId); //If you are using redis then you can try this process and disable 57 line code.
+        const userData = await User.findByPk(decoded.id, {include: ['roles']});
       const user = JSON.parse(userData);
 
       if (user === null || user.isCompleted === false || user.user.tokenSalt !== decoded.tokenSalt) {
@@ -69,7 +71,7 @@ class authMiddleware extends middleware {
           throw new baseError(`Invalid authorization token4.`, 401);
         }
       }
-      
+
       req.user = JSON.parse(JSON.stringify(user));
       next();
 
@@ -105,8 +107,8 @@ class authMiddleware extends middleware {
       let decoded = await jwt.verify(token, this.env.JWT_SECRET);
       if (!decoded) {
         next('Invalid authorization token4.');
-      } 
-      
+      }
+
       console.debug('decoded', decoded)
       req.user_id = decoded.id;
 
@@ -130,7 +132,7 @@ class authMiddleware extends middleware {
       if(userRole) {
         if(!authorities.includes(userRole)) {
           next('Invalid authorization token6.');
-        }        
+        }
       }
 
       req.user = JSON.parse(JSON.stringify(user));

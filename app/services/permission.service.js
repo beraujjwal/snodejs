@@ -1,6 +1,6 @@
 const autoBind = require('auto-bind');
-const { service } = require('@service/service');
-const { baseError } = require('@error/baseError');
+const { service } = require( './service' );
+const { baseError } = require('../../system/core/error/baseError');
 
 const permissionGraph = require('../../neo4j/services/permission');
 

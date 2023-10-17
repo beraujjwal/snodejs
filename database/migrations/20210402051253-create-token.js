@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('verification_tokens', {
+    await queryInterface.createTable('tokens', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,6 +13,16 @@ module.exports = {
       },
       token: {
         type: Sequelize.STRING
+      },
+      sentTo: {
+        type: Sequelize.STRING,
+        index: true,
+        allowNull: false
+      },
+      sentOn: {
+        type: Sequelize.STRING,
+        index: true,
+        allowNull: false
       },
       type: {
         type: Sequelize.STRING
@@ -40,16 +50,16 @@ module.exports = {
       }
     }).then(() => {
       //console.log('created VerificationToken table');
-      // return queryInterface.sequelize.query(`
-      //   CREATE EVENT expire_token
-      //     ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL  1 DAY
-      //     DO
-      //     DELETE FROM verification_tokens WHERE created_at < DATE_SUB(NOW(), INTERVAL 1 DAY);
-      // `)
+      return queryInterface.sequelize.query(`
+        CREATE EVENT expire_token
+          ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL  1 DAY
+          DO
+          DELETE FROM tokens WHERE createdAt < DATE_SUB(NOW(), INTERVAL 1 DAY);
+      `)
     }).then(() => { console.log('expireToken event created') });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('verification_tokens').then(() => {
+    await queryInterface.dropTable('tokens').then(() => {
 	    //resconsole.log(`VericationTokens table dropped`)
 	    return queryInterface.sequelize.query(`DROP EVENT IF EXISTS expire_token`);
     }).then(() => { console.log(`expireToken event dropped`) })

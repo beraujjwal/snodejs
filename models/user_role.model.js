@@ -1,8 +1,6 @@
 'use strict';
-require('dotenv').config();
-
-const { Sequelize, Model, DataTypes } = require('sequelize');
-const { sequelize } = require('../system/core/db.connection');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../system/core/db.connection');
 
 const UserRole = sequelize.define("UserRole",
     {

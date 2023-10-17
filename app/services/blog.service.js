@@ -1,5 +1,5 @@
 const autoBind = require('auto-bind');
-const { service } = require('@service/service');
+const { service } = require( './service' );
 
 class blog extends service {
   /**

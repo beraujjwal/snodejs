@@ -1,6 +1,7 @@
 'use strict';
 require( 'dotenv' ).config();
-
+const chalk = require('chalk');
+const log = console.log;
 const Sequelize = require('sequelize');
 
 const database = process.env.DB_DATABASE || 'node';
@@ -9,21 +10,22 @@ const password = process.env.DB_PASSWORD || '';
 const host = process.env.DB_HOST || '127.0.0.1';
 const port = process.env.DB_PORT || '3306';
 const dialect = process.env.DB_CONNECTION || 'mysql';
-const log = process.env.APP_DEBUG || 'true';
 
-const conn = {};
 const sequelize = new Sequelize(database, user, password, {
-    host,
-    port,
-    dialect,
-    operatorsAliases: 'false',
-    logging: process.env.APP_ENV === 'production' ? false : console.log,
-    logging: function (str) {
-      console.log('\x1b[32m%s\x1b[0m', str);
-    }
+  host,
+  port,
+  dialect,
+  operatorsAliases: 'false',
+  logging: process.env.APP_ENV === 'production' ? false : console.log,
+  logging: function (str) {
+    console.log('\x1b[32m%s\x1b[0m', str);
+  }
 });
 
-conn.sequelize = sequelize;
-conn.Sequelize = Sequelize;
+sequelize.authenticate().then(() => {
+  log(chalk.white.bgGreen.bold('✔ Database Connection has been established successfully'));
+}).catch((ex) => {
+  log(chalk.white.bgRed.bold(`✘ Unable to connect to the database:: ${ex.message}`));
+});
 
-module.exports = conn;
+module.exports = sequelize;

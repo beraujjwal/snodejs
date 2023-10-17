@@ -17,7 +17,9 @@ module.exports = {
           },
           key: 'id'
         },
-        allowNull: false
+        allowNull: false,
+        onUpdate: 'cascade',
+        onDelete: 'cascade'
       },
       permissionId: {
         type: Sequelize.INTEGER,
@@ -28,7 +30,9 @@ module.exports = {
           },
           key: 'id'
         },
-        allowNull: false
+        allowNull: false,
+        onUpdate: 'cascade',
+        onDelete: 'cascade'
       },
       status: {
         type: Sequelize.BOOLEAN,

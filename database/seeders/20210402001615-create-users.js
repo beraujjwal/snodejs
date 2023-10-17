@@ -16,10 +16,13 @@ module.exports = {
       {
         name: 'Ujjwal Bera',
         phone: '9876543210',
+        isPhoneVerified:true,
         email: 'super-admin@hotmail.com',
+        isEmailVerified:true,
         password: '$2a$09$yieBsv1UgvVgPdBBOzV4l.SujiWdgGlV5csLUauCBiTZ.J/qRP42C',
         tokenSalt: 123456,
         loginAttempts: 0,
+        blockExpires: new Date(),
         status:true,
         verified:true,
         deletedAt: null,

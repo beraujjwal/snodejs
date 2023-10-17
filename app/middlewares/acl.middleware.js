@@ -2,8 +2,9 @@
 const autoBind = require('auto-bind');
 const jwt = require('jsonwebtoken');
 const { middleware } = require('./middleware');
-const { baseError } = require('@error/baseError');
-const redisClient = require('../../libraries/redis.library');
+const { baseError } = require('../../system/core/error/baseError');
+//const redisClient = require('../../libraries/redis.library'); //Enable this line if you want to config redis also with line no 54
+const User = require('../../models/user.model');
 
 class aclMiddleware extends middleware {
   /**
@@ -13,7 +14,7 @@ class aclMiddleware extends middleware {
    */
   constructor() {
     super();
-    this.User = this.db.User;
+    //this.User = this.db.User;
     autoBind(this);
   }
 
@@ -26,7 +27,7 @@ class aclMiddleware extends middleware {
   hasPermission(action, module) {
     const userModel = this.User;
     const env = this.env;
-    return async function (req, res, next) {      
+    return async function (req, res, next) {
       let bearerHeader = req.headers['authorization'];
 
       if( !bearerHeader ){
@@ -50,7 +51,9 @@ class aclMiddleware extends middleware {
         const userId = decoded.id;
 
         //Finding user with set criteria
-        const userData = await redisClient.getValue(userId);
+        //const userData = await redisClient.getValue(userId); //If you are using redis then you can try this process and disable 55 line code.
+        const userData = await User.findByPk(decoded.id, {include: ['roles']});
+
         const userFullData = JSON.parse(userData);
         const user = userFullData.user;
 

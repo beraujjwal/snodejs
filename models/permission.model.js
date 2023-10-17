@@ -1,6 +1,6 @@
 'use strict';
-const { Sequelize, Model, DataTypes } = require('sequelize');
-const { sequelize } = require('../system/core/db.connection');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../system/core/db.connection');
 
 const Permission = sequelize.define("Permission",
     {

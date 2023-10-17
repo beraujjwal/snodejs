@@ -3,7 +3,7 @@ require('dotenv').config();
 const nodemailer = require('nodemailer');
 const hbs = require('nodemailer-express-handlebars');
 const path = require('path');
-const { baseError } = require('@error/baseError');
+const { baseError } = require('../../system/core/error/baseError');
 const { config, defaultMail } = require('../../config/mail.config');
 
 const viewPath =  path.resolve(__dirname, '../../resources/templates/views/');

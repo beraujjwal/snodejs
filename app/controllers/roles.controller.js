@@ -1,31 +1,39 @@
 'use strict';
-const autoBind = require('auto-bind');
+const { controller } = require( './controller' );
+const { role } = require('../services/role.service');
 
-const { controller } = require('./controller');
-const { role } = require('@service/role.service');
 const roleService = new role('Role');
-const { baseError } = require('@error/baseError');
 
-class rolesController extends controller {
+
+
+class RolesController extends controller {
+
+
+
   /**
    * Controller constructor
    * @author Ujjwal Bera
    * @param null
    */
-  constructor(service) {
-    super(service);
-    this.service = roleService;
-    autoBind(this);
+  constructor( ) {
+      super( );
+      this.Role = this.db.Role;
+      this.RoleTranslation = this.db.RoleTranslation;
+      this.RolePermission = this.db.RolePermission;
   }
 
+
   /**
-   * @desc Fetching list of roles
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
+   * @desc   Get list of attribute for admin user
+   *
+   * @param req : request
+   * @param res : response
+   * @param next
+   * @returns {Promise<*>}
    */
-  async rolesList(req, session) {
-    let result = await this.service.rolesList(req.query, session);
+  async allRolesList( req, transaction ) {
+
+    const result = await roleService.allRolesList(req.query, transaction);
     if (result) {
       return {
         code: 200,
@@ -36,114 +44,143 @@ class rolesController extends controller {
     throw new baseError(__("ROLES_LIST_FETCH_ERROR"));
   }
 
+
+
+  async adminStoreRole( req, res, next ) {
+
+    this.Role.create({
+      code:             req.body.code,
+      name:             req.body.name,
+      type:             req.body.type,
+      validation:       req.body.validation,
+      position:         req.body.position,
+      is_required:      req.body.required,
+      is_unique:        req.body.unique,
+      is_filterable:    req.body.filterable,
+      is_configurable:  req.body.configurable,
+      is_visible:       req.body.visible,
+      is_user_defined:  req.body.user_defined,
+      is_comparable:    req.body.comparable,
+      deleted_at:       null,
+      status:           true,
+    }).then(attribute => {
+      res.status(200).send({code: 200, status: true, data: attribute,  message: "Role was added successfully!" });
+    }).catch(err => {
+      res.status(500).json(this.Response.error(err.message, res.statusCode));
+    });
+  }
+
+
   /**
-   * @desc Fetching list of roles
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
+   * @desc   Get attribute for for admin user
+   *
+   * @param req : request
+   * @param res : response
+   * @param next
+   * @returns {Promise<*>}
    */
-  async rolesDDLList(req, session) {
-    req.query.return_type = 'ddl';
-    let result = await this.service.rolesList(req.query, session);
-    if (result) {
-      return {
-        code: 200,
-        result,
-        message: 'Roles list for DDL got successfully.'
+  async adminDetailsRole( req, res, next ) {
+
+      var id = req.params.id;
+      console.log(id)
+      this.Role.findOne({
+        where: {
+          [this.Op.and]: [
+            {
+              id: {
+                [this.Op.eq]: id
+              }
+            },
+            {
+              deleted_at: {
+                [this.Op.eq]: null
+              }
+            }
+          ]
+        }
+      })
+      .then(data => {
+        if(data) {
+          res.status(200).json(this.Response.success("OK", { data: data }, res.statusCode));
+        } else {
+          res.status(500).json(this.Response.error("Role Not found.", res.statusCode));
+        }
+      })
+      .catch(err => {
+          res.status(500).json(this.Response.error(err.message || "Some error occurred while retrieving tutorials.", res.statusCode));
+      });
+  }
+
+
+
+  async adminUpdateRole( req, res, next ) {
+    var id = req.params.id;
+    this.Role.update({
+      code:             req.body.code,
+      name:             req.body.name,
+      type:             req.body.type,
+      validation:       req.body.validation,
+      position:         req.body.position,
+      is_required:      req.body.required,
+      is_unique:        req.body.unique,
+      is_filterable:    req.body.filterable,
+      is_configurable:  req.body.configurable,
+      is_visible:       req.body.visible,
+      is_user_defined:  req.body.user_defined,
+      is_comparable:    req.body.comparable,
+      deleted_at:       null,
+      status:           true,
+    }, {
+      where: {
+        id: id
       }
-    }
-    throw new baseError('Some error occurred while fetching list of roles.');
+    }).then(attribute => {
+      res.status(200).send({code: 200, status: true, data: attribute,  message: "Role was updated successfully!" });
+    }).catch(err => {
+      res.status(500).json(this.Response.error(err.message, res.statusCode));
+    });
   }
 
-  /**
-   * @desc Store a new role
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
-   */
-  async roleStore(req, session) {
-    let { parent, name, description, rights } = req.body;
-    let result = await this.service.roleStore({ parent, name, description, rights }, session);
-    console.log('HERE');
-    if (result) {
-      return {
-        code: 201,
-        result,
-        message: 'New role created successfully.'
-      }
-    }
-    //throw new baseError('Some error occurred while creating new role.');
-  }
 
   /**
-   * @desc Fetch detail of a role
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
+   * @desc   Get attribute for for admin user
+   *
+   * @param req : request
+   * @param res : response
+   * @param next
+   * @returns {Promise<*>}
    */
-  async roleDetails(req, session) {
-    let roleId = req.params.id;
-    let result = await this.service.roleDetails(roleId, session);
-    if (result) {
-      return {
-        code: 201,
-        result,
-        message: 'Role details got successfully.'
-      }
-    }
-    throw new baseError('Some error occurred while fetching role details.');
-  }
+  async adminDeleteRole( req, res, next ) {
 
-  /**
-   * @desc Updated a role
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
-   */
-  async roleUpdate(req, session) {
-    let roleId = req.params.id;
-    let { parent, name, description, rights, status } = req.body;
-    let result = await this.service.roleUpdate(roleId, { parent, name, description, rights, status }, session);
-    if (result) {
-      return res
-        .status(200)
-        .json(this.success(result, 'Role details updated successfully!'));
-    }
-    throw new baseError('Some error occurred while updating role details.');
-  }
-
-  /**
-   * @desc Delete a role
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
-   */
-  async roleCanDelete(req, session) {
-    let roleId = req.params.id;
-    let result = await this.service.roleCanDelete(roleId, session);
-    if (result) {
-      return res
-        .status(200)
-        .json(this.success(result, 'Role can deletable successfully!'));
-    }
-    throw new baseError('Some error occurred while checking role deletability.');
-  }
-
-  /**
-   * @desc Delete a role
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
-   */
-  async roleDelete(req, session) {
-    let roleId = req.params.id;
-    let result = await this.service.roleDelete(roleId, session);
-    if (result) {
-      return res
-        .status(200)
-        .json(this.success(result, 'Role deleted successfully!'));
-    }
-    throw new baseError('Some error occurred while deleting role.');
+      var id = req.params.id;
+      console.log(id)
+      this.Role.findOne({
+        where: {
+          [this.Op.and]: [
+            {
+              id: {
+                [this.Op.eq]: id
+              }
+            },
+            {
+              deleted_at: {
+                [this.Op.eq]: null
+              }
+            }
+          ]
+        }
+      })
+      .then(data => {
+        if(data) {
+          res.status(200).json(this.Response.success("OK", { data: data }, res.statusCode));
+        } else {
+          res.status(500).json(this.Response.error("Role Not found.", res.statusCode));
+        }
+      })
+      .catch(err => {
+          res.status(500).json(this.Response.error(err.message || "Some error occurred while retrieving tutorials.", res.statusCode));
+      });
   }
 }
-module.exports = new rolesController(roleService);
+
+module.exports = new RolesController( );

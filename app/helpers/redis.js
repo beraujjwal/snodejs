@@ -1,5 +1,5 @@
 'use strict';
-const { baseError } = require('@error/baseError');
+const { baseError } = require('../../system/core/error/baseError');
 const { config } = require('../../config/redis.config');
 const redis = require('redis');
 

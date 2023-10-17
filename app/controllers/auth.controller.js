@@ -1,8 +1,8 @@
 'use strict';
 const autoBind = require('auto-bind');
-const { baseError } = require('@error/baseError');
+const { baseError } = require('../../system/core/error/baseError');
 const { controller } = require('./controller');
-const { user } = require('@service/user.service');
+const { user } = require('../services/user.service');
 
 const userService = new user('User');
 
@@ -64,7 +64,7 @@ class authController extends controller {
   async login(req, transaction) {
       let message = 'Please compleate your signup process!';
       let { device_id, device_type, fcm_token, username, password } = req.body;
-      let result = await userService.login(
+      let result = await userService.singin(
         { username, password },
         { device_id, device_type, fcm_token },
         transaction

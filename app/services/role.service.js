@@ -1,7 +1,7 @@
-const autoBind = require('auto-bind');
-const { service } = require('@service/service');
-const { baseError } = require('@error/baseError');
-const { validationError } = require('@error/validationError');
+const  { Sequelize, sequelize, Op } = require('sequelize');
+const { service } = require( './service' );
+const { baseError } = require('../../system/core/error/baseError');
+const { validationError } = require('../../system/core/error/validationError');
 const roleGraph = require('../../neo4j/services/role');
 
 class role extends service {
@@ -13,11 +13,11 @@ class role extends service {
   constructor(model) {
     super(model);
     this.model = this.db[model];
-    this.resource = this.db['Resource'];
-    autoBind(this);
+    this.user = this.db['User'];
+    this.userRole = this.db['UserRole'];
   }
 
-  async rolesList(queries) {
+  async allRolesList(queries, transaction) {
     try {
       const {
         id = null,
@@ -25,80 +25,68 @@ class role extends service {
         name = null,
         parent = null,
         orderby = 'name',
-        ordering = 'asc',
-        limit = this.dataPerPage,
+        ordering = 'ASC',
+        limit = this.dataPerPage || 10,
         page = 1,
         return_type = null,
       } = queries;
 
-      let order = 1;
-      if (ordering.toLowerCase() == 'desc') {
-        order = -1;
-      }
+      const order = ordering.toUpperCase();
       const skip = parseInt(page) * parseInt(limit) - parseInt(limit);
 
-      let filter = { deleted: false, parent: parent };
+      const query = [{ parentId: parent }];
+
       if(name) {
-        filter = { ...filter, name: new RegExp(name, 'i') };
+        query.push({
+          name: {
+            [Op.like]: `%${name}%`
+          }
+        });
       }
       if(id) {
-        if(id.length !== 36) filter = { ...filter, _id: new RegExp(id, 'i') };
-        else filter = { ...filter, _id: id };
+        query.push({
+          id: id
+        });
       }
       if(ids) {
         const idsArr = ids.split(',');
-        filter = { ...filter, _id: { "$in": idsArr } };
-      }
-
-      let unset = ["__v", "childrens.level"];
-      let restrictSearchWithMatch = { deleted: false }
-      if(return_type === 'ddl') {
-        restrictSearchWithMatch = { deleted: false, status: true };
-        filter = { ...filter, status: true };
-        unset = [
-          "__v", "rights", "slug", "deleted", "createdAt", "updatedAt", "status", "childrens.__v", "childrens.slug",
-          "childrens.rights", "childrens.deleted", "childrens.status", "childrens.createdAt", "childrens.updatedAt", "childrens.level"
-        ];
-      }
-
-      const result = await this.model.aggregate([
-        {
-          $match: filter
-        },
-        {
-          $graphLookup: {
-            from: "roles",
-            startWith: "$_id",
-            connectFromField: "_id",
-            connectToField: "parent",
-            depthField: "depth",
-            maxDepth: 100,
-            as: "childrens",
-            depthField: "level",
-            restrictSearchWithMatch: restrictSearchWithMatch
-          },
-        },
-        {
-          $unset: unset
-        },
-        {
-          $sort: { [orderby]: order }
-        },
-        {
-          $facet: {
-            items: [
-              { $skip: +skip }, { $limit: +limit}
-            ],
-            total: [
-              {
-                $count: 'count'
-              }
-            ]
+        query.push({
+          id: {
+            [Op.in]: idsArr
           }
-        }
-      ]);
+        });
+      }
 
-      return result[0];
+      const result = await this.model.unscoped().findAll({
+        attributes: {
+          exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
+        },
+        where: query,
+        include: [
+          {
+            model: this.user.unscoped() ,
+            as: 'users',
+            attributes: ['id'],
+            through:{
+              where: {
+                status: true,
+              },
+              attributes: []
+            },
+            where: {
+              status: true,
+            },
+          }
+        ],
+        order: [
+          [orderby, order],
+        ],
+        limit: limit,
+        offset: skip,
+        transaction
+      });
+
+      return result;
     } catch (ex) {
       console.log(ex)
       throw new baseError(ex);
@@ -331,6 +319,126 @@ class role extends service {
     }
 
   }
+
+
+
+  async createUserRole({userId, roles}, transaction) {
+    try {
+      if (!roles) throw new baseError(__('INVALI_ROLES_SELECTED'));
+
+      const dbRoles = await this.model.findAll({
+        attribuites: ['id'],
+        where: {
+          slug: { [Op.or]: roles }
+        }
+      });
+
+      if (dbRoles.length < 1) throw new baseError(__('INVALI_ROLES_SELECTED'));
+      const userRoles = [];
+      dbRoles.forEach( async (role) => {
+        userRoles.push({ userId: userId,  roleId: role.id, status: true, deletedAt: null });
+      });
+      const dbUserRoles = await this.userRole.findAll({ where: { userId }, paranoid: false }, { transaction });
+      if (dbUserRoles.length > 0) {
+        if(dbRoles.length === dbUserRoles.length) {
+          let count = 0;
+          dbUserRoles.forEach( async (dbUserRole) => {
+            await this.updateUserRole(dbUserRole.id, userRoles[count], transaction );
+            count++;
+          });
+
+        } else if(dbRoles.length > dbUserRoles.length) {
+          dbUserRoles.forEach( async (dbUserRole) => {
+            const userRole = userRoles.shift();
+            await this.updateUserRole(dbUserRole.id, userRole, transaction );
+          });
+          return await this.userRole.bulkCreate(userRoles, { transaction });
+        } else if(dbRoles.length < dbUserRoles.length) {
+          let count = 0;
+          const haveToDeleteIds = [];
+          dbUserRoles.forEach( async (dbUserRole) => {
+            if(userRoles[count]) {
+              await this.updateUserRole(dbUserRole.id, userRoles[count], transaction );
+            } else {
+              haveToDeleteIds.push(dbUserRole.id);
+            }
+            count++;
+          });
+          await this.userRole.destroy({ where: { id: { [Op.in]: haveToDeleteIds } } }, { transaction });
+        }
+      } else {
+        return await this.userRole.bulkCreate(userRoles, { transaction });
+      }
+
+    } catch (ex) {
+      throw new baseError(ex);
+    }
+  }
+
+
+  async updateUserRole(userRoleId, userRoleData, transaction) {
+    try {
+      await this.userRole.update(userRoleData, {
+        where: { id: userRoleId },
+        transaction
+      });
+    } catch (ex) {
+      throw new baseError(ex);
+    }
+
+  }
+
+
+  async createUserRole2({ userId, roles }, transaction) {
+    try {
+        if (!roles) {
+            throw new baseError('INVALID_ROLES_SELECTED');
+        }
+
+        const dbRoles = await this.model.findAll({
+            attributes: ['id'],
+            where: {
+                slug: { [Op.or]: roles }
+            }
+        });
+
+        if (dbRoles.length < 1) {
+            throw new baseError('INVALID_ROLES_SELECTED');
+        }
+
+        const userRoles = dbRoles.map((role) => ({ userId: userId, roleId: role.id, status: true, deletedAt: null }));
+        const dbUserRoles = await this.userRole.findAll({ where: { userId }, paranoid: false }, { transaction });
+
+        if (dbRoles.length === dbUserRoles.length) {
+            for (let i = 0; i < dbRoles.length; i++) {
+                await this.updateUserRole(dbUserRoles[i].id, userRoles[i], transaction);
+            }
+        } else {
+            const rolesToUpdate = Math.min(dbRoles.length, dbUserRoles.length);
+
+            for (let i = 0; i < rolesToUpdate; i++) {
+                await this.updateUserRole(dbUserRoles[i].id, userRoles[i], transaction);
+            }
+
+            if (dbRoles.length > dbUserRoles.length) {
+                await this.userRole.bulkCreate(userRoles.slice(rolesToUpdate), { transaction });
+            } else {
+                const rolesToDelete = dbUserRoles.slice(rolesToUpdate);
+
+                for (const roleToDelete of rolesToDelete) {
+                    await this.userRole.destroy({ where: { id: roleToDelete.id } }, { transaction });
+                }
+            }
+        }
+
+    } catch (ex) {
+        throw new baseError(ex.message);
+    }
+  }
+
+
+
+
 }
 
 module.exports = { role };

@@ -1,221 +1,157 @@
 'use strict';
-const autoBind = require('auto-bind');
+const { controller } = require( './controller' );
+const { Utilities } = require('../services/utilitie.service');
+const autoBind = require( 'auto-bind' );
+const nodemailer = require('nodemailer');
+var jwt = require("jsonwebtoken");
+var bcrypt = require("bcryptjs");
 
-const { controller } = require('./controller');
-const { user } = require('@service/user.service');
-const { baseError } = require('@error/baseError');
+const { user } = require('../services/user.service');
+
 const userService = new user('User');
-//const roleService = new role('Role');
 
-class usersController extends controller {
+
+
+class UsersController extends controller {
+
+
+
   /**
    * Controller constructor
    * @author Ujjwal Bera
    * @param null
    */
-  constructor(service) {
-    super(service);
-    //autoBind(this);
+  constructor( ) {
+      super( );
+      this.User = this.db.User;
+      this.Role = this.db.Role;
+      this.UserRole = this.db.UserRole;
+      autoBind( this );
   }
-  
 
-  /**
-   * @desc create new user
-   * @param {*} req
-   * @param {*} session
-   */
-  async createNewCarrierUser(req, session) {
-    let { name, email, phone, password, roles } = req.body;      
-    let result = await userService.createNewCarrierUser({name, email, phone, password, roles }, session );
 
-    console.log(result);
-    if (result) {
-      return {
-        code: 201,
-        result,
-        message: 'User created successfully!'
-      }
+  async signup (req, res) {
+
+    try {
+
+      var signupRes = await this.User.signupService(req, res);
+      res.status(res.statusCode).json(this.Response.success( __('REGISTER_SUCCESS'), signupRes, res.statusCode));
+
+    } catch ( err ) {
+      res.status(res.statusCode).json(this.Response.error( err.message, 404));
     }
-    throw new baseError(
-      'Some error occurred while creating your account. Please try again.',
-      500
-    );
+
+  };
+
+  async signin(req, res, next) {
+
+    try {
+
+      var loginRes = await this.User.signinService(req, res);
+      res.status(res.statusCode).json(this.Response.success( __('LOGIN_SUCCESS'), loginRes, res.statusCode));
+
+    } catch ( err ) {
+      res.status(res.statusCode).json(this.Response.error( err.message, 404));
+    }
+
   }
 
-  /**
-   * @desc get logged-in user profile
-   * @param {*} req
-   * @param {*} session
-   */
-  async profile( req, session ) {
-    //console.log(req.user);
-    const phone = req?.user?.phone;
-    let result = await userService.getProfile(phone, session);
-    if (result) {
-      return {
-        code: 200,
-        result,
-        message: 'Profile details got successfully!'
-      }
-    }      
-    throw new baseError(
-      'Some error occurred while fetching profile details.',
-      500
-    );
+
+
+  async dashboard (req, res) {
+    // Save User to Database
+    res.render('admin/users/dashboard', { title: 'User Authentic', msg: 'Uh oh snap! You are drive to the wrong way', error: false })
   }
 
-  /**
-   * @desc update logged-in user profile
-   * @param {*} req
-   * @param {*} session
-   */
-  async updateProfile(req, session ) {
-    
-      let result = await userService.updateProfile(req.user.id, req.body);
-      if (result) {
-        return res
-          .status(200)
-          .json(this.success(result, 'Profile details updated successfully!'));
+
+
+  async adminUsers(req, res) {
+    try {
+      //logger.debug('This is the "/" route.')
+      var usersList = await this.User.usersListService(req, res);
+      var userDatas = JSON.parse(JSON.stringify(usersList));
+      //console.log(userDatas)
+      if(userDatas) {
+        res.render('admin/users/users', {userDatas: userDatas});
+      }else {
+        res.render('admin/users/users', {userDatas: userDatas, error: true});
       }
-      
-      throw new baseError(
-        'Some error occurred while updating profile details.',
-        500
-      );
+    } catch ( err ) {
+      console.log(err);
+      res.render('admin/users/users', {error: true, message: err.message});
+    }
   }
 
-  /**
-   * @desc change password of logged-in user
-   * @param {*} req
-   * @param {*} session
-   */
-  async changePassword(req, session ) {
-      let result = await userService.changePassword(req.user.id, req.body);
-      if (result) {
-        return res
-          .status(200)
-          .json(this.success(result, 'Profile password updated successfully!'));
-      }
-      
-      throw new baseError(
-        'Some error occurred while updating profile password.',
-        500
-      );
+
+
+  async adminAddUser(req, res) {
+    try {
+      var languages = await this.Utilities.getLanguages();
+      res.render('admin/users/user_add', { title: 'User add', msg: 'Add New Users', error: false, languages: languages })
+    } catch ( err ) {
+      console.log(err);
+      res.render('admin/users/user_add', {error: true, message: err});
+    }
   }
 
-  /**
-   * @desc Fetching list of users
-   * @param {*} req
-   * @param {*} session
-   */
-  async userList(req, session ) {
-      let result = await userService.userList(req.query);
-      if (result) {
-        return res
-          .status(200)
-          .json(this.success(result, 'User list got successfully!'));
-      }
-      
-      throw new baseError(
-        'Some error occurred while fetching list of users.',
-        500
-      );
+
+
+  async adminStoreUser(req, res) {
+    var languages = await this.Utilities.getLanguages();
+    try {
+      var userStore = await this.User.userStore(req, res);
+      res.redirect('/admin/users')
+    } catch ( err ) {
+      console.log(err);
+      res.render('admin/users/user_add', {error: true, message: err, languages: languages});
+    }
   }
 
-  /**
-   * @desc Store a new user
-   * @param {*} req
-   * @param {*} session
-   */
-  async userStore(req, session ) {
-      let { name, email, phone, password, roles, verified, status } = req.body;
-      let result = await userService.userStore(
-        name,
-        email,
-        phone,
-        password,
-        roles,
-        verified,
-        status,
-      );
-      if (result) {
-        return res
-          .status(200)
-          .json(this.success(result, 'New user created successfully!'));
-      }
-      
-      throw new baseError(
-        'Some error occurred while creating new user.',
-        500
-      );
+
+
+  async adminEditUser(req, res) {
+    var languages = await this.Utilities.getLanguages();
+    try {
+      var userDetails = await this.User.usersDetailsService(req, res);
+
+      var userDatas = JSON.parse(JSON.stringify(userDetails));
+      res.render('admin/users/user_edit', { title: 'User Edit', msg: 'Edit Users', error: false, userDatas: userDatas, languages: languages })
+    } catch ( err ) {
+      console.log(err);
+      res.render('admin/users/user_edit', {error: true, message: err, languages: languages});
+    }
   }
 
-  /**
-   * @desc Fetch detail of a user
-   * @param {*} req
-   * @param {*} session
-   */
-  async userDetails(req, session ) {
-      let userId = req.params.id;
-      let result = await userService.userDetails(userId);
-      if (result) {
-        return res
-          .status(200)
-          .json(this.success(result, 'User details fetched successfully!'));
-      }
-      
-      throw new baseError(
-        'Some error occurred while fetching user details.',
-        500
-      );
+
+
+  async adminUpdateUser(req, res) {
+    try {
+      console.log(req.body);
+      var updateUser = await this.User.userUpdate(req, res);
+      res.redirect('/admin/users')
+    } catch ( err ) {
+      console.log(err);
+      res.render('admin/users/user_edit', {error: true, message: err});
+    }
   }
 
-  /**
-   * @desc Updated a user
-   * @param {*} req
-   * @param {*} session
-   */
-  async userUpdate(req, session ) {
-      let userId = req.params.id;
-      let { name, email, phone, roles, status } = req.body;
-      let result = await userService.userUpdate({
-        userId,
-        name,
-        email,
-        phone,
-        roles,
-        status },
-        session );
-      if (result) {
-        return res
-          .status(200)
-          .json(this.success(result, 'User details updated successfully!'));
+
+
+  async adminDeleteUser(req, res) {
+    try {
+      var usersList = await this.User.usersListService(req, res);
+      var userDatas = JSON.parse(JSON.stringify(usersList));
+      if(userDatas) {
+        res.render('admin/users/users', {userDatas: userDatas});
+      }else {
+        res.render('admin/users/users', {userDatas: userDatas, error: true});
       }
-      
-      throw new baseError(
-        'Some error occurred while updating user details.',
-        500
-      );
+    } catch ( err ) {
+      console.log(err);
+      res.render('admin/users/users', {error: true, message: err});
+    }
   }
 
-  /**
-   * @desc Delete a user
-   * @param {*} req
-   * @param {*} session
-   */
-  async userDelete(req, session ) {
-      let userId = req.params.id;
-      let result = await userService.userDelete(userId, session);
-      if (result) {
-        return res
-          .status(200)
-          .json(this.success(result, 'User deleted successfully!'));
-      }
-      
-      throw new baseError(
-        'Some error occurred while deleting user.',
-        500
-      );
-  }
 }
-module.exports = new usersController(userService);
+
+module.exports = new UsersController( );

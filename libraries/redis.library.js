@@ -9,53 +9,38 @@ redisClient.connect().catch((err)=> {
     log(chalk.white.bgRed.bold('✘ Redis client setup process failed!'));
 });
 
-exports.set = async (key, value, timeout = '5m') => {
-    try {
-        await redisClient.set(key, value, redisClient.print);
-        await redisClient.expire(key, getExpiresInTime(timeout));
-        return true;
-    } catch (ex) {
-        console.log(ex);
-        return true;
-    }
-};
 
-exports.setValue = async (key, value, timeout = '5m') => {
-    try {
-        await redisClient.set(key, value, redisClient.print);
-        await redisClient.expire(key, getExpiresInTime(timeout));
-        return true;
-    } catch (ex) {
-        console.log(ex);
-        return true;
-    }
-};
-
-exports.getValue = async (key) => {
-    try {
-        return await redisClient.get(key, function (err, result) {
-            if (err) {
-                console.log(err);
-            }
-            return result;
-        });
-    } catch (ex) {
-        console.log(ex);
-    }
-};
-
-exports.deleteValue = async (key) => {
-    try {
-        return await redisClient.del(key, function(err, response) {
-            if (err) {
-                console.log(err);
-            }
-            return response;
-         });
-    } catch (ex) {
-        console.log(ex);
-    }
-};
+module.exports = {
+    set: async (key, value, timeout = '5m') => {
+        try {
+            await redisClient.set(key, value, redisClient.print);
+            await redisClient.expire(key, getExpiresInTime(timeout));
+            return true;
+        } catch (ex) {
+            throw new baseError(ex);
+        }
+    },
+    get: async (key) => {
+        try {
+            return await redisClient.get(key, function (err, result) {
+                if (err) throw new baseError(err);
+                return result;
+            });
+        } catch (ex) {
+            console.log(ex);
+        }
+    },
+    delete: async (key) => {
+        try {
+            return await redisClient.del(key, function(err, response) {
+                if (err) throw new baseError(err);
+                return response;
+             });
+        } catch (ex) {
+            throw new baseError(ex);
+        }
+    },
+}
 
 function getExpiresInTime(expiresIn) {
     (expiresIn) ? expiresIn : process.env.JWT_EXPIRES_IN;

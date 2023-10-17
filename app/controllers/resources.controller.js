@@ -2,9 +2,9 @@
 const autoBind = require('auto-bind');
 
 const { controller } = require('./controller');
-const { resource } = require('@service/resource.service');
+const { resource } = require('../services/resource.service');
 const resourceService = new resource('Resource');
-const { baseError } = require('@error/baseError');
+const { baseError } = require('../../system/core/error/baseError');
 
 class resourcesController extends controller {
   /**
@@ -55,7 +55,7 @@ class resourcesController extends controller {
     }
     throw new baseError('Some error occurred while fetching list of roles.');
   }
-  
+
 
   /**
    * @desc Store a new resource

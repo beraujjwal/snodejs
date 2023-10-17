@@ -1,15 +1,18 @@
 'use strict';
 require('dotenv').config();
-const { baseError } = require('@error/baseError');
+const { baseError } = require('../../system/core/error/baseError');
 const otpGenerator = require('otp-generator');
 const jwt = require('jsonwebtoken');
+const moment = require('moment');
 
-exports.getExpiresInTime = async (expiresIn) => {
-    const expiresInInt = parseInt(expiresIn);
-    const expiresInString = expiresIn.split(expiresInInt)[1];
-    const expiresInTime = moment().add(expiresInInt, expiresInString).toDate();
-    return expiresInTime;
+exports.getExpiresInTime = async () => {
+  const expiresIn = process.env.JWT_EXPIRES_IN;
+  const expiresInInt = parseInt(expiresIn);
+  const expiresInString = expiresIn.split(expiresInInt)[1];
+  const expiresInTime = moment().utc(process.env.APP_TIMEZONE).add(expiresInInt, expiresInString).toDate();
+  return expiresInTime;
 }
+
 exports.randomNumber = async (length) => {
   var text = '';
   var possible = '123456789';
@@ -76,10 +79,44 @@ exports.generateAccessToken = async ({userId, email, phone, tokenSalt }) => {
   }
 };
 
+exports.generateRefreshToken = async (userInfo, algorithm = 'HS256') => {
+  try {
+    // Gets expiration time
+    const expiration = process.env.JWT_REFRESH_IN;
+
+    return jwt.sign(userInfo, process.env.JWT_REFRESH_TOKEN_SECRET, {
+      expiresIn: expiration, // expiresIn time
+      algorithm: algorithm,
+    });
+  } catch (ex) {
+    console.log(ex);
+    throw new baseError(ex);
+  }
+};
+
 exports.getExpiresInTime = async () => {
   const expiresIn = process.env.JWT_EXPIRES_IN;
   const expiresInInt = parseInt(expiresIn);
   const expiresInString = expiresIn.split(expiresInInt)[1];
   const expiresInTime = moment().utc(process.env.APP_TIMEZONE).add(expiresInInt, expiresInString).toDate();
   return expiresInTime;
+}
+
+exports.generateAccessToken = async ( id, email, phone, tokenSalt ) => {
+  try {
+    const token = await this.generateToken({id, email, phone, tokenSalt});
+    const refreshToken = await this.generateRefreshToken({id});
+    const expiresInTime = await this.getExpiresInTime();
+    const accessToken = {
+      tokenType: 'Bearer',
+      accessToken: token,
+      refreshToken: refreshToken,
+      expiresIn: expiresInTime,
+    }
+
+    return accessToken;
+  } catch (ex) {
+    console.log(ex);
+    throw new baseError(ex);
+  }
 }

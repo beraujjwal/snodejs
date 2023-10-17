@@ -12,7 +12,6 @@ const router = express.Router();
 
 router.group('/v1.0', (versionRouter) => {
   versionRouter.group('/auth', (authRouter) => {
-
     authRouter.post('/sign-up', [userValidation.signup], exceptionHandler(authController.register));
     authRouter.post('/sign-in', [userValidation.signin], exceptionHandler(authController.login));
     authRouter.post('/otp-resend', [userValidation.signin], exceptionHandler(authController.otpResend));

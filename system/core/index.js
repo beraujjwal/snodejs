@@ -1,5 +1,4 @@
 'use strict';
-require('module-alias/register');
 const chalk = require('chalk');
 const log = console.log;
 require('dotenv').config();
@@ -11,14 +10,14 @@ const path = require('path');
 const logger = require('morgan');
 
 const i18n = require('../../config/i18n.config');
-//const Sentry = require('@sentry/node');
+
 const winston = require('../../config/winston');
 const { errorResponse } = require('./helpers/apiResponse');
-const { consumerKafkaMessage } = require('../../libraries/consumer.library');
+const { consumerKafkaMessage } = require('../../libraries/consumer.library');  //Enable this line if you want to config kafkajs also with line no 94
 const limiter = require('../../config/rateLimit.config');
 const app = express();
 let apiHitCount = 0;
-
+//const Sentry = require('@sentry/node');
 // Sentry.init({
 //   dsn: "https://e8bf701c3e4444ea9a9f1d0725cac7ce@o4505588600471553.ingest.sentry.io/4505589025079296",
 //   integrations: [
@@ -59,7 +58,7 @@ const MODE = process.env.APP_ENV || 'development';
 log(chalk.white.bgGreen.bold(`✔ Mode: ${MODE}`));
 log(chalk.white.bgGreen.bold(`✔ Port: ${PORT}`));
 
-//require('./db.connection');
+require('./db.connection');
 
 //don't show the log when it is test
 if (process.env.APP_ENV === 'development') {
@@ -92,7 +91,7 @@ app.all('/*', (req, res) => {
   });
 });
 
-consumerKafkaMessage().catch(console.error);
+consumerKafkaMessage(); //Enable this line if you want to config kafkajs also line no 16
 
 app.use(function (err, req, res, next) {
 

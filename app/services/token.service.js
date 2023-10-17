@@ -1,7 +1,6 @@
-const autoBind = require('auto-bind');
 const moment = require('moment');
-const { service } = require('@service/service');
-const { baseError } = require('@error/baseError');
+const { service } = require( './service' );
+const { baseError } = require('../../system/core/error/baseError');
 const {
   generatePassword,
   generateOTP,
@@ -21,9 +20,8 @@ class token extends service {
     super(model);
     this.model = this.db[model];
     this.regexEmail = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-    autoBind(this);
   }
-  
+
   async findOtp(userId, otp, type, sentOn) {
     try {
       let cutoff = moment().utc(this.env.APP_TIMEZONE).toDate();
@@ -40,7 +38,7 @@ class token extends service {
       throw new baseError(ex);
     }
   }
-  
+
   async deactiveOtp(Id) {
     try {
       let data = {
@@ -55,39 +53,42 @@ class token extends service {
       throw new baseError(ex);
     }
   }
-  
-  async createToken({userId, type, sentOn}, session) {
+
+  async createToken({userId, type, sentOn}, transaction) {
     try {
-      let isEmail = sentOn.match(this.regexEmail) ? true : false;
+      const isEmail = sentOn.match(this.regexEmail) ? true : false;
       let sentTo = 'phone';
 
       if(isEmail) {
         sentTo = 'email';
       }
 
-      this.model.updateMany({ user: userId }, { $set: { status: false, expiresAt: moment().utc(this.env.APP_TIMEZONE).toDate() } }).session(session);
+      const tokenExpireData = { status: false, expireAt: moment().utc(this.env.APP_TIMEZONE).toDate() }
+      this.model.update(tokenExpireData, {
+        where: { userId },
+        transaction
+      })
 
-      let otpToken = await this.generateOTP(6, {
+      const token = await generateOTP(6, {
         digits: true,
       });
 
-      let userToken = await this.model.create([{
-        user: userId,
-        token: otpToken,
-        type: type,
-        sent_to: sentTo,
-        sent_on: sentOn,
+      const userToken = await this.model.create({
+        userId,
+        token,
+        type,
+        sentTo,
+        sentOn,
         status: true,
-        expiresAt: moment().utc(this.env.APP_TIMEZONE).add(5, 'm').toDate(),
-      }], { session: session });
-      
+        expireAt: moment().utc(this.env.APP_TIMEZONE).add(5, 'm').toDate(),
+      }, { transaction });
+
       return userToken;
     } catch (ex) {
-      console.log(ex);
       throw new baseError(ex);
     }
   }
-  
+
   async findUpdateOrCreate(userId, type, sentOn) {
     try {
       let isEmail = sentOn.match(this.regexEmail) ? true : false;
@@ -113,16 +114,16 @@ class token extends service {
         digits: true,
       });
 
-      if(otpResponse) {                
-        
+      if(otpResponse) {
+
         let filter = { _id: otpResponse._id };
         await this.model.updateOne(
-          filter, 
-          { 
-            $set: { 
-              token: otpToken, 
-              expiresAt: expiresAt 
-            } 
+          filter,
+          {
+            $set: {
+              token: otpToken,
+              expiresAt: expiresAt
+            }
           }
         ).session(session);
 
@@ -130,7 +131,7 @@ class token extends service {
         otpResponse.expiresAt = expiresAt;
         return otpResponse
 
-      }      
+      }
 
       let userToken = await this.model.create({
         user: userId,
@@ -141,13 +142,13 @@ class token extends service {
         status: true,
         expiresAt: expiresAt,
       }, { session: session });
-      
+
       return userToken;
     } catch (ex) {
       throw new baseError(ex);
     }
   }
-  
+
 }
 
 module.exports = { token };

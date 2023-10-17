@@ -2,14 +2,11 @@
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const Sequelize = require('sequelize');
 const pluralize = require('pluralize');
 const changeCase = require('case');
 
 const modelsPath = __dirname + '/../../../models/';
 const basename = 'index.js';
-
-
 const db = {};
 
 fs.readdirSync(modelsPath)

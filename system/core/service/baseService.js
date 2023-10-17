@@ -1,7 +1,7 @@
 'use strict';
 const autoBind = require('auto-bind');
 const { base } = require('../base');
-const { baseError } = require('@error/baseError');
+const { baseError } = require('../error/baseError');
 
 class baseService extends base {
   /**
@@ -72,7 +72,7 @@ class baseService extends base {
       if (item) {
         return item;
       }
-      
+
       throw new baseError(`Some error occurred while fetching ${this.name} details.`, 410);
     } catch (ex) {
       throw new baseError(ex.message || `Some error occurred while fetching ${this.name} details.`, 400);
@@ -147,7 +147,7 @@ class baseService extends base {
       const oldDBItem = JSON.parse(JSON.stringify(dbItem));
       const newTeamDetails = { ...oldDBItem, ...data };
       return newTeamDetails;
-      
+
     } catch (ex) {
       throw new baseError(ex.message || `Some error occurred while updating the ${this.name}.`, ex.statusCode || 400);
     }
@@ -164,9 +164,9 @@ class baseService extends base {
       if (!item) {
         throw new baseError(`Some error occurred while updating the ${this.name}s.`, 500);
       }
-      
+
       return item;
-      
+
     } catch (ex) {
       throw new baseError(ex.message || `Some error occurred while updating the ${this.name}.`, ex.statusCode || 400);
     }
@@ -200,7 +200,7 @@ class baseService extends base {
       const count = await this.model.deleteMany(filter).session(session);
       if (count) {
         return count;
-        //returns {deletedCount: x} 
+        //returns {deletedCount: x}
       }
       throw new baseError(`Some error occurred while deleting the ${this.name}.`, 500);
     } catch (ex) {
@@ -216,17 +216,17 @@ class baseService extends base {
         if (typeof search[field] === 'number') {
           filterValue = parseInt(search[field]);
         } else if (typeof search[field] === 'string') {
-          if(field == 'id') {            
+          if(field == 'id') {
             if(search[field].length !== 36) filterValue = new RegExp(search[field], 'i');
-            else filterValue = search[field];            
+            else filterValue = search[field];
             field = '_id'
-          } else if(field == 'ids') {            
+          } else if(field == 'ids') {
             const idsArr = ids.split(',');
             filterValue = { "$in": idsArr }
             field = '_id'
           } else {
             filterValue = new RegExp(search[field], 'i');
-          }          
+          }
         } else if (typeof search[field] === 'boolean') {
           filterValue = parseInt(search[field]);
         } else {

@@ -1,48 +1,49 @@
 'use strict';
-const { Sequelize, DataTypes, Model } = require('sequelize');
-module.exports = ( sequelize ) => {
-  class State extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      this.belongsTo(models.Country, {foreignKey: 'countryId', as: 'country'});
-      this.hasMany(models.City, {foreignKey: 'stateId', as: 'cities'});
-    }
-  };
+const { DataTypes } = require('sequelize');
+const sequelize = require('../system/core/db.connection');
 
-  State.init({
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
+const State = sequelize.define("State",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+      },
+      name: {
+        type: DataTypes.STRING,
+        required : true,
+        index : true,
+        allowNull: false
+      },
+      countryId: DataTypes.INTEGER,
+      status: DataTypes.BOOLEAN,
     },
-    name: DataTypes.STRING,
-    countryId: DataTypes.INTEGER,
-    status: DataTypes.BOOLEAN,
-    createdBy: DataTypes.INTEGER,
-  }, {
-    timestamps: true,
-    paranoid: true,
-    defaultScope: {
-      where: {
-        deleted_at: null
-      }
-    },
-    scopes: {
-      activeStates: {
+    {
+      timestamps: true,
+      paranoid: true,
+      sequelize,
+      modelName: 'State',
+      tableName: 'states',
+      /*defaultScope: {
         where: {
-          status: true
+          deleted_at: null
         }
-      }
-    },
-    sequelize,
-    modelName: 'State',
-    tableName: 'states'
-  });
+      },*/
+      scopes: {
+        activeCountries: {
+          where: {
+            status: true
+          }
+        }
+      },
 
-  return State;
+    }
+);
+
+State.associate = function(models) {
+  State.belongsTo(models.Country, {foreignKey: 'countryId', as: 'country'});
+  State.hasMany(models.City, {foreignKey: 'stateId', as: 'cities'});
 };
+
+module.exports = State;

@@ -1,6 +1,6 @@
 const autoBind = require('auto-bind');
-const { service } = require('@service/service');
-const { baseError } = require('@error/baseError');
+const { service } = require( './service' );
+const { baseError } = require('../../system/core/error/baseError');
 
 const resourceGraph = require('../../neo4j/services/resource');
 
@@ -19,7 +19,7 @@ class resource extends service {
 
   /**
    * @description Fetching list of resources by given query params
-   * @param {object} queries 
+   * @param {object} queries
    * @returns object
    * @author Ujjwal Bera
    */
@@ -69,7 +69,7 @@ class resource extends service {
             restrictSearchWithMatch: restrictSearchWithMatch
           },
         },
-        { 
+        {
           $unset: unset
         },
         {
@@ -89,13 +89,13 @@ class resource extends service {
         }
       ]);
 
-      
+
       let response = result[0];
       //response.items = await this.modifyIds(result[0].items);
 
       const docs = response.items;
       let finalResult = []     //For Storing all parent with childs
-      if (docs.length >= 0) {   
+      if (docs.length >= 0) {
           docs.map( async singleDoc => {  //For getting all parent Tree
             const singleChild = await this.listToTree(singleDoc.childrens);
             singleDoc.childrens = singleChild;
@@ -121,7 +121,7 @@ class resource extends service {
    */
   async resourceStore( { name, parent, rightsAvailable,  status = true }, session ) {
     try {
-      
+
       let rightsAvailableSlugs = [];
       let dbPermissions = null;
       if(rightsAvailable?.length > 0) {
@@ -140,7 +140,7 @@ class resource extends service {
       const result = resource[0];
 
       //resource[0].rightsAvailable = rightsAvailable;
-      
+
       await resourceGraph.create(resource[0]);
       return result;
     } catch (ex) {
@@ -153,7 +153,7 @@ class resource extends service {
 
   /**
    * @description Fatching a resource details identified by the given resource ID.
-   * @param {String} resourceId 
+   * @param {String} resourceId
    * @returns object
    * @author Ujjwal Bera
    */
@@ -175,9 +175,9 @@ class resource extends service {
 
   /**
    * @description Updating a resource details identified by the given resource ID.
-   * @param {String} resourceId 
-   * @param {*} name 
-   * @param {*} status 
+   * @param {String} resourceId
+   * @param {*} name
+   * @param {*} status
    * @returns object
    * @author Ujjwal Bera
    */
@@ -213,9 +213,9 @@ class resource extends service {
 
   /**
    * @description Updating a resource status identified by the given resource ID.
-   * @param {*} resourceId 
-   * @param {*} status 
-   * @returns 
+   * @param {*} resourceId
+   * @param {*} status
+   * @returns
    * @author Ujjwal Bera
    */
   async resourceStatusUpdate(resourceId, status) {
@@ -239,10 +239,10 @@ class resource extends service {
         });
         if(childResource && childResource.status) throw new baseError('Please in-active child resource before this.');
       }
-      
+
       await this.model.updateOne({ _id: resourceId }, { $set: { status: status } });
 
-      //await this.updateNestedStatus(resourceId, status); 
+      //await this.updateNestedStatus(resourceId, status);
 
       return await this.resourceDetails(resourceId);
     } catch (ex) {
@@ -255,8 +255,8 @@ class resource extends service {
 
   /**
    * @description Check if a resource is deletable, identified by the given resource ID.
-   * @param {*} resourceId 
-   * @returns 
+   * @param {*} resourceId
+   * @returns
    * @author Ujjwal Bera
    */
   async isDeletableResource(resourceId) {
@@ -275,7 +275,7 @@ class resource extends service {
       if (childResource) throw new baseError('You have child resource inside it.');
 
       return true
-      
+
     } catch (ex) {
       throw new baseError(
         ex.message || 'An error occurred while deleting a resource details.',
@@ -287,7 +287,7 @@ class resource extends service {
   /**
    * @description Delete a resource identified by the given resource ID.
    * @param {*} resourceId  - The ID of the resource to be deleted.
-   * @returns 
+   * @returns
    * @author Ujjwal Bera
    */
   async resourceDelete(resourceId) {

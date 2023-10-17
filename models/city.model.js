@@ -1,46 +1,47 @@
 'use strict';
-const { Sequelize, DataTypes, Model } = require('sequelize');
-const { sequelize } = require('../system/core/db.connection');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../system/core/db.connection');
 
-module.exports = () => {
-  class City extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      this.belongsTo(models.State, {foreignKey: 'stateId', as: 'state'});
-    }
-
-
-  };
-
-  City.init({
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
+const City = sequelize.define("City",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+      },
+      name: {
+        type: DataTypes.STRING,
+        required : true,
+        index : true,
+        allowNull: false
+      },
+      stateId: DataTypes.INTEGER,
+      status: DataTypes.BOOLEAN,
     },
-    name: DataTypes.STRING,
-    stateId: DataTypes.INTEGER,
-    status: DataTypes.BOOLEAN,
-    createdBy: DataTypes.INTEGER,
-  }, {
-    timestamps: true,
-    paranoid: true,
-    scopes: {
-      activeCities: {
+    {
+      timestamps: true,
+      paranoid: true,
+      sequelize,
+      modelName: 'City',
+      tableName: 'cities',
+      /*defaultScope: {
         where: {
-          status: true
+          deleted_at: null
         }
-      }
-    },
-    sequelize,
-    modelName: 'City',
-    tableName: 'cities'
-  });
+      },*/
+      scopes: {
+        activeCities: {
+          where: {
+            status: true
+          }
+        }
+      },
+    }
+);
 
-  return City;
+City.associate = function(models) {
+  City.belongsTo(models.State, {foreignKey: 'stateId', as: 'state'});
 };
+
+module.exports = City;

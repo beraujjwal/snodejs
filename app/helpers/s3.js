@@ -1,6 +1,6 @@
 'use strict';
 require('dotenv').config();
-const { baseError } = require('@error/baseError');
+const { baseError } = require('../../system/core/error/baseError');
 const S3 = require("aws-sdk/clients/s3");
 const fs = require("fs");
 

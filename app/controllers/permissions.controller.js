@@ -1,122 +1,234 @@
 'use strict';
-const autoBind = require('auto-bind');
-
 const { controller } = require('./controller');
-const { permission } = require('@service/permission.service');
-const permissionService = new permission('Permission');
-const { baseError } = require('@error/baseError');
+const autoBind = require( 'auto-bind' );
 
-class permissionsController extends controller {
+
+
+class PermissionsController extends controller {
+
+
+
   /**
    * Controller constructor
    * @author Ujjwal Bera
    * @param null
    */
-  constructor(service) {
-    super(service);
-    this.service = permissionService;
-    autoBind(this);
+  constructor( ) {
+      super( );
+      this.Permission = this.db.Permission;
+      this.User = this.db.User;
+      this.Role = this.db.Role;
+      autoBind( this );
   }
 
+
   /**
-   * @desc Fetching list of permissions
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
+   * @desc   Get list of attribute for admin user
+   *
+   * @param req : request
+   * @param res : response
+   * @param next
+   * @returns {Promise<*>}
    */
-  async permissionList(req, session) {
-      let result = await this.service.getAll(req.query);
-      //if all filter fields name are same as db field name you can just use
-      //let result = await this.service.getAll (req.query);
-      if (result) {
-        return {
-          code: 200,
-          result,
-          message: 'Permission list got successfully.'
+  async adminPermissions( req, res, next ) {
+
+      var name = 'name';
+      var order = 'name';
+      var ordering = 'ASC';
+      var queries = req.query;
+      var offset = 0;
+      var limit = 100;
+      const query = [];
+
+      if(req.query.limit) {
+        limit = req.query.limit
+      }
+
+      if(req.query.page) {
+        if(req.query.page > 1) {
+          offset = req.query.page * limit - limit;
         }
       }
-      throw new baseError('Some error occurred while fetching list of permissions.');
-  }
 
-  /**
-   * @desc Store a new permission
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
-   */
-  async permissionStore(req, session) {
-      let { name } = req.body;
-      console.log(req.body);
-      //let result = await this.service.permissionStore(name);
-      let result = await this.service.permissionStore({ name }, session);
-      if (result) {
-        return {
-          code: 201,
-          result,
-          message: 'New permission created successfully.'
+      if(req.query.orderby) {
+        order = req.query.orderby
+      }
+
+      if(req.query.ordering) {
+        ordering = req.query.ordering
+      }
+
+      if(req.query.keyword) {
+        query.push({
+          [name]: {
+            [this.Op.iLike]: `%${req.query.keyword}%`
+          }
+        })
+      }
+
+      this.Permission.findAll({
+        /*where: {
+          [this.Op.and]: query
+        },*/
+        include: [
+          {
+            model: this.User,
+            as: 'user_permissions',
+            include: [
+              {
+                model: this.Role,
+                as: 'roles',
+                required: false,
+              }
+            ]
+          },
+          {  model: this.Role, as: 'role_permissions' }
+        ],
+        order: [
+          [order, ordering],
+        ],
+        offset: offset, limit: limit,
+      })
+      .then(datas => {
+        if(datas.length) {
+          res.status(200).json(this.Response.success("OK", { count: datas.length, datas: datas }, res.statusCode));
+        } else {
+          res.status(500).json(this.Response.error("Permission Not found.", res.statusCode));
         }
-      }
-      throw new baseError('Some error occurred while creating new permission.');
+      })
+      .catch(err => {
+          res.status(500).json(this.Response.error(err.message || "Some error occurred while retrieving tutorials.", res.statusCode));
+      });
   }
 
-  /**
-   * @desc Fetch detail of a permission
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
-   */
-  async permissionDetails(req, session) {
-      let permissionId = req.params.id;
-      let result = await this.service.get(permissionId);
-      if (result) {
-        return res
-          .status(200)
-          .json(
-            this.success(result, 'Permission details fetched successfully!'),
-          );
-      }
-      throw new baseError('Some error occurred while fetching permission details.');
+
+
+  async adminStorePermission( req, res, next ) {
+    console.log(req.user.phone);
+    this.Permission.create({
+      name:             req.body.name,
+      slug:             req.body.slug,
+      deleted_at:       null,
+      status:           true,
+      created_by:       req.user.id
+    }).then(data => {
+      res.status(200).send({code: 200, status: true, data: data,  message: "Permission was added successfully!" });
+    }).catch(err => {
+      res.status(500).json(this.Response.error(err.message, res.statusCode));
+    });
   }
 
-  /**
-   * @desc Updated a permission
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
-   */
-  async permissionUpdate(req, session) {
-      let permissionId = req.params.id;
-      let { name, status } = req.body;
-      let result = await this.service.permissionUpdate(
-        permissionId,
-        name,
-        status,
-      );
-      if (result) {
-        return res
-          .status(200)
-          .json(
-            this.success(result, 'Permission details updated successfully!'),
-          );
-      }
-      throw new baseError('Some error occurred while updating permission details.');
-  }
 
   /**
-   * @desc Delete a permission
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
+   * @desc   Get attribute for for admin user
+   *
+   * @param req : request
+   * @param res : response
+   * @param next
+   * @returns json
    */
-  async permissionDelete(req, session) {
-    let permissionId = req.params.id;
-    let result = await this.service.permissionDelete(permissionId);
-    if (result) {
-      return res
-        .status(200)
-        .json(this.success(result, 'Permission deleted successfully!'));
-    }
-    throw new baseError('Some error occurred while deleting permission.');
+  async adminDetailsPermission( req, res, next ) {
+
+      var id = req.params.id;
+      console.log(id)
+      this.Permission.findOne({
+        where: {
+          [this.Op.and]: [
+            {
+              id: {
+                [this.Op.eq]: id
+              }
+            },
+            {
+              deleted_at: {
+                [this.Op.eq]: null
+              }
+            }
+          ]
+        }
+      })
+      .then(data => {
+        if(data) {
+          res.status(200).json(this.Response.success("OK", { data: data }, res.statusCode));
+        } else {
+          res.status(500).json(this.Response.error("Permission Not found.", res.statusCode));
+        }
+      })
+      .catch(err => {
+          res.status(500).json(this.Response.error(err.message || "Some error occurred while retrieving tutorials.", res.statusCode));
+      });
+  }
+
+
+
+  async adminUpdatePermission( req, res, next ) {
+    var id = req.params.id;
+    this.Permission.update({
+      code:             req.body.code,
+      name:             req.body.name,
+      type:             req.body.type,
+      validation:       req.body.validation,
+      position:         req.body.position,
+      is_required:      req.body.required,
+      is_unique:        req.body.unique,
+      is_filterable:    req.body.filterable,
+      is_configurable:  req.body.configurable,
+      is_visible:       req.body.visible,
+      is_user_defined:  req.body.user_defined,
+      is_comparable:    req.body.comparable,
+      deleted_at:       null,
+      status:           true,
+    }, {
+      where: {
+        id: id
+      }
+    }).then(data => {
+      res.status(200).send({code: 200, status: true, data: data,  message: "Permission was updated successfully!" });
+    }).catch(err => {
+      res.status(500).json(this.Response.error(err.message, res.statusCode));
+    });
+  }
+
+
+  /**
+   * @desc   Get Permission for for admin user
+   *
+   * @param req : request
+   * @param res : response
+   * @param next
+   * @returns {Promise<*>}
+   */
+  async adminDeletePermission( req, res, next ) {
+
+      var id = req.params.id;
+      console.log(id)
+      this.Permission.findOne({
+        where: {
+          [this.Op.and]: [
+            {
+              id: {
+                [this.Op.eq]: id
+              }
+            },
+            {
+              deleted_at: {
+                [this.Op.eq]: null
+              }
+            }
+          ]
+        }
+      })
+      .then(data => {
+        if(data) {
+          res.status(200).json(this.Response.success("OK", { data: data }, res.statusCode));
+        } else {
+          res.status(500).json(this.Response.error("Permission Not found.", res.statusCode));
+        }
+      })
+      .catch(err => {
+          res.status(500).json(this.Response.error(err.message || "Some error occurred while retrieving tutorials.", res.statusCode));
+      });
   }
 }
-module.exports = new permissionsController(permissionService);
+
+module.exports = new PermissionsController( );
