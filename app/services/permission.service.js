@@ -1,4 +1,3 @@
-const autoBind = require('auto-bind');
 const { service } = require( './service' );
 const { baseError } = require('../../system/core/error/baseError');
 
@@ -13,41 +12,102 @@ class permission extends service {
   constructor(model) {
     super(model);
     this.model = this.db[model];
-    autoBind(this);
+
   }
 
-  async permissionList(queries) {
+  async getAll(queries, { transaction }) {
     try {
-      let { orderby, order, limit, page, ...search } = queries;
-      let filter = { deleted: false };
-      if (search.name != null && search.name.length > 0) {
-        filter = { ...filter, name: new RegExp(search.name, 'i') };
+      const {
+        id = null,
+        ids = null,
+        name = null,
+        orderby = 'name',
+        ordering = 'ASC',
+        limit = this.dataPerPage || 10,
+        page = 1,
+        return_type = null,
+      } = queries;
+
+      const order = ordering.toUpperCase();
+      const skip = parseInt(page) * parseInt(limit) - parseInt(limit);
+
+      const query = [];
+
+      if(name) {
+        query.push({
+          name: {
+            [Op.like]: `%${name}%`
+          }
+        });
+      }
+      if(id) {
+        query.push({
+          id: id
+        });
+      }
+      if(ids) {
+        const idsArr = ids.split(',');
+        query.push({
+          id: {
+            [Op.in]: idsArr
+          }
+        });
       }
 
-      return await this.getAll(queries, filter);
+      const result = await this.model.findAll({
+        attributes: {
+          exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
+        },
+        where: query,
+        order: [
+          [orderby, order],
+        ],
+        limit: parseInt(limit),
+        offset: skip,
+        transaction
+      });
+
+      const count = await this.model.count({
+        attributes: {
+          exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
+        },
+        where: query,
+        order: [
+          [orderby, order],
+        ],
+        limit: parseInt(limit),
+        offset: skip,
+        transaction
+      });
+
+
+
+      return {
+        rows: result,
+        count,
+      };
     } catch (ex) {
+      console.log(ex)
       throw new baseError(ex);
     }
   }
 
-  async permissionStore( { name, status = true }, session) {
+  async addNew( { name, status = true }, { transaction }) {
     try {
-      console.log(name);
-      const permission = await this.insert({
+      const permission = await this.model.create({
         name,
         status,
-      }, session);
+      }, transaction);
 
-      await permissionGraph.create(permission[0]);
       return permission;
     } catch (ex) {
       throw new baseError(ex);
     }
   }
 
-  async permissionDetails(permissionId) {
+  async findByPk(id, { transaction }) {
     try {
-      let permission = await this.get(permissionId, { deleted: false });
+      let permission = await this.model.findByPk(id, { transaction });
       if (!permission) {
         throw new baseError('Permission not found with this given details.');
       }
@@ -57,13 +117,17 @@ class permission extends service {
     }
   }
 
-  async permissionUpdate(permissionId, name, status) {
+  async updateByPk(id, data, { transaction }) {
     try {
-      await this.updateById(permissionId, {
-        name: name,
-        status: status,
-      }, { deleted: false });
-      return await this.get(permissionId);
+      console.log(data);
+      await this.model.update(data, {
+        where: {
+          id: id
+        },
+        transaction,
+      });
+
+      return await this.findByPk(id, { transaction });
     } catch (ex) {
       console.log(ex);
       throw new baseError(ex);

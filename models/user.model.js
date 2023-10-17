@@ -12,7 +12,7 @@ const saltRounds = 9;
 const User = sequelize.define("User",
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT(11),
       primaryKey: true,
       autoIncrement: true,
       unique: true,
@@ -168,13 +168,6 @@ const User = sequelize.define("User",
     }
   }
 );
-
-// User.addScope('limitedBars', {
-//   include: [{
-//     model: Bar,
-//     limit: 2
-//   }]
-// });
 
 // User.prototype.validPassword = async (password, hash) => {
 //   return await bcrypt.compareSync(password, hash);

@@ -17,7 +17,7 @@ class role extends service {
     this.userRole = this.db['UserRole'];
   }
 
-  async allRolesList(queries, transaction) {
+  async getAll(queries, transaction) {
     try {
       const {
         id = null,
@@ -101,7 +101,7 @@ class role extends service {
    * @param {*} rights
    * @returns
    */
-  async roleStore({ parent, name, description, rights, status = true }, session) {
+  async addNew({ name, parentId, status = true }, transaction) {
     try {
       let havError = false, resourceName = null, rightSlugs = [], resourceRightsAvailable = [];
       if (rights != null) {

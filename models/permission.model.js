@@ -8,13 +8,18 @@ const Permission = sequelize.define("Permission",
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-        allowNull: false
+        allowNull: false,
+        unique: true
       },
       name: {
         type: DataTypes.STRING,
         required : true,
         index : true,
-        allowNull: false
+        allowNull: false,
+        unique: true,
+        validate: {
+          notEmpty: true
+        }
       },
       slug: {
         type: DataTypes.STRING,
@@ -40,12 +45,51 @@ const Permission = sequelize.define("Permission",
       sequelize,
       modelName: 'Permission',
       tableName: 'permissions',
+      indexes: [ { unique: true, fields: [ 'name', 'slug'] } ],
+      defaultScope: {
+        attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+        // where: {
+        //   status: true,
+        // },
+      },
+      scopes: {
+        // withRoles: {
+        //   attributes: { exclude: ['password'] },
+        //   // include: [
+        //   //   { model: SecretClub, as: 'secretClub' },
+        //   //   { model: Item, as: 'items' }
+        //   // ]
+        // }
+      },
+      instanceMethods: {
+        // async generateHash(password) {
+        //   const salt = await bcrypt.genSalt(saltRounds);
+        //   return bcrypt.hashSync(user.password, salt);
+        // },
+        // async validPassword(password) {
+        //     return bcrypt.compareSync(password, this.password);
+        // }
+      },
+      classMethods: {
+        // associate: function (models) {
+        //     Article.belongsTo(models.User, {as: "Author", onDelete: 'CASCADE', foreignKey: { field:'author_id', allowNull: false }});
+        // },
+        setterMethods: {
+            title : function(v) {
+                this.setDataValue('title', v.toString());
+                this.setDataValue('slug', slugify(v));
+            }
+        },
+      },
       hooks: {
         beforeValidate: function (model, options) {
           if (typeof model.name === 'string') {
             model.slug = model.name.toLowerCase();
-            model.slug = model.slug.replace(/[^a-zA-Z-_ ]/g, "");
-            model.slug = model.slug.replace(/[^a-zA-Z]/g, "-");
+            model.slug = model.slug.replace(/[^1-9a-zA-Z-_ ]/g, "");
+            model.slug = model.slug.replace(/[^1-9a-zA-Z]/g, "-");
+          }
+          if (model.status !== false) {
+            model.status = true;
           }
         },
         afterValidate: (permission, options) => {
@@ -53,7 +97,7 @@ const Permission = sequelize.define("Permission",
         },
         afterCreate: (async (permission, options) => {
 
-          var admins = await sequelize.models.Role.findAll({ where: {slug: 'admin'}});
+          const admins = await sequelize.models.Role.findAll({ where: {slug: 'admin'}});
 
           admins.forEach(admin => {
             //console.log(admin); // Logs each 'Admin #'

@@ -1,4 +1,4 @@
-'use strict';
+const  { Sequelize, sequelize, Op } = require('sequelize');
 const autoBind = require('auto-bind');
 const { base } = require('../base');
 const { baseError } = require('../error/baseError');
@@ -20,46 +20,49 @@ class baseService extends base {
   async getAll(
     {
       orderby = 'name',
-      order = 'asc',
-      limit = this.dataPerPage,
+      ordering = 'ASC',
+      limit = this.dataPerPage || 10,
       page = 1,
       ...search
     },
-    filter = null,
+    {
+      filter = null,
+      include,
+      attributes,
+      transaction
+    }
   ) {
     try {
+      const order = ordering.toUpperCase();
+      if(page < 1) page = 1;
+      const skip = parseInt(page) * parseInt(limit) - parseInt(limit);
+
       if (filter === null) {
         filter = await this.generateQueryFilterFromQueryParams(search);
       }
-      filter = { ...filter, deleted: false };
-      let ordering = 1;
-      if (order == 'desc') {
-        ordering = -1;
-      }
-      let skip = parseInt(page) * parseInt(limit) - parseInt(limit);
 
-      const result = await this.model.aggregate([
-        {
-          $match: filter
-        },
-        {
-          $sort: { [orderby]: ordering }
-        },
-        {
-          $facet: {
-            items: [
-              { $skip: +skip }, { $limit: +limit}
-            ],
-            total: [
-              {
-                $count: 'count'
-              }
-            ]
-          }
-        }
-      ]);
+      const result = await this.model.findAll({
+        attributes: attributes,
+        where: filter,
+        include: include,
+        order: [
+          [orderby, order],
+        ],
+        limit: parseInt(limit),
+        offset: skip,
+        transaction
+      });
 
-      return result[0];
+      const count = await this.model.count({
+        where: filter,
+        include: include,
+        transaction
+      });
+
+      return {
+        rows: result,
+        count,
+      };
     } catch (ex) {
       throw new baseError(ex.message || `Some error occurred while fetching ${this.name}s list.`, 400);
     }
@@ -88,15 +91,12 @@ class baseService extends base {
     }
   }
 
-  async insert(data, session) {
+  async addNew(data, { transaction }) {
     try {
       Object.keys(data).forEach(
         (key) => data[key] === undefined && delete data[key],
       );
-      let item =  null;
-      if(session) item = await this.model.create([data], { session });
-      else item = await this.model.create(data);
-
+      let item = await this.model.create(data, transaction);
       if (item) {
         return item;
       }
@@ -210,29 +210,20 @@ class baseService extends base {
 
   async generateQueryFilterFromQueryParams(search){
     try {
-      let filter = { deleted: false }
+      let filter = [];
       for (const field in search) {
         let filterValue;
-        if (typeof search[field] === 'number') {
-          filterValue = parseInt(search[field]);
+        if (typeof search[field] === 'number' || typeof search[field] === 'boolean') {
+          filter.push({
+            [field] : search[field]
+          });
         } else if (typeof search[field] === 'string') {
-          if(field == 'id') {
-            if(search[field].length !== 36) filterValue = new RegExp(search[field], 'i');
-            else filterValue = search[field];
-            field = '_id'
-          } else if(field == 'ids') {
-            const idsArr = ids.split(',');
-            filterValue = { "$in": idsArr }
-            field = '_id'
-          } else {
-            filterValue = new RegExp(search[field], 'i');
-          }
-        } else if (typeof search[field] === 'boolean') {
-          filterValue = parseInt(search[field]);
-        } else {
-          filterValue = search[field];
+          filter.push({
+            [field] : {
+              [Op.like]: `%${search[field]}%`
+            }
+          });
         }
-        filter = { ...filter, [field]: filterValue };
       }
       return filter;
     } catch (ex) {

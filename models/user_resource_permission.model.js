@@ -5,7 +5,7 @@ const sequelize = require('../system/core/db.connection');
 const UserResourcePermission = sequelize.define("UserResourcePermission",
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT(11),
         primaryKey: true,
         autoIncrement: true,
         allowNull: false

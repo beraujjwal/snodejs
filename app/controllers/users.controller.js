@@ -21,8 +21,8 @@ class UsersController extends controller {
    * @author Ujjwal Bera
    * @param null
    */
-  constructor( ) {
-      super( );
+  constructor( service ) {
+      super( service );
       this.User = this.db.User;
       this.Role = this.db.Role;
       this.UserRole = this.db.UserRole;
@@ -154,4 +154,4 @@ class UsersController extends controller {
 
 }
 
-module.exports = new UsersController( );
+module.exports = new UsersController( userService );

@@ -12,7 +12,7 @@ const router = express.Router();
 router.group('/v1.0', (versionRouter) => {
 
 
-  versionRouter.get('/roles', /*authMiddleware.verifyToken,*/ exceptionHandler(rolesController.allRolesList));
+  versionRouter.get('/roles', /*authMiddleware.verifyToken,*/ exceptionHandler(rolesController.getAll));
   versionRouter.get( '/roles-ddl', [authMiddleware.verifyToken, aclMiddleware.hasPermission('dropDownList', 'role-section')], exceptionHandler(rolesController.rolesDDLList) );
 
   versionRouter.group('/role', (roleRouter) => {

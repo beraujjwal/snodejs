@@ -1,8 +1,8 @@
 'use strict';
-const { controller } = require('./controller');
-const autoBind = require( 'auto-bind' );
+const { controller } = require( './controller' );
+const { permission } = require('../services/permission.service');
 
-
+const permissionService = new permission('Permission');
 
 class PermissionsController extends controller {
 
@@ -13,12 +13,9 @@ class PermissionsController extends controller {
    * @author Ujjwal Bera
    * @param null
    */
-  constructor( ) {
-      super( );
-      this.Permission = this.db.Permission;
-      this.User = this.db.User;
-      this.Role = this.db.Role;
-      autoBind( this );
+  constructor( service ) {
+      super( service );
+      this.service = service;
   }
 
 
@@ -30,92 +27,31 @@ class PermissionsController extends controller {
    * @param next
    * @returns {Promise<*>}
    */
-  async adminPermissions( req, res, next ) {
+  async getAll( req, transaction ) {
 
-      var name = 'name';
-      var order = 'name';
-      var ordering = 'ASC';
-      var queries = req.query;
-      var offset = 0;
-      var limit = 100;
-      const query = [];
-
-      if(req.query.limit) {
-        limit = req.query.limit
+    const result = await this.service.getAll(req.query, { transaction });
+    if (result) {
+      return {
+        code: 200,
+        result,
+        message: "PERMISSIONS_LIST_FETCH_SUCESSFULLY"
       }
-
-      if(req.query.page) {
-        if(req.query.page > 1) {
-          offset = req.query.page * limit - limit;
-        }
-      }
-
-      if(req.query.orderby) {
-        order = req.query.orderby
-      }
-
-      if(req.query.ordering) {
-        ordering = req.query.ordering
-      }
-
-      if(req.query.keyword) {
-        query.push({
-          [name]: {
-            [this.Op.iLike]: `%${req.query.keyword}%`
-          }
-        })
-      }
-
-      this.Permission.findAll({
-        /*where: {
-          [this.Op.and]: query
-        },*/
-        include: [
-          {
-            model: this.User,
-            as: 'user_permissions',
-            include: [
-              {
-                model: this.Role,
-                as: 'roles',
-                required: false,
-              }
-            ]
-          },
-          {  model: this.Role, as: 'role_permissions' }
-        ],
-        order: [
-          [order, ordering],
-        ],
-        offset: offset, limit: limit,
-      })
-      .then(datas => {
-        if(datas.length) {
-          res.status(200).json(this.Response.success("OK", { count: datas.length, datas: datas }, res.statusCode));
-        } else {
-          res.status(500).json(this.Response.error("Permission Not found.", res.statusCode));
-        }
-      })
-      .catch(err => {
-          res.status(500).json(this.Response.error(err.message || "Some error occurred while retrieving tutorials.", res.statusCode));
-      });
+    }
+    throw new baseError(__("PERMISSIONS_LIST_FETCH_ERROR"));
   }
 
 
 
-  async adminStorePermission( req, res, next ) {
-    console.log(req.user.phone);
-    this.Permission.create({
-      name:             req.body.name,
-      slug:             req.body.slug,
-      deleted_at:       null,
-      status:           true,
-      created_by:       req.user.id
-    }).then(data => {
-      res.status(200).send({code: 200, status: true, data: data,  message: "Permission was added successfully!" });
-    }).catch(err => {
-      res.status(500).json(this.Response.error(err.message, res.statusCode));
-    });
+  async addNew( req, transaction ) {
+    const result = await this.service.addNew({ ...req.body }, { transaction });
+    if (result) {
+      return {
+        code: 201,
+        result,
+        message: "PERMISSION_ADDED_SUCESSFULLY"
+      }
+    }
+    throw new baseError(__("UNABLE_TO_ADD_PERMISSION"));
   }
 
 
@@ -127,66 +63,34 @@ class PermissionsController extends controller {
    * @param next
    * @returns json
    */
-  async adminDetailsPermission( req, res, next ) {
+  async findByPk( req, transaction ) {
 
-      var id = req.params.id;
-      console.log(id)
-      this.Permission.findOne({
-        where: {
-          [this.Op.and]: [
-            {
-              id: {
-                [this.Op.eq]: id
-              }
-            },
-            {
-              deleted_at: {
-                [this.Op.eq]: null
-              }
-            }
-          ]
-        }
-      })
-      .then(data => {
-        if(data) {
-          res.status(200).json(this.Response.success("OK", { data: data }, res.statusCode));
-        } else {
-          res.status(500).json(this.Response.error("Permission Not found.", res.statusCode));
-        }
-      })
-      .catch(err => {
-          res.status(500).json(this.Response.error(err.message || "Some error occurred while retrieving tutorials.", res.statusCode));
-      });
+    const id = req.params.id;
+    const result = await this.service.findByPk(id, { transaction });
+
+    if (result) {
+      return {
+        code: 200,
+        result,
+        message: "PERMISSION_DEATILS_FETCHED_SUCESSFULLY"
+      }
+    }
+    throw new baseError(__("UNABLE_TO_FETCH_PERMISSION"));
   }
 
 
 
-  async adminUpdatePermission( req, res, next ) {
-    var id = req.params.id;
-    this.Permission.update({
-      code:             req.body.code,
-      name:             req.body.name,
-      type:             req.body.type,
-      validation:       req.body.validation,
-      position:         req.body.position,
-      is_required:      req.body.required,
-      is_unique:        req.body.unique,
-      is_filterable:    req.body.filterable,
-      is_configurable:  req.body.configurable,
-      is_visible:       req.body.visible,
-      is_user_defined:  req.body.user_defined,
-      is_comparable:    req.body.comparable,
-      deleted_at:       null,
-      status:           true,
-    }, {
-      where: {
-        id: id
+  async updateByPk( req, transaction ) {
+    const id = req.params.id;
+    const result = await this.service.updateByPk(id, { ...req.body }, { transaction });
+    if (result) {
+      return {
+        code: 200,
+        result,
+        message: "PERMISSION_UPDATED_SUCESSFULLY"
       }
-    }).then(data => {
-      res.status(200).send({code: 200, status: true, data: data,  message: "Permission was updated successfully!" });
-    }).catch(err => {
-      res.status(500).json(this.Response.error(err.message, res.statusCode));
-    });
+    }
+    throw new baseError(__("UNABLE_TO_UPDATE_PERMISSION"));
   }
 
 
@@ -231,4 +135,4 @@ class PermissionsController extends controller {
   }
 }
 
-module.exports = new PermissionsController( );
+module.exports = new PermissionsController( permissionService );

@@ -13,103 +13,82 @@ class resource extends service {
   constructor(model) {
     super(model);
     this.model = this.db[model];
-    this.permission = this.db['Permission'];
     autoBind(this);
   }
 
-  /**
-   * @description Fetching list of resources by given query params
-   * @param {object} queries
-   * @returns object
-   * @author Ujjwal Bera
-   */
-  async resourcesList(queries) {
+  async getAll(queries, transaction) {
     try {
       const {
+        id = null,
+        ids = null,
         name = null,
         parent = null,
         orderby = 'name',
-        ordering = 'asc',
-        limit = this.dataPerPage,
+        ordering = 'ASC',
+        limit = this.dataPerPage || 10,
         page = 1,
         return_type = null,
       } = queries;
 
-      let order = 1;
-      if (ordering == 'desc') order = -1;
+      const order = ordering.toUpperCase();
       const skip = parseInt(page) * parseInt(limit) - parseInt(limit);
 
-      let filter = { deleted: false, parent: parent };
-      if(name) filter = { ...filter, name: new RegExp(name, 'i') };
+      const query = [{ parentId: parent }];
 
-      let unset = ["__v", "childrens.level"];
-      let restrictSearchWithMatch = { deleted: false }
-      if(return_type === 'ddl') {
-        restrictSearchWithMatch = { deleted: false, status: true }
-        unset = [
-          "__v", "slug", "deleted", "createdAt", "updatedAt", "status", "childrens.__v", "childrens.slug",
-          "childrens.deleted", "childrens.status", "childrens.createdAt", "childrens.updatedAt", "childrens.level"
-        ];
-      }
-
-      const result = await this.model.aggregate([
-        {
-          $match: filter
-        },
-        {
-          $graphLookup: {
-            from: "resources",
-            startWith: "$_id",
-            connectFromField: "_id",
-            connectToField: "parent",
-            depthField: "depth",
-            maxDepth: 100,
-            as: "childrens",
-            depthField: "level",
-            restrictSearchWithMatch: restrictSearchWithMatch
-          },
-        },
-        {
-          $unset: unset
-        },
-        {
-          $sort: { [orderby]: order }
-        },
-        {
-          $facet: {
-            items: [
-              { $skip: +skip }, { $limit: +limit}
-            ],
-            total: [
-              {
-                $count: 'count'
-              }
-            ]
+      if(name) {
+        query.push({
+          name: {
+            [Op.like]: `%${name}%`
           }
-        }
-      ]);
-
-
-      let response = result[0];
-      //response.items = await this.modifyIds(result[0].items);
-
-      const docs = response.items;
-      let finalResult = []     //For Storing all parent with childs
-      if (docs.length >= 0) {
-          docs.map( async singleDoc => {  //For getting all parent Tree
-            const singleChild = await this.listToTree(singleDoc.childrens);
-            singleDoc.childrens = singleChild;
-            finalResult.push(singleDoc)
-          })
+        });
       }
-      response.items = finalResult;
+      if(id) {
+        query.push({
+          id: id
+        });
+      }
+      if(ids) {
+        const idsArr = ids.split(',');
+        query.push({
+          id: {
+            [Op.in]: idsArr
+          }
+        });
+      }
 
-      return response;
+      const result = await this.model.unscoped().findAll({
+        attributes: {
+          exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
+        },
+        where: query,
+        include: [
+          {
+            model: this.user.unscoped() ,
+            as: 'users',
+            attributes: ['id'],
+            through:{
+              where: {
+                status: true,
+              },
+              attributes: []
+            },
+            where: {
+              status: true,
+            },
+          }
+        ],
+        order: [
+          [orderby, order],
+        ],
+        limit: limit,
+        offset: skip,
+        transaction
+      });
+
+      return result;
     } catch (ex) {
-      throw new baseError(
-        ex.message || 'An error occurred while fetching resources list. Please try again.',
-        ex.status
-      );
+      console.log(ex)
+      throw new baseError(ex);
     }
   }
 

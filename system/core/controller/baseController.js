@@ -17,8 +17,8 @@ class baseController extends base {
     autoBind(this);
   }
 
-  async getAll(req, session) {
-      const response = await this.service.getAll(req.query, session);
+  async getAll(req, transaction) {
+      const response = await this.service.getAll(req.query, { transaction });
       if (response) {
         return {
           code: 200,
@@ -27,6 +27,18 @@ class baseController extends base {
         }
       }
       throw new baseError('Some error occurred while fetching items list.');
+  }
+
+  async addNew(req, session) {
+    const response = await this.service.addNew({ ...req.body }, { transaction });
+    if(response) {
+      return {
+        code: 200,
+        result: response,
+        message: 'The new item was added successfully.'
+      }
+    }
+    throw new baseError('Some error occurred while adding the new item.');
   }
 
   async getById(req, session) {
