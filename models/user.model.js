@@ -63,7 +63,8 @@ const User = sequelize.define("User",
     },
     blockExpires: {
       type: DataTypes.DATE,
-      defaultValue: moment().utc(process.env.APP_TIMEZONE).toDate(),  //defaultValue: DataTypes.NOW
+      allowNull: true,
+      defaultValue: null,
     },
     deviceId: {
       type: DataTypes.STRING,

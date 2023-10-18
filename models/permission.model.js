@@ -75,8 +75,8 @@ const Permission = sequelize.define("Permission",
         //     Article.belongsTo(models.User, {as: "Author", onDelete: 'CASCADE', foreignKey: { field:'author_id', allowNull: false }});
         // },
         setterMethods: {
-            title : function(v) {
-                this.setDataValue('title', v.toString());
+            name : function(v) {
+                this.setDataValue('name', v.toString());
                 this.setDataValue('slug', slugify(v));
             }
         },
