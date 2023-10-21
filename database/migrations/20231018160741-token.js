@@ -49,7 +49,7 @@ module.exports = {
       expireAt: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW
+        defaultValue: Sequelize.NOW
       },
       deletedAt: {
         type: Sequelize.DATE,
@@ -59,12 +59,12 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: DataTypes.NOW
+        defaultValue: Sequelize.NOW
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: DataTypes.NOW
+        defaultValue: Sequelize.NOW
       }
     }).then(() => {
       return queryInterface.sequelize.query(`

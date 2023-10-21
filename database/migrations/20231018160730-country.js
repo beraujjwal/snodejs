@@ -8,44 +8,43 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.DataTypes.INTEGER
+        type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.DataTypes.STRING(100),
+        type: Sequelize.STRING(100),
         unique: true,
         allowNull: false
       },
       code: {
-        type: Sequelize.DataTypes.STRING(2),
+        type: Sequelize.STRING(2),
         unique: true,
         allowNull: false
       },
       phoneCode: {
-        type: Sequelize.DataTypes.INTEGER,
-        unique: true,
+        type: Sequelize.INTEGER,
         allowNull: false
       },
       status: {
-        type: Sequelize.DataTypes.BOOLEAN,
+        type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: true
       },
       deletedAt: {
-        type: Sequelize.DataTypes.DATE,
+        type: Sequelize.DATE,
         allowNull: true,
         defaultValue: null
       },
       createdAt: {
-        type: Sequelize.DataTypes.DATE,
+        type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW
+        defaultValue: Sequelize.NOW
       },
       updatedAt: {
-        type: Sequelize.DataTypes.DATE,
+        type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW
+        defaultValue: Sequelize.NOW
       }
-    }).then(() => queryInterface.addIndex('states', ['name', 'code', 'phoneCode']));
+    }).then(() => queryInterface.addIndex('countries', ['name', 'code', 'phoneCode']));
   },
 
   async down (queryInterface, Sequelize) {

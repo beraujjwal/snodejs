@@ -103,7 +103,19 @@ const Role = sequelize.define("Role",
 
 Role.associate = function(models) {
   Role.belongsToMany(models.User, {through: 'UserRole', foreignKey: 'roleId', as: 'users'});
-  Role.belongsToMany(models.Permission, {through: 'RolePermission', foreignKey: 'roleId', as: 'permissions'});
+  Role.belongsToMany(models.Resource, {
+    through: {
+      model: models.RoleResourcePermission,
+      unique: true,
+      // scope: {
+      //   roleId: 1
+      // }
+    },
+    foreignKey: 'roleId',
+    as: 'resources',
+    constraints: false
+  });
+  Role.belongsToMany(models.Permission, {through: 'RoleResourcePermission', foreignKey: 'roleId', as: 'permissions'});
 };
 
 module.exports = Role;

@@ -9,7 +9,6 @@ const { config, defaultMail } = require('../../config/mail.config');
 const viewPath =  path.resolve(__dirname, '../../resources/templates/views/');
 const partialsPath = path.resolve(__dirname, '../../resources/templates/partials');
 
-
 exports.sendMail = function (mailOptions) {
   mailOptions = { ...defaultMail, ...mailOptions };
 

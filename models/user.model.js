@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const sequelize = require('../system/core/db.connection');
 const Role = require('./role.model');
 const Permission = require('./permission.model');
-
+const Resource = require('./resource.model');
 const saltRounds = 9;
 
 const User = sequelize.define("User",
@@ -117,6 +117,40 @@ const User = sequelize.define("User",
           where: {
             status: true,
           },
+          include: [
+            {
+              model: Resource,
+              as: 'resources',
+              required: true,
+              attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+              through:{
+                where: {
+                  status: true,
+                },
+                attributes: []
+              },
+              where: {
+                status: true,
+              },
+              include: [
+                {
+                  model: Permission,
+                  as: 'permissions',
+                  required: false,
+                  attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+                  through:{
+                    where: {
+                      status: true,
+                    },
+                    attributes: []
+                  },
+                  where: {
+                    status: true,
+                  },
+                }
+              ]
+            }
+          ],
         },
         {
           model: Permission,
@@ -175,7 +209,10 @@ const User = sequelize.define("User",
 // }
 
 User.associate = function(models) {
+  User.belongsToMany(models.Role, { through: 'UserRole', scope: { status: true }, foreignKey: 'userId', as: 'activeRoles' });
   User.belongsToMany(models.Role, { through: 'UserRole', foreignKey: 'userId', as: 'roles' });
+
+  User.belongsToMany(models.Resource, { through: 'UserResourcePermission', foreignKey: 'userId', as: 'resources' });
   User.belongsToMany(models.Permission, { through: 'UserResourcePermission', foreignKey: 'userId', as: 'permissions' });
   User.hasMany(models.Token, { as: 'tokens', foreignKey: 'userId', foreignKeyConstraint: true });
 };

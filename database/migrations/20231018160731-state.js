@@ -12,7 +12,6 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING(100),
-        unique: true,
         allowNull: false
       },
       countryId: {
@@ -41,12 +40,12 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: DataTypes.NOW
+        defaultValue: Sequelize.NOW
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: DataTypes.NOW
+        defaultValue: Sequelize.NOW
       }
     }).then(() => queryInterface.addIndex('states', ['name', 'countryId']));
   },

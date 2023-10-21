@@ -32,6 +32,7 @@ class user extends service {
       this.model = this.db[model];
       this.role = this.db['Role'];
       this.permission = this.db['Permission'];
+      this.resource = this.db['Resource'];
   }
 
 
@@ -113,22 +114,61 @@ class user extends service {
             where: {
               status: true,
             },
+            include: [
+              {
+                model: this.resource,
+                as: 'resources',
+                required: true,
+                attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+                through:{
+                  where: {
+                    status: true,
+                  },
+                  attributes: []
+                },
+                where: {
+                  status: true,
+                },
+                // all: true,
+                //nested: true,
+                include: [
+                  {
+                    model: this.permission,
+                    as: 'roleResourcePermissions',
+                    required: false,
+                    attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+                    through:{
+                      where: {
+                        status: true,
+                        // roleId: 1
+                      },
+                      attributes: []
+                    },
+                    where: {
+                      status: true,
+                    },
+                    // all: true,
+                    //nested: true
+                  }
+                ]
+              }
+            ],
           },
-          {
-            model: this.permission,
-            as: 'permissions',
-            required: false,
-            attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
-            through:{
-              where: {
-                status: true,
-              },
-              attributes: []
-            },
-            where: {
-              status: true,
-            },
-          }
+          // {
+          //   model: this.permission,
+          //   as: 'permissions',
+          //   required: false,
+          //   attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+          //   through:{
+          //     where: {
+          //       status: true,
+          //     },
+          //     attributes: []
+          //   },
+          //   where: {
+          //     status: true,
+          //   },
+          // }
         ],
         transaction: transaction
       });

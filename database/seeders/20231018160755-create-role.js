@@ -22,10 +22,10 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       }
-    ], {});
+    ], {}).catch(error => { console.error(error)});
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('roles', null, {});
+    await queryInterface.bulkDelete('roles', null, {}).catch(error => { console.error(error)});
   }
 };

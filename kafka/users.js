@@ -1,4 +1,5 @@
 const User = require('../models/user.model');
+const userGraph = require('../neo4j/services/user');
 
 exports.xxxxx = function(messageBody) {
     try{

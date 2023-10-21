@@ -14,7 +14,6 @@ class authMiddleware extends middleware {
    */
   constructor() {
     super();
-    this.User = this.db.User;
     autoBind(this);
   }
 
@@ -27,9 +26,6 @@ class authMiddleware extends middleware {
    */
   async verifyToken(req, res, next) {
     let bearerHeader = req.headers['authorization'];
-
-    let userRole = req.params.role;
-    req.role = userRole;
 
     if( !bearerHeader ){
       throw new baseError(`Authorization token not found.`, 401);
@@ -47,29 +43,12 @@ class authMiddleware extends middleware {
       }
       const userId = decoded.id;
 
-      let isCompleted = decoded.isCompleted;
+      //const userData = await redisClient.getValue(userId); //If you are using redis then you can try this process and disable 57 line code.
+      // const user = JSON.parse(userData);
+      const user = await User.unscoped().findByPk(decoded.id, { attributes: { include: [ 'id', 'name', 'tokenSalt', 'status' ] }});
 
-      if (isCompleted === false) {
-        throw new baseError(`Unauthorized to access this section.`, 401);
-      }
-
-        //const userData = await redisClient.getValue(userId); //If you are using redis then you can try this process and disable 57 line code.
-        const userData = await User.findByPk(decoded.id, {include: ['roles']});
-      const user = JSON.parse(userData);
-
-      if (user === null || user.isCompleted === false || user.user.tokenSalt !== decoded.tokenSalt) {
+      if (user === null || user.tokenSalt !== decoded.tokenSalt) {
         throw new baseError(`Invalid authorization token3.`, 401);
-      }
-
-      const authorities = [];
-      for await (const role of user.roles) {
-        authorities.push(role?.slug);
-      }
-
-      if(userRole) {
-        if(!authorities.includes(userRole)) {
-          throw new baseError(`Invalid authorization token4.`, 401);
-        }
       }
 
       req.user = JSON.parse(JSON.stringify(user));
@@ -77,7 +56,8 @@ class authMiddleware extends middleware {
 
       return;
     } catch (ex) {
-      next(ex.message);
+      console.log(ex);
+      next(ex);
     }
   }
 

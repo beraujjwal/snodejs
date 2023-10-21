@@ -62,12 +62,12 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: DataTypes.NOW
+        defaultValue: Sequelize.NOW
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: DataTypes.NOW
+        defaultValue: Sequelize.NOW
       }
     }).then(() => queryInterface.addIndex('user_resource_permissions', ['userId', 'resourceId', 'permissionId']));
   },

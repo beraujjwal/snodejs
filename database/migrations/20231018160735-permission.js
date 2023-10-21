@@ -33,14 +33,14 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: DataTypes.NOW
+        defaultValue: Sequelize.NOW
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: DataTypes.NOW
+        defaultValue: Sequelize.NOW
       }
-    })/*.then(() => {
+    }).then(() => {
       return queryInterface.sequelize.query(`
       CREATE TRIGGER alter_permission_slug_on_delete
         BEFORE UPDATE ON permissions
@@ -51,11 +51,11 @@ module.exports = {
         END IF;
       END;
       `)
-    })*/.then(() => queryInterface.addIndex('permissions', ['name', 'slug']));
+    }).then(() => queryInterface.addIndex('permissions', ['name', 'slug']));
   },
 
   async down (queryInterface, Sequelize) {
-    //await queryInterface.sequelize.query(`DROP TRIGGER IF EXISTS alter_permission_slug_on_delete`);
+    await queryInterface.sequelize.query(`DROP TRIGGER IF EXISTS alter_permission_slug_on_delete`);
     await queryInterface.dropTable('permissions');
   }
 };

@@ -23,12 +23,12 @@ module.exports = {
             database,
             defaultAccessMode: neo4j.session.WRITE
         });
-
+        
         if(params?.rights) delete params.rights;
 
         return await session.run(cypher, params).then(result => {
             session.close();
-            return result.records;
+            return result.records;            
         }).catch(err => {
             console.error(err)
             session.close();

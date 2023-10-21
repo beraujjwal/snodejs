@@ -11,7 +11,7 @@ module.exports = {
       {'id': 5, 'code': 'AD', 'name': 'Andorra',                                'phoneCode': 376, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 6, 'code': 'AO', 'name': 'Angola',                                 'phoneCode': 244, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 7, 'code': 'AI', 'name': 'Anguilla',                               'phoneCode': 1264, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
-      {'id': 8, 'code': 'AQ', 'name': 'Antarctica',                             'phoneCode': 0, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
+      {'id': 8, 'code': 'AQ', 'name': 'Antarctica',                             'phoneCode': 672, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 9, 'code': 'AG', 'name': 'Antigua And Barbuda',                    'phoneCode': 1268, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 10, 'code': 'AR', 'name': 'Argentina',                             'phoneCode': 54, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 11, 'code': 'AM', 'name': 'Armenia',                               'phoneCode': 374, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
@@ -32,7 +32,7 @@ module.exports = {
       {'id': 26, 'code': 'BO', 'name': 'Bolivia',                               'phoneCode': 591, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 27, 'code': 'BA', 'name': 'Bosnia and Herzegovina',                'phoneCode': 387, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 28, 'code': 'BW', 'name': 'Botswana',                              'phoneCode': 267, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
-      {'id': 29, 'code': 'BV', 'name': 'Bouvet Island',                         'phoneCode': 0, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
+      {'id': 29, 'code': 'BV', 'name': 'Bouvet Island',                         'phoneCode': 47, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 30, 'code': 'BR', 'name': 'Brazil',                                'phoneCode': 55, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 31, 'code': 'IO', 'name': 'British Indian Ocean Territory',        'phoneCode': 246, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 32, 'code': 'BN', 'name': 'Brunei',                                'phoneCode': 673, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
@@ -73,7 +73,7 @@ module.exports = {
       {'id': 67, 'code': 'ER', 'name': 'Eritrea',                               'phoneCode': 291, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 68, 'code': 'EE', 'name': 'Estonia',                               'phoneCode': 372, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 69, 'code': 'ET', 'name': 'Ethiopia',                              'phoneCode': 251, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
-      {'id': 70, 'code': 'XA', 'name': 'External Territories of Australia',     'phoneCode': 61, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
+      {'id': 70, 'code': 'XA', 'name': 'External Territories of Australia',     'phoneCode': 672, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 71, 'code': 'FK', 'name': 'Falkland Islands',                      'phoneCode': 500, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 72, 'code': 'FO', 'name': 'Faroe Islands',                         'phoneCode': 298, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 73, 'code': 'FJ', 'name': 'Fiji Islands',                          'phoneCode': 679, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
@@ -81,7 +81,7 @@ module.exports = {
       {'id': 75, 'code': 'FR', 'name': 'France',                                'phoneCode': 33, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 76, 'code': 'GF', 'name': 'French Guiana',                         'phoneCode': 594, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 77, 'code': 'PF', 'name': 'French Polynesia',                      'phoneCode': 689, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
-      {'id': 78, 'code': 'TF', 'name': 'French Southern Territories',           'phoneCode': 0, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
+      {'id': 78, 'code': 'TF', 'name': 'French Southern Territories',           'phoneCode': 262, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 79, 'code': 'GA', 'name': 'Gabon',                                 'phoneCode': 241, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 80, 'code': 'GM', 'name': 'Gambia The',                            'phoneCode': 220, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 81, 'code': 'GE', 'name': 'Georgia',                               'phoneCode': 995, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
@@ -99,7 +99,7 @@ module.exports = {
       {'id': 93, 'code': 'GW', 'name': 'Guinea-Bissau',                         'phoneCode': 245, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 94, 'code': 'GY', 'name': 'Guyana',                                'phoneCode': 592, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 95, 'code': 'HT', 'name': 'Haiti',                                 'phoneCode': 509, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
-      {'id': 96, 'code': 'HM', 'name': 'Heard and McDonald Islands',            'phoneCode': 0, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
+      {'id': 96, 'code': 'HM', 'name': 'Heard and McDonald Islands',            'phoneCode': 672, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 97, 'code': 'HN', 'name': 'Honduras',                              'phoneCode': 504, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 98, 'code': 'HK', 'name': 'Hong Kong S.A.R.',                      'phoneCode': 852, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 99, 'code': 'HU', 'name': 'Hungary',                               'phoneCode': 36, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
@@ -177,7 +177,7 @@ module.exports = {
       {'id': 171, 'code': 'PY', 'name': 'Paraguay', 'phoneCode': 595, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 172, 'code': 'PE', 'name': 'Peru', 'phoneCode': 51, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 173, 'code': 'PH', 'name': 'Philippines', 'phoneCode': 63, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
-      {'id': 174, 'code': 'PN', 'name': 'Pitcairn Island', 'phoneCode': 0, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
+      {'id': 174, 'code': 'PN', 'name': 'Pitcairn Island', 'phoneCode': 649, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 175, 'code': 'PL', 'name': 'Poland', 'phoneCode': 48, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 176, 'code': 'PT', 'name': 'Portugal', 'phoneCode': 351, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 177, 'code': 'PR', 'name': 'Puerto Rico', 'phoneCode': 1787, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
@@ -206,7 +206,7 @@ module.exports = {
       {'id': 200, 'code': 'SB', 'name': 'Solomon Islands', 'phoneCode': 677, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 201, 'code': 'SO', 'name': 'Somalia', 'phoneCode': 252, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 202, 'code': 'ZA', 'name': 'South Africa', 'phoneCode': 27, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
-      {'id': 203, 'code': 'GS', 'name': 'South Georgia', 'phoneCode': 0, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
+      {'id': 203, 'code': 'GS', 'name': 'South Georgia', 'phoneCode': 995, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 204, 'code': 'SS', 'name': 'South Sudan', 'phoneCode': 211, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 205, 'code': 'ES', 'name': 'Spain', 'phoneCode': 34, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 206, 'code': 'LK', 'name': 'Sri Lanka', 'phoneCode': 94, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
@@ -251,10 +251,10 @@ module.exports = {
       {'id': 245, 'code': 'ZM', 'name': 'Zambia', 'phoneCode': 260, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 246, 'code': 'ZW', 'name': 'Zimbabwe', 'phoneCode': 263, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()}
     ],
-    {});
+    {}).catch(error => { console.error(error)});
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('countries', null, {});
+    await queryInterface.bulkDelete('countries', null, {}).catch(error => { console.error(error)});
   }
 };

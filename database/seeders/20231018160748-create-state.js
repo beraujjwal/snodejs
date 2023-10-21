@@ -4096,10 +4096,10 @@ module.exports = {
       {'id': 4119, 'name': 'Matabeleland South', 'countryId': 246, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()},
       {'id': 4120, 'name': 'Midlands', 'countryId': 246, 'status':true, 'createdAt': new Date(), 'updatedAt': new Date()}
     ],
-  {});
+  {}).catch(error => { console.error(error)});
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('states', null, {});
+    await queryInterface.bulkDelete('states', null, {}).catch(error => { console.error(error)});
   }
 };

@@ -3,11 +3,8 @@ const autoBind = require( 'auto-bind' );
 const { baseService } = require("../../system/core/service/baseService");
 var mailer =  require('../../config/mailer');
 var crypto = require('crypto');
-const { Response } = require("../helpers/Response");
 
 class service extends baseService {
-
-
 
     /**
      * Service constructor
@@ -18,7 +15,6 @@ class service extends baseService {
         super( );
         this.mailer = mailer;
         this.crypto = crypto;
-        this.Response = new Response();
         autoBind( this );
     }
 

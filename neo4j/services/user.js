@@ -24,8 +24,7 @@ module.exports = {
 
             await neo4j.write(cypherScript, graphUser);
         } catch (err) {
-            //console.log(err);
-            //throw new baseError(err.message);
+            throw new baseError(err);
         }
     },
     get: async (email) => {
@@ -33,7 +32,7 @@ module.exports = {
             const cypherScript = cypher(`user/get-user-by-email`);
             await neo4j.write(cypherScript, email);
         } catch (err) {
-            throw new baseError(err.message);
+            throw new baseError(err);
         }
     },
     getUserByEmail: async (email) => {
@@ -41,7 +40,7 @@ module.exports = {
             const cypherScript = cypher(`user/get-user-by-email`);
             await neo4j.write(cypherScript, email);
         } catch (err) {
-            throw new baseError(err.message);
+            throw new baseError(err);
         }
     },
     getUserById: async (id) => {
@@ -49,7 +48,7 @@ module.exports = {
             const cypherScript = cypher(`user/get-user-by-id`);
             await neo4j.write(cypherScript, id);
         } catch (err) {
-            throw new baseError(err.message);
+            throw new baseError(err);
         }
     },
     update: async (email, user) => {
@@ -57,7 +56,7 @@ module.exports = {
             const cypherScript = cypher(`user/get-user-by-email`);
             await neo4j.write(cypherScript, email);
         } catch (err) {
-            throw new baseError(err.message);
+            throw new baseError(err);
         }
     },
     updateUserByEmail: async (email, user) => {
@@ -65,7 +64,7 @@ module.exports = {
             const cypherScript = cypher(`user/get-user-by-email`);
             await neo4j.write(cypherScript, email);
         } catch (err) {
-            throw new baseError(err.message);
+            throw new baseError(err);
         }
     },
     updateUserById: async (id) => {
@@ -73,7 +72,7 @@ module.exports = {
             const cypherScript = cypher(`user/get-user-by-id`);
             await neo4j.write(cypherScript, id);
         } catch (err) {
-            throw new baseError(err.message);
+            throw new baseError(err);
         }
     },
     deleteUserById: async (id) => {
@@ -81,7 +80,7 @@ module.exports = {
             const cypherScript = cypher(`user/get-user-by-id`);
             await neo4j.write(cypherScript, id);
         } catch (err) {
-            throw new baseError(err.message);
+            throw new baseError(err);
         }
     },
 }
