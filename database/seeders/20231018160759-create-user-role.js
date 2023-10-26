@@ -21,6 +21,15 @@ module.exports = {
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
+      },
+      {
+        id: 3,
+        userId: 3,
+        roleId: 3,
+        status:true,
+        deletedAt: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ], {}).catch(error => { console.error(error)});
   },

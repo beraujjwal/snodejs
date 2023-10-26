@@ -12,6 +12,51 @@ module.exports = {
         status:true,
         createdAt: new Date(),
         updatedAt: new Date()
+      },
+      {
+        id: 2,
+        parentId: null,
+        name: 'User Management',
+        slug: 'user-management',
+        status:true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 3,
+        parentId: null,
+        name: 'ACL Management',
+        slug: 'acl-management',
+        status:true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 4,
+        parentId: 3,
+        name: 'Role Section',
+        slug: 'role-section',
+        status:true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 5,
+        parentId: 3,
+        name: 'Resource Section',
+        slug: 'resource-section',
+        status:true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 6,
+        parentId: 3,
+        name: 'Permission Section',
+        slug: 'permission-section',
+        status:true,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ], {}).catch(error => { console.error(error)});
   },

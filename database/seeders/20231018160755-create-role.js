@@ -21,6 +21,15 @@ module.exports = {
         status:true,
         createdAt: new Date(),
         updatedAt: new Date()
+      },
+      {
+        id: 3,
+        parentId: null,
+        name: 'Manager',
+        slug: 'manager',
+        status:true,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ], {}).catch(error => { console.error(error)});
   },

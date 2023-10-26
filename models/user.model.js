@@ -101,73 +101,7 @@ const User = sequelize.define("User",
       attributes: { exclude: [ 'password', 'tokenSalt', 'createdAt', 'updatedAt', 'deletedAt' ] },
       where: {
         status: true,
-      },
-      include: [
-        {
-          model: Role,
-          as: 'roles',
-          required: true,
-          attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
-          through:{
-            where: {
-              status: true,
-            },
-            attributes: []
-          },
-          where: {
-            status: true,
-          },
-          include: [
-            {
-              model: Resource,
-              as: 'resources',
-              required: true,
-              attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
-              through:{
-                where: {
-                  status: true,
-                },
-                attributes: []
-              },
-              where: {
-                status: true,
-              },
-              include: [
-                {
-                  model: Permission,
-                  as: 'permissions',
-                  required: false,
-                  attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
-                  through:{
-                    where: {
-                      status: true,
-                    },
-                    attributes: []
-                  },
-                  where: {
-                    status: true,
-                  },
-                }
-              ]
-            }
-          ],
-        },
-        {
-          model: Permission,
-          as: 'permissions',
-          required: false,
-          attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
-          through:{
-            where: {
-              status: true,
-            },
-            attributes: []
-          },
-          where: {
-            status: true,
-          },
-        }
-      ],
+      }
     },
     scopes: {
       withRoles: {

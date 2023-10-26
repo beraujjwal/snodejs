@@ -92,6 +92,9 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('users');
+    //await queryInterface.removeConstraint('users', 'users_ibfk_1');
+    const refs = await queryInterface.getForeignKeyReferencesForTable('users');
+    console.log(refs);
+    //await queryInterface.dropTable('users');
   }
 };

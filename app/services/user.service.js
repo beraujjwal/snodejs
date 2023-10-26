@@ -1,5 +1,5 @@
 'use strict';
-const  { Op } = require('sequelize');
+const  { Sequelize, Op } = require('sequelize');
 const { service } = require( './service' );
 const nodemailer = require('nodemailer');
 const jwt = require("jsonwebtoken");
@@ -113,71 +113,72 @@ class user extends service {
             },
             where: {
               status: true,
-            },
-            include: [
-              {
-                model: this.resource,
-                as: 'resources',
-                required: true,
-                attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
-                through:{
-                  where: {
-                    status: true,
-                  },
-                  attributes: []
-                },
-                where: {
-                  status: true,
-                },
-                // all: true,
-                //nested: true,
-                include: [
-                  {
-                    model: this.permission,
-                    as: 'roleResourcePermissions',
-                    required: false,
-                    attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
-                    through:{
-                      where: {
-                        status: true,
-                        // roleId: 1
-                      },
-                      attributes: []
-                    },
-                    where: {
-                      status: true,
-                    },
-                    // all: true,
-                    //nested: true
-                  }
-                ]
-              }
-            ],
+            }
           },
-          // {
-          //   model: this.permission,
-          //   as: 'permissions',
-          //   required: false,
-          //   attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
-          //   through:{
-          //     where: {
-          //       status: true,
-          //     },
-          //     attributes: []
-          //   },
-          //   where: {
-          //     status: true,
-          //   },
-          // }
         ],
         transaction: transaction
       });
-
-      user = JSON.parse(JSON.stringify(user));
-
       if (!user) {
         throw new baseError(__('LOGIN_INVALID_USERNAME_PASSWORD1'))
       }
+
+      console.log(user);
+
+      user = user.toJSON();
+      const allRoles = user.roles;
+
+      const rolesWithDetails = await Promise.all(
+        allRoles.map(async (role) => {
+          const resources = await this.resource.findAll({
+            attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+            where: {
+              status: true,
+            },
+            include: [
+              {
+                model: this.permission,
+                as: 'roleResourcePermissions',
+                attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+                where: {
+                  status: true,
+                },
+                through: {
+                  where: { roleId: role.id, status: true },
+                  attributes: [] // To exclude the join table attributes
+                }
+              }
+            ]
+          });
+          role.resources = resources;
+          return role;
+        })
+      );
+
+      const resources = await this.resource.findAll({
+        attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+        where: {
+          status: true,
+        },
+        include: [
+          {
+            model: this.permission,
+            as: 'userResourcePermissions',
+            attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+            where: {
+              status: true,
+            },
+            through: {
+              where: { userId: user.id, status: true },
+              attributes: [] // To exclude the join table attributes
+            }
+          }
+        ]
+      });
+
+      user.roles = rolesWithDetails;
+      user.resources = resources;
+
+
 
       const passwordIsValid = bcrypt.compareSync(
         password,
@@ -189,7 +190,7 @@ class user extends service {
       }
 
       const tokenSalt = await generateOTP(6, {digits: true,});
-      const accessToken = await generateAccessToken(user.id, user.phone, user.email, tokenSalt );
+      const accessToken = await generateAccessToken({userId: user.id, phone: user.phone, email: user.email, tokenSalt: tokenSalt });
 
       const filter = { id: user.id };
       const data = {

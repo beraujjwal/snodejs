@@ -1,12 +1,13 @@
 'use strict';
 require('dotenv').config();
+const moment = require('moment');
 const { baseError } = require('../../system/core/error/baseError');
 const otpGenerator = require('otp-generator');
 const jwt = require('jsonwebtoken');
 
 exports.getExpiresInTime = async (expiresIn) => {
     const expiresInInt = parseInt(expiresIn);
-    const expiresInString = expiresIn.split(expiresInInt)[1];
+    const expiresInString =  'd'; //(expiresInInt != expiresIn) ? expiresIn.split(expiresInInt)[1] : 'ms';
     const expiresInTime = moment().add(expiresInInt, expiresInString).toDate();
     return expiresInTime;
 }
@@ -57,3 +58,39 @@ exports.generateToken = async (userInfo, algorithm = 'HS256') => {
     throw new baseError(ex);
   }
 };
+
+
+exports.generateAccessToken = async ( id, email, phone, tokenSalt ) => {
+  try {
+    const token = await this.generateToken({id, email, phone, tokenSalt});
+    const refreshToken = await this.generateRefreshToken({id});
+    const expiresInTime = await this.getExpiresInTime();
+    const accessToken = {
+      tokenType: 'Bearer',
+      accessToken: token,
+      refreshToken: refreshToken,
+      expiresIn: expiresInTime,
+    }
+
+    return accessToken;
+  } catch (error) {
+    console.log(error);
+    throw new baseError(error);
+  }
+}
+
+
+
+exports.generateRefreshToken = async (userInfo, algorithm = 'HS256') => {
+  try {
+    // Gets expiration time
+    const expiration = process.env.JWT_REFRESH_IN;
+
+    return jwt.sign(userInfo, process.env.JWT_REFRESH_TOKEN_SECRET, {
+      expiresIn: expiration, // expiresIn time
+      algorithm: algorithm,
+    });
+  } catch (error) {
+    throw new baseError(error.message);
+  }
+}

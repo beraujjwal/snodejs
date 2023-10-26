@@ -70,6 +70,36 @@ module.exports = {
         defaultValue: Sequelize.NOW
       }
     }).then(() => queryInterface.addIndex('role_resource_permissions', ['roleId', 'resourceId', 'permissionId']));
+
+
+
+    // queryInterface.addConstraint("role_resource_permissions", {
+    //     type: "FOREIGN KEY",
+    //     name: "role_resource_permissions_role_id_fkey",
+    //     fields: ["roleId"],
+    //     references: {
+    //         table: "roles",
+    //         field: "id"
+    //     }
+    // });
+    // queryInterface.addConstraint("role_resource_permissions", {
+    //     type: "FOREIGN KEY",
+    //     name: "role_resource_permissions_user_id_fkey",
+    //     fields: ["user_id"],
+    //     references: {
+    //         table: "auth_user",
+    //         field: "id"
+    //     }
+    // });
+    // queryInterface.addConstraint("role_resource_permissions", {
+    //     type: "FOREIGN KEY",
+    //     name: "role_resource_permissions_role_id_fkey",
+    //     fields: ["role_id"],
+    //     references: {
+    //         table: "role",
+    //         field: "id"
+    //     }
+    // });
   },
 
   async down (queryInterface, Sequelize) {

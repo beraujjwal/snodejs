@@ -45,17 +45,33 @@ const Resource = sequelize.define("Resource",
 
 Resource.associate = function(models) {
   Resource.belongsToMany(models.Role, {through: 'RoleResourcePermission', foreignKey: 'resourceId', as: 'roles'});
-  Resource.belongsToMany(models.Permission, {through: 'RoleResourcePermission', foreignKey: 'resourceId', as: 'permissions'});
+  Resource.belongsToMany(models.Permission, {through: 'RoleResourcePermission', foreignKey: 'resourceId', as: 'resourcePermissions'});
   Resource.belongsToMany(models.Permission, {
     through: {
       model: models.RoleResourcePermission,
-      unique: true,
+      unique: false,
       scope: {
-        // roleId: 1
+        status: true
       }
     },
+    sourceKey: 'id',
     foreignKey: 'resourceId',
     as: 'roleResourcePermissions',
+    constraints: false
+  });
+
+  Resource.belongsToMany(models.Permission, {through: 'UserResourcePermission', foreignKey: 'resourceId', as: 'permissions'});
+  Resource.belongsToMany(models.Permission, {
+    through: {
+      model: models.UserResourcePermission,
+      unique: false,
+      scope: {
+        status: true
+      }
+    },
+    sourceKey: 'id',
+    foreignKey: 'resourceId',
+    as: 'userResourcePermissions',
     constraints: false
   });
 };
