@@ -1,61 +1,64 @@
 'use strict';
 require('dotenv').config();
 const chalk = require('chalk');
-
+const { baseError } = require('../system/core/error/baseError');
 const { redisClient } = require('../app/helpers/redis');
 const log = console.log;
+let isRedis = false;
 
 if(redisClient) {
     redisClient.connect().catch((err)=> {
-        log(chalk.white.bgRed.bold('✘ Redis client setup process failed!'));
+        log(chalk.red.bgWhite.bold('✘ Redis client setup process failed!'));
+    });
+
+    redisClient.on("connect", function () {
+        log(chalk.green.bgWhite.bold('✔ Redis client connected successfully!'));
+        isRedis = true;
     });
 }
 
 exports.set = async (key, value, timeout = '5m') => {
     try {
-        await redisClient.set(key, value, redisClient.print);
-        await redisClient.expire(key, getExpiresInTime(timeout));
-        return true;
+        if(isRedis) {
+            await redisClient.set(key, value, redisClient.print);
+            await redisClient.expire(key, getExpiresInTime(timeout));
+            return true;
+        }
+        return null;
     } catch (ex) {
-        console.log(ex);
-        return true;
+        throw new baseError(ex);
     }
 };
 
-exports.setValue = async (key, value, timeout = '5m') => {
+exports.get = async (key) => {
     try {
-        await redisClient.set(key, value, redisClient.print);
-        await redisClient.expire(key, getExpiresInTime(timeout));
-        return true;
+        if(isRedis) {
+            return await redisClient.get(key, function (err, result) {
+                if (err) {
+                    throw new baseError(err);
+                }
+                return result;
+            });
+        }
+        return null;
     } catch (ex) {
-        console.log(ex);
-        return true;
+        throw new baseError(ex);
     }
 };
 
-exports.getValue = async (key) => {
+exports.delete = async (key) => {
     try {
-        return await redisClient.get(key, function (err, result) {
-            if (err) {
-                console.log(err);
-            }
-            return result;
-        });
+        if(isRedis) {
+            return await redisClient.del(key, function(err, response) {
+                if (err) {
+                    throw new baseError(err);
+                }
+                return response;
+            });
+        }
+        return null;
     } catch (ex) {
-        console.log(ex);
-    }
-};
-
-exports.deleteValue = async (key) => {
-    try {
-        return await redisClient.del(key, function(err, response) {
-            if (err) {
-                console.log(err);
-            }
-            return response;
-         });
-    } catch (ex) {
-        console.log(ex);
+        throw new baseError(ex);
     }
 };
 

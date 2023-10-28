@@ -53,12 +53,14 @@ exports.errorResponse = (err, code = 500) => {
   let { indicate } = codesObj.find((codeItem) => codeItem.code == code);
 
   let message = 'Internal Server Error happens when the server encounters an unexpected condition that prevents it from fulfilling the request.';
-  if (typeof err === Object) {
-    message = err.message;
-  } else if (typeof err === 'object') {
-    message = err.message;
-  } else if (typeof err === 'string') {
-    message = err;
+  if(code != 500) {
+    if (typeof err === Object) {
+      message = err.message;
+    } else if (typeof err === 'object') {
+      message = err.message;
+    } else if (typeof err === 'string') {
+      message = err;
+    }
   }
 
   return {

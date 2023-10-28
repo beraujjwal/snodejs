@@ -14,7 +14,6 @@ class authMiddleware extends middleware {
    */
   constructor() {
     super();
-    autoBind(this);
   }
 
   /**
@@ -37,26 +36,30 @@ class authMiddleware extends middleware {
     }
 
     try {
-      let decoded = await jwt.verify(token, this.env.JWT_SECRET);
+      const decoded = await jwt.verify(token, this.env.JWT_SECRET);
+
       if (!decoded) {
-        throw new baseError(`Invalid authorization token2.`, 401);
-      }
-      const userId = decoded.id;
-
-      //const userData = await redisClient.getValue(userId); //If you are using redis then you can try this process and disable 57 line code.
-      // const user = JSON.parse(userData);
-      const user = await User.unscoped().findByPk(decoded.id, { attributes: { include: [ 'id', 'name', 'tokenSalt', 'status' ] }});
-
-      if (user === null || user.tokenSalt !== decoded.tokenSalt) {
-        throw new baseError(`Invalid authorization token3.`, 401);
+        throw new baseError(`Invalid authorization token.`, 401);
       }
 
-      req.user = JSON.parse(JSON.stringify(user));
+      let user = await redisClient.get(`${decoded.id}#${decoded.tokenSalt}`);
+
+      if(!user) {
+        user = await User.unscoped().findByPk(decoded.id, { attributes: { include: [ 'id', 'name', 'tokenSalt', 'status', 'verified' ] }});
+        user = user.toJSON();
+      } else {
+        user = JSON.parse(user);
+      }
+
+      if (user === null || user.tokenSalt !== decoded.tokenSalt || user.status === false || user.verified === false) {
+        throw new baseError(`Invalid authorization token.`, 401);
+      }
+
+      req.user = user;
       next();
 
       return;
     } catch (ex) {
-      console.log(ex);
       next(ex);
     }
   }

@@ -20,7 +20,7 @@ if(kafka) {
       if(topicsString && groupId) {
         const consumer = kafka.consumer({ groupId: groupId });
         await consumer.connect().then((value) => console.log("Consumer connected"))
-        .catch((err) => log(chalk.white.bgRed.bold('✘ Kafka consumer connect failed!')));
+        .catch((err) => log(chalk.red.bgWhite.bold('✘ Kafka consumer connect failed!')));
 
         if(topics.length > 0) {
           topics.forEach(topic => {

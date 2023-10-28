@@ -2,7 +2,7 @@
 const chalk = require('chalk');
 const log = console.log;
 require('dotenv').config();
-log(chalk.white.bgGreen.bold('✔ Bootstrapping Application'));
+log(chalk.green.bgWhite.bold('✔ Bootstrapping Application'));
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -17,6 +17,7 @@ const { consumerKafkaMessage } = require('../../libraries/consumer.library');  /
 const limiter = require('../../config/rateLimit.config');
 const app = express();
 let apiHitCount = 0;
+let errorCount = 0;
 //const Sentry = require('@sentry/node');
 // Sentry.init({
 //   dsn: "https://e8bf701c3e4444ea9a9f1d0725cac7ce@o4505588600471553.ingest.sentry.io/4505589025079296",
@@ -55,8 +56,8 @@ app.use(helmet());
 const PORT = parseInt(process.env.APP_PORT) || 5445;
 const MODE = process.env.APP_ENV || 'development';
 
-log(chalk.white.bgGreen.bold(`✔ Mode: ${MODE}`));
-log(chalk.white.bgGreen.bold(`✔ Port: ${PORT}`));
+log(chalk.green.bgWhite.bold(`✔ Mode: ${MODE}`));
+log(chalk.green.bgWhite.bold(`✔ Port: ${PORT}`));
 
 require('./db.connection');
 
@@ -65,13 +66,13 @@ if (process.env.APP_ENV === 'development') {
   app.use(logger('dev', { stream: winston.stream }));
 }
 //app.use(Sentry.Handlers.requestHandler());
-log(chalk.white.bgGreen.bold('✔ Mapping Routes'));
+log(chalk.green.bgWhite.bold('✔ Mapping Routes'));
 //app.use(Sentry.Handlers.tracingHandler());
 
 app.use(function (req, res, next) {
   apiHitCount++
   winston.info(
-    `${apiHitCount} - ${req.originalUrl} - ${req.method} - ${req.ip}`,
+    `Call: ${apiHitCount} - ${req.originalUrl} - ${req.method} - ${req.ip}`,
   );
   next();
 });
@@ -91,14 +92,25 @@ app.all('/*', (req, res) => {
   });
 });
 
-consumerKafkaMessage(); //Enable this line if you want to config kafkajs also line no 16
+consumerKafkaMessage();
 
 app.use(function (err, req, res, next) {
 
+  console.log(err);
+  let showErrorNumber = '';
   const code = err.code || err.statusCode;
+  let errorMessage = err.toString();
+
+  if(code == 500) {
+    console.log('code', code);
+    errorCount++;
+    errorMessage = 'Internal Server error. Please try after sometime.';
+    showErrorNumber = `No.- ${errorCount} - `;
+  }
+
   if (MODE !== 'test') {
     winston.error(
-      `${code || 500} - ${err.toString()} - ${req.originalUrl} - ${req.method} - ${req.ip}`,
+      `${showErrorNumber}${code || 500} - ${errorMessage} - ${req.originalUrl} - ${req.method} - ${req.ip}`,
     );
   }
 
@@ -108,6 +120,5 @@ app.use(function (err, req, res, next) {
 
 //Sentry.close().then(() => process.exit(0));
 //app.use(Sentry.Handlers.errorHandler());
-
 
 module.exports = app;

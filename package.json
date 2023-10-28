@@ -1,11 +1,15 @@
 {
   "name": "snodejs",
-  "version": "1.0.0",
-  "description": "This is a SNode application",
+  "version": "2.0.1",
+  "description": "SNode is a basic skeleton written in JavaScript with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. SNode takes the pain out of development by easing common tasks used in many applications. SNode is accessible, powerful, and provides tools required for large, robust applications.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx nodemon index.js"
+    "start": "cross-env TZ=Asia/Kolkata APP_ENV=production pm2 start index.js",
+    "dev": "cross-env TZ=Asia/Kolkata APP_ENV=development nodemon index.js",
+    "fresh": "node ./system/core/seeding/clean.js && node ./system/core/seeding/seeder.js",
+    "clean": "node ./system/core/seeding/clean.js",
+    "seed": "node ./system/core/seeding/seeder.js"
   },
   "keywords": [
     "SNode"
@@ -17,6 +21,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",

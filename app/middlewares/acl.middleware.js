@@ -1,128 +1,106 @@
-'use strict';
-const autoBind = require('auto-bind');
 const jwt = require('jsonwebtoken');
 const { middleware } = require('./middleware');
 const { baseError } = require('../../system/core/error/baseError');
-//const redisClient = require('../../libraries/redis.library'); //Enable this line if you want to config redis also with line no 54
-const User = require('../../models/user.model');
-const Role = require('../../models/role.model');
-const Permission = require('../../models/role.model');
+const redisClient = require('../../libraries/redis.library');
+const sequelize = require('../../system/core/db.connection');
+const { user } = require('../services/user.service');
+
+const userService = new user('User');
 
 class aclMiddleware extends middleware {
   /**
-   * Controller constructor
+   * @description Controller constructor
    * @author Ujjwal Bera
    * @param null
    */
   constructor() {
     super();
-    //this.User = this.db.User;
-    autoBind(this);
   }
 
   /**
-   *
+   * @description Controller constructor
+   * @author Ujjwal Bera
    * @param {*} action
    * @param {*} module
    * @returns
    */
   hasPermission(action, module) {
-    const userModel = this.User;
-    const env = this.env;
+
     return async function (req, res, next) {
-
-
-
       try {
         const userData = req.user;
-        const userId = userData.id;
 
-        if(!userId) throw new baseError(`Invalid authorization token.`, 401);
+        if(!userData?.id) throw new baseError(`Invalid authorization token.`, 401);
+        let user = await redisClient.get(`${userData.id}#${userData.tokenSalt}`);
 
-        //Finding user with set criteria
-        //const userData = await redisClient.getValue(userId); //If you are using redis then you can try this process and disable 55 line code.
-        //const userData = await User.findByPk(decoded.id, {include: ['roles']});
-        const user = await User.findByPk(userId);
-
-        console.log(JSON.parse(JSON.stringify(user.roles[0].permissions)));
-
+        if(!user) {
+          const criteria =  { id: userData.id, tokenSalt: userData.tokenSalt, status: true, verified: true };
+          const transaction = await sequelize.transaction();
+          user = await userService.getUserDetails({criteria, transaction });
+          if(transaction) await transaction.commit();
+        } else {
+          user = JSON.parse(user);
+        }
+        const userRoles = user.roles;
+        const userResources = user.resources;
         let haveAccess = false;
-        loop1: if (haveAccess === false) {
-          for await (const permission of user?.permissions) {
-            if (permission.slug === 'root') {
+        let runLoop = true;
+        loop1: if (haveAccess === false && runLoop === true) {
+          for await (const resource of userResources) {
+            if (resource?.slug === 'root' && resource?.userResourcePermissions[0]?.slug === 'fullAccess') {
+              haveAccess = true;
+              break loop1;
+            } else if(resource?.slug === module) {
 
+              for await (const permission of resource?.userResourcePermissions) {
+                if (permission?.slug === 'fullDeny') {
+                  runLoop = false;
+                  break loop1;
+                } else if (permission?.slug === 'fullAccess') {
+                  haveAccess = true;
+                  break loop1;
+                } else if (permission?.slug === action) {
+                  haveAccess = true;
+                  break loop1;
+                }
+              }
             }
           }
 
+          for await (const role of userRoles) {
+            const roleResources = role.resources;
+            for await (const resource of roleResources) {
+              if (resource?.slug === 'root' && resource?.roleResourcePermissions[0]?.slug === 'fullAccess') {
+                haveAccess = true;
+                break loop1;
+              } else if(resource?.slug === module) {
 
+                for await (const permission of resource?.roleResourcePermissions) {
+                  if (permission?.slug === 'fullDeny') {
+                    runLoop = false;
+                    break loop1;
+                  } else if (permission?.slug === 'fullAccess') {
+                    haveAccess = true;
+                    break loop1;
+                  } else if (permission?.slug === action) {
+                    haveAccess = true;
+                    break loop1;
+                  }
+                }
 
-
-
-
-
-
-
-
-          // //Checking role have permission
-          // for await (const role of user?.roles) {
-          //   for await (const right of role?.rights) {
-          //     if (right?.resource === 'root') {
-          //       if (right?.fullAccess && right?.fullAccess === true) {
-          //         haveAccess = true;
-          //         break loop1;
-          //       }
-          //     }
-          //     if (right?.resource === module) {
-          //       if (right?.fullDeny && right?.fullDeny === false) {
-          //         break loop1;
-          //       } else if (right?.fullAccess && right?.fullAccess === true) {
-          //         haveAccess = true;
-          //         break loop1;
-          //       } else if (right[action] && right[action] === true) {
-          //         haveAccess = true;
-          //         break loop1;
-          //       } else {
-          //         break loop1;
-          //       }
-          //     }
-          //   }
-          // }
-
-          // //Checking user have permission
-          // for await (const right of user.rights) {
-          //   if (right.resource === 'root') {
-          //     if (right.fullAccess && right.fullAccess === true) {
-          //       haveAccess = true;
-          //       break loop1;
-          //     }
-          //   }
-          //   if (right.resource === module) {
-          //     if (right.fullDeny && right.fullDeny === false) {
-          //       break loop1;
-          //     } else if (right.fullAccess && right.fullAccess === true) {
-          //       haveAccess = true;
-          //       break loop1;
-          //     } else if (right[action] && right[action] === true) {
-          //       haveAccess = true;
-          //       break loop1;
-          //     } else {
-          //       break loop1;
-          //     }
-          //   }
-          // }
+              }
+            }
+          }
         }
 
         if (haveAccess == false) {
-          const err = new Error('Unauthorized to access this section.');
-          err.statusCode = 403;
-          next(err);
+          throw new baseError(`Unauthorized to access this section.`, 403);
         }
 
         next();
         return;
       } catch (ex) {
-        console.log(ex);
-        next(ex.message);
+        next(ex);
       }
     };
   }

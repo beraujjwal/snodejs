@@ -8,7 +8,6 @@ SNode is a application framework with expressive, elegant syntax. We believe dev
 - Multiple back-ends for session and cache storage.
 - Expressive, intuitive [database ORM](https://sequelize.org/).
 - Database migrations.
-- Real-time event broadcasting.
 
 SNode is accessible, powerful, and provides tools required for large, robust applications.
 
@@ -17,11 +16,11 @@ This README would normally document whatever steps are necessary to get your app
 ### What is this repository for? ###
 
 * Structure node application
-* Version 0.5
+* Version 2.0.1
 
 ### Requirments ###
 
-* Node.Js 12.x or upper
+* Node.Js 16.x or upper
 * Mysql or Postgres
 
 ### How do I get set up? ###
@@ -29,9 +28,9 @@ This README would normally document whatever steps are necessary to get your app
 * git clone https://github.com/beraujjwal/snode.git
 * npm install
 * npm install --save-dev sequelize-cli
-* npx sequelize-cli db:migrate
-* npx sequelize-cli db:seed:all
-* npx nodemon server
+* node cli run:migration up
+* node cli run:seeder up
+* npm run dev
 
 ### Helpfull Command Line Interface for file create ###
 

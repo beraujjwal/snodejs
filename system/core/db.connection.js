@@ -23,9 +23,9 @@ const sequelize = new Sequelize(database, user, password, {
 });
 
 sequelize.authenticate().then(() => {
-  log(chalk.white.bgGreen.bold('✔ Database Connection has been established successfully'));
+  log(chalk.green.bgWhite.bold('✔ Database Connection has been established successfully'));
 }).catch((ex) => {
-  log(chalk.white.bgRed.bold(`✘ Unable to connect to the database:: ${ex.message}`));
+  log(chalk.red.bgWhite.bold(`✘ Unable to connect to the database:: ${ex.message}`));
 });
 
 module.exports = sequelize;

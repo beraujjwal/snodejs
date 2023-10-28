@@ -11,11 +11,16 @@ module.exports = {
             defaultAccessMode: neo4j.session.READ
         });
 
-        return await session.run(cypher, params).then(result => {
+        const txc = session.beginTransaction();
+
+        return await txc.run(cypher, params).then( async(result) => {
+            await txc.commit();
             return result;
-        }).catch(err => {
-            session.close();
+        }).catch(async(err) => {
+            await txc.rollback();
             throw new baseError(err);
+        }).finally( async() => {
+            await session.close()
         });
     },
     write: async (cypher, params = {}) => {
@@ -23,16 +28,16 @@ module.exports = {
             database,
             defaultAccessMode: neo4j.session.WRITE
         });
-        
-        if(params?.rights) delete params.rights;
+        const txc = session.beginTransaction();
 
-        return await session.run(cypher, params).then(result => {
-            session.close();
-            return result.records;            
-        }).catch(err => {
-            console.error(err)
-            session.close();
-            //throw new baseError(err);
+        return await txc.run(cypher, params).then(async(result) => {
+            await txc.commit();
+            return result.records;
+        }).catch(async(err) => {
+            await txc.rollback();
+            throw new baseError(err);
+        }).finally( async() => {
+            await session.close()
         });
     },
 }

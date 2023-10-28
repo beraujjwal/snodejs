@@ -3,9 +3,9 @@ const chalk = require('chalk');
 
 exports.log = (message) => {
   if (typeof message === 'string') {
-    console.log(chalk.white.bgGreen.bold(`✔ ${message}`));
+    console.log(chalk.green.bgWhite.bold(`✔ ${message}`));
   } else {
-    console.log(chalk.white.bgGreen.bold(`${message}`));
+    console.log(chalk.green.bgWhite.bold(`${message}`));
   }
 };
 

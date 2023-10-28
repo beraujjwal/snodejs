@@ -165,7 +165,7 @@ class baseError extends Error {
     }
 
     if(typeof error == 'object') {
-      statusCode = error.code;
+      statusCode = error?.code || statusCode;
       message = error.message;
     }
 

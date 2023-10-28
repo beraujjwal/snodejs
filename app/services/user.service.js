@@ -96,89 +96,10 @@ class user extends service {
     try {
       const criteria = (username.match(regexEmail)) ? { email: username, isEmailVerified: true, status: true, verified: true } : { phone: username, isPhoneVerified: true, status: true,verified: true};
 
-      let user = await this.model.unscoped().findOne({
-        attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt', 'isEmailVerified', 'isPhoneVerified' ] },
-        where: criteria,
-        include: [
-          {
-            model: this.role,
-            as: 'roles',
-            required: true,
-            attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
-            through:{
-              where: {
-                status: true,
-              },
-              attributes: []
-            },
-            where: {
-              status: true,
-            }
-          },
-        ],
-        transaction: transaction
-      });
+      const user = await this.getUserDetails( {criteria, transaction });
       if (!user) {
-        throw new baseError(__('LOGIN_INVALID_USERNAME_PASSWORD1'))
+        throw new baseError(__('LOGIN_INVALID_USERNAME_PASSWORD'), 401)
       }
-
-      console.log(user);
-
-      user = user.toJSON();
-      const allRoles = user.roles;
-
-      const rolesWithDetails = await Promise.all(
-        allRoles.map(async (role) => {
-          const resources = await this.resource.findAll({
-            attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
-            where: {
-              status: true,
-            },
-            include: [
-              {
-                model: this.permission,
-                as: 'roleResourcePermissions',
-                attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
-                where: {
-                  status: true,
-                },
-                through: {
-                  where: { roleId: role.id, status: true },
-                  attributes: [] // To exclude the join table attributes
-                }
-              }
-            ]
-          });
-          role.resources = resources;
-          return role;
-        })
-      );
-
-      const resources = await this.resource.findAll({
-        attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
-        where: {
-          status: true,
-        },
-        include: [
-          {
-            model: this.permission,
-            as: 'userResourcePermissions',
-            attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
-            where: {
-              status: true,
-            },
-            through: {
-              where: { userId: user.id, status: true },
-              attributes: [] // To exclude the join table attributes
-            }
-          }
-        ]
-      });
-
-      user.roles = rolesWithDetails;
-      user.resources = resources;
-
-
 
       const passwordIsValid = bcrypt.compareSync(
         password,
@@ -186,11 +107,11 @@ class user extends service {
       );
 
       if (!passwordIsValid) {
-        throw new baseError(__('LOGIN_INVALID_USERSNAME_PASSWORD2'));
+        throw new baseError(__('LOGIN_INVALID_USERSNAME_PASSWORD'), 401);
       }
 
       const tokenSalt = await generateOTP(6, {digits: true,});
-      const accessToken = await generateAccessToken({userId: user.id, phone: user.phone, email: user.email, tokenSalt: tokenSalt });
+      const accessToken = await generateAccessToken( user.id, user.phone, user.email, tokenSalt );
 
       const filter = { id: user.id };
       const data = {
@@ -206,6 +127,7 @@ class user extends service {
         where: filter,
       }, { transaction: transaction });
       const userWithLatestData = { ...user, ...data };
+      redisClient.set(`${user.id}#${data.tokenSalt}`, JSON.stringify(userWithLatestData), this.env.JWT_EXPIRES_IN);
       delete userWithLatestData.password;
       delete userWithLatestData.tokenSalt;
       const loginRes = {
@@ -213,10 +135,8 @@ class user extends service {
         accessToken,
       };
 
-      redisClient.set(`${user.id}#${data.tokenSalt}`, JSON.stringify(loginRes), this.env.JWT_EXPIRES_IN);
-      return loginRes;
+      return loginRes; //.toJson();
     } catch (ex) {
-      console.log(ex);
       throw new baseError(ex);
     }
   }
@@ -429,7 +349,7 @@ class user extends service {
 
 
 
-  async usersDetailsService (req, res) {
+  async usersDetailsService (criteria, transaction) {
 
     try {
       var lang =  getLocale();
@@ -556,6 +476,96 @@ class user extends service {
         ex.message || 'An error occurred while validating your Login Attempt.',
         ex.status
       );
+    }
+  }
+
+
+
+  async getUserDetails( {criteria, transaction }) {
+    try {
+
+      let user = await this.model.unscoped().findOne({
+        attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt', 'isEmailVerified', 'isPhoneVerified' ] },
+        where: criteria,
+        include: [
+          {
+            model: this.role,
+            as: 'roles',
+            required: true,
+            attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+            through:{
+              where: {
+                status: true,
+              },
+              attributes: []
+            },
+            where: {
+              status: true,
+            }
+          },
+        ],
+        transaction: transaction
+      });
+      if (user) {
+        user = user.toJSON();
+        const allRoles = user.roles;
+
+        const rolesWithDetails = await Promise.all(
+          allRoles.map(async (role) => {
+            const resources = await this.resource.findAll({
+              attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+              where: {
+                status: true,
+              },
+              include: [
+                {
+                  model: this.permission,
+                  as: 'roleResourcePermissions',
+                  attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+                  where: {
+                    status: true,
+                  },
+                  through: {
+                    where: { roleId: role.id, status: true },
+                    attributes: [] // To exclude the join table attributes
+                  }
+                }
+              ]
+            }, { transaction });
+            role.resources = resources;
+            return role;
+          })
+        );
+
+        const resources = await this.resource.findAll({
+          attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+          where: {
+            status: true,
+          },
+          include: [
+            {
+              model: this.permission,
+              as: 'userResourcePermissions',
+              attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+              where: {
+                status: true,
+              },
+              through: {
+                where: { userId: user.id, status: true },
+                attributes: [] // To exclude the join table attributes
+              }
+            }
+          ]
+        }, { transaction });
+
+        user.roles = rolesWithDetails;
+        user.resources = resources;
+      }
+
+
+      return user;
+    } catch (ex) {
+      throw new baseError(ex);
     }
   }
 
