@@ -98,7 +98,7 @@ class resource extends service {
    * @returns object
    * @author Ujjwal Bera
    */
-  async resourceStore( { name, parent, rightsAvailable,  status = true }, session ) {
+  async resourceStore( { name, parent, rightsAvailable,  status = true }, transaction ) {
     try {
 
       let rightsAvailableSlugs = [];
@@ -114,7 +114,7 @@ class resource extends service {
         parent,
         rightsAvailable: rightsAvailableSlugs,
         status,
-      }], session);
+      }], transaction);
 
       const result = resource[0];
 

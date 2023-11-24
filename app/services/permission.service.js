@@ -1,11 +1,17 @@
+const  { Sequelize, Op } = require('sequelize');
+
 const { service } = require( './service' );
 const { baseError } = require('../../system/core/error/baseError');
 
 const permissionGraph = require('../../neo4j/services/permission');
 
+const chalk = require('chalk');
+const log = console.log;
+
+
 class permission extends service {
   /**
-   * permission service constructor
+   * @description permission service constructor
    * @author Ujjwal Bera
    * @param null
    */
@@ -17,90 +23,96 @@ class permission extends service {
 
   async getAll(queries, { transaction }) {
     try {
-      const {
-        id = null,
-        ids = null,
-        name = null,
-        orderby = 'name',
-        ordering = 'ASC',
-        limit = this.dataPerPage || 10,
-        page = 1,
-        return_type = null,
-      } = queries;
+      return await super.getAll(queries, { transaction })
+      // const {
+      //   id = null,
+      //   ids = null,
+      //   name = null,
+      //   orderby = 'name',
+      //   ordering = 'ASC',
+      //   limit = this.dataPerPage || 10,
+      //   page = 1,
+      //   return_type = null,
+      // } = queries;
 
-      const order = ordering.toUpperCase();
-      const skip = parseInt(page) * parseInt(limit) - parseInt(limit);
+      // const order = ordering.toUpperCase();
+      // const skip = parseInt(page) * parseInt(limit) - parseInt(limit);
 
-      const query = [];
+      // const query = [];
 
-      if(name) {
-        query.push({
-          name: {
-            [Op.like]: `%${name}%`
-          }
-        });
-      }
-      if(id) {
-        query.push({
-          id: id
-        });
-      }
-      if(ids) {
-        const idsArr = ids.split(',');
-        query.push({
-          id: {
-            [Op.in]: idsArr
-          }
-        });
-      }
+      // if(name) {
+      //   query.push({
+      //     name: {
+      //       [Op.like]: `%${name}%`
+      //     }
+      //   });
+      // }
+      // if(id) {
+      //   query.push({
+      //     id: id
+      //   });
+      // }
+      // if(ids) {
+      //   const idsArr = ids.split(',');
+      //   query.push({
+      //     id: idsArr
+      //   });
+      // }
 
-      const result = await this.model.findAll({
-        attributes: {
-          exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
-        },
-        where: query,
-        order: [
-          [orderby, order],
-        ],
-        limit: parseInt(limit),
-        offset: skip,
-        transaction
-      });
+      // const result = await this.model.findAll({
+      //   attributes: {
+      //     exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
+      //   },
+      //   where: query,
+      //   order: [
+      //     [orderby, order],
+      //   ],
+      //   limit: parseInt(limit),
+      //   offset: skip,
+      //   transaction
+      // });
 
-      const count = await this.model.count({
-        attributes: {
-          exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
-        },
-        where: query,
-        order: [
-          [orderby, order],
-        ],
-        limit: parseInt(limit),
-        offset: skip,
-        transaction
-      });
-
+      // const count = await this.model.count({
+      //   attributes: {
+      //     exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
+      //   },
+      //   where: query,
+      //   order: [
+      //     [orderby, order],
+      //   ],
+      //   limit: parseInt(limit),
+      //   offset: skip,
+      //   transaction
+      // });
 
 
-      return {
-        rows: result,
-        count,
-      };
+
+      // return {
+      //   rows: result,
+      //   count,
+      // };
     } catch (ex) {
       console.log(ex)
       throw new baseError(ex);
     }
   }
 
-  async addNew( { name, status = true }, { transaction }) {
+  /**
+   * @description Add new permission
+   * @author Ujjwal Bera
+   * @param {*} data
+   * @param {*} others
+   * @returns
+   */
+  async createNew( { name, status = true }, { transaction }) {
     try {
-      const permission = await this.model.create({
+      const permission = await super.createNew({
         name,
         status,
       }, transaction);
-
       return permission;
     } catch (ex) {
+      console.log(ex);
       throw new baseError(ex);
     }
   }

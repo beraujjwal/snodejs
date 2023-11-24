@@ -1,3 +1,4 @@
+'use strict';
 const neo4j = require('neo4j-driver');
 const  { database } = require('../config/neo4j.config');
 const { baseError } = require('../system/core/error/baseError');

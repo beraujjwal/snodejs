@@ -15,26 +15,26 @@ router.group('/v1.0', (versionRouter) => {
   versionRouter.get('/permissions', [authMiddleware.verifyToken, aclMiddleware.hasPermission('listView', 'permission-section')], exceptionHandler(permissionsController.getAll));
   versionRouter.get( '/permissions-ddl', [authMiddleware.verifyToken, aclMiddleware.hasPermission('dropDownList', 'permission-section')], exceptionHandler(permissionsController.permissionsDDLList) );
 
-  versionRouter.group('/permission', (permissionRouter) => {
+  versionRouter.group('/permission', authMiddleware.verifyToken, (permissionRouter) => {
     permissionRouter.post(
       '',
       [
-        /*aclMiddleware.hasPermission('createNew', 'permission-section'),*/
+        aclMiddleware.hasPermission('createNew', 'permission-section'),
         permissionValidation.create,
       ],
-      exceptionHandler(permissionsController.addNew)
+      exceptionHandler(permissionsController.createNew)
     );
 
     permissionRouter.get(
       '/:id',
-    [ /*aclMiddleware.hasPermission('singleDetailsView', 'permission-section')*/ ],
+    [ aclMiddleware.hasPermission('singleDetailsView', 'permission-section') ],
       exceptionHandler(permissionsController.findByPk)
     );
 
     permissionRouter.put(
       '/:id',
       [
-        // aclMiddleware.hasPermission('updateExisting', 'permission-section'),
+        aclMiddleware.hasPermission('updateExisting', 'permission-section'),
         permissionValidation.update,
       ],
       exceptionHandler(permissionsController.updateByPk)

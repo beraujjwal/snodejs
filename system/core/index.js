@@ -10,7 +10,6 @@ const path = require('path');
 const logger = require('morgan');
 
 const i18n = require('../../config/i18n.config');
-
 const winston = require('../../config/winston');
 const { errorResponse } = require('./helpers/apiResponse');
 const { consumerKafkaMessage } = require('../../libraries/consumer.library');  //Enable this line if you want to config kafkajs also with line no 94

@@ -1,7 +1,7 @@
 'use strict';
 const { controller } = require( './controller' );
 const { permission } = require('../services/permission.service');
-
+const { baseError } = require('../../system/core/error/baseError');
 const permissionService = new permission('Permission');
 
 class PermissionsController extends controller {
@@ -20,12 +20,11 @@ class PermissionsController extends controller {
 
 
   /**
-   * @desc   Get list of attribute for admin user
-   *
+   * @description Fetch list of permissions
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
    * @param req : request
-   * @param res : response
-   * @param next
-   * @returns {Promise<*>}
+   * @param transaction : transaction
+   * @returns {*}
    */
   async getAll( req, transaction ) {
 
@@ -41,9 +40,16 @@ class PermissionsController extends controller {
   }
 
 
+  /**
+   * @description Fetch list of permissions
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param req : request
+   * @param transaction : transaction
+   * @returns {*}
+   */
+  async createNew( req, transaction ) {
 
-  async addNew( req, transaction ) {
-    const result = await this.service.addNew({ ...req.body }, { transaction });
+    const result = await this.service.createNew({ ...req.body }, { transaction } );
     if (result) {
       return {
         code: 201,
@@ -56,12 +62,11 @@ class PermissionsController extends controller {
 
 
   /**
-   * @desc   Get attribute for for admin user
-   *
+   * @description Fetch list of permissions
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
    * @param req : request
-   * @param res : response
-   * @param next
-   * @returns json
+   * @param transaction : transaction
+   * @returns {*}
    */
   async findByPk( req, transaction ) {
 
@@ -79,7 +84,13 @@ class PermissionsController extends controller {
   }
 
 
-
+  /**
+   * @description Fetch list of permissions
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param req : request
+   * @param transaction : transaction
+   * @returns {*}
+   */
   async updateByPk( req, transaction ) {
     const id = req.params.id;
     const result = await this.service.updateByPk(id, { ...req.body }, { transaction });
@@ -95,12 +106,11 @@ class PermissionsController extends controller {
 
 
   /**
-   * @desc   Get Permission for for admin user
-   *
+   * @description Fetch list of permissions
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
    * @param req : request
-   * @param res : response
-   * @param next
-   * @returns {Promise<*>}
+   * @param transaction : transaction
+   * @returns {*}
    */
   async adminDeletePermission( req, res, next ) {
 

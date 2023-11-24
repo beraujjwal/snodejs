@@ -89,7 +89,7 @@ class authController extends controller {
    * @desc user login with otp
    * @param {*} req
    */
-  async otpVerify(req, session) {
+  async otpVerify(req, transaction) {
       let message = 'Please compleate your signup process!';
       let { device_id, device_type, fcm_token, username, otp } = req.body;
       let result = await userService.otpVerify(
@@ -116,7 +116,7 @@ class authController extends controller {
    * @desc Resend verify otp
    * @param {*} req
    */
-  async otpResend(req, session) {
+  async otpResend(req, transaction) {
       let message = 'OTP sent successfully!';
       let { username, type } = req.body;
       let result = await userService.otpResend( username, type );
@@ -138,7 +138,7 @@ class authController extends controller {
    * @desc Resend verify otp
    * @param {*} req
    */
-  async phoneVerify(req, session) {
+  async phoneVerify(req, transaction) {
       let message = 'Your phone number verified successfully!';
       let { phone, otp } = req.body;
       let result = await userService.phoneVerify( phone, otp );
@@ -160,7 +160,7 @@ class authController extends controller {
    * @desc Resend verify otp
    * @param {*} req
    */
-  async emailVerify(req, session) {
+  async emailVerify(req, transaction) {
       let message = 'Your email address verified successfully!';
       let { email, otp } = req.body;
       let result = await userService.emailVerify( email, otp );
@@ -182,7 +182,7 @@ class authController extends controller {
    * @desc User forgot password
    * @param {*} req
    */
-  async forgotPassword(req, session) {
+  async forgotPassword(req, transaction) {
       let { username } = req.body;
       let result = await userService.forgotPassword({ username });
       if (result) {
@@ -203,7 +203,7 @@ class authController extends controller {
    * @desc reset user password
    * @param {*} req
    */
-  async reset(req, session) {
+  async reset(req, transaction) {
       let { user_id, token } = req.params;
       let result = await userService.verify(user_id, token);
       if (result) {
@@ -224,7 +224,7 @@ class authController extends controller {
    * @desc reset user password
    * @param {*} req
    */
-  async resetPassword(req, session) {
+  async resetPassword(req, transaction) {
       let { username, otp, password } = req.body;
       let result = await userService.resetPassword( { username, otp, password } );
       if (result) {
@@ -245,7 +245,7 @@ class authController extends controller {
    * @desc reset user password
    * @param {*} req
    */
-  async samplePage(req, session) {
+  async samplePage(req, transaction) {
       let { email } = req.query;
       let result = await userService.getUserDetailsByUsername(email);
       if (result) {
@@ -266,7 +266,7 @@ class authController extends controller {
    * @desc reset user password
    * @param {*} req
    */
-  async samplePagePost(req, session) {
+  async samplePagePost(req, transaction) {
       let { page } = req.query;
       let result = await userService.getUserDetailsByUsername('administrator@mail.com');
       if (result) {

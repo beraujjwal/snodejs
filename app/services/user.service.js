@@ -501,7 +501,7 @@ class user extends service {
             },
             where: {
               status: true,
-            }
+            },
           },
         ],
         transaction: transaction

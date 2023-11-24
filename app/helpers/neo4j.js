@@ -1,4 +1,7 @@
+'use strict';
 const neo4j = require('neo4j-driver');
+const chalk = require('chalk');
+const log = console.log;
 const config = require('../../config/neo4j.config');
 let neo4jDriver = null;
 
@@ -15,7 +18,7 @@ if(config.url) {
             //trustedCertificates: [process.env.NEO4J_TRUSTED_CERTS],
             logging: {
                 level: 'debug',
-                logger: (level, message) => console.log('+++' + level + ' ' + message)
+                logger: (level, message) => log(chalk.green.bgWhite.bold('✔ Neo4J Connected successfully!')) //log('+++' + level + ' ' + message)
             }
         }
     );

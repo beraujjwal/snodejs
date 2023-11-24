@@ -108,7 +108,7 @@ class token extends service {
         sent_on: sentOn,
         expiresAt: { $gt: cutoff },
       };
-      let otpResponse = await this.model.findOne(tokenCriteria).session(session);
+      let otpResponse = await this.model.findOne(tokenCriteria).transaction(transaction);
 
       const otpToken = await this.generateOTP(6, {
         digits: true,
@@ -125,7 +125,7 @@ class token extends service {
               expiresAt: expiresAt
             }
           }
-        ).session(session);
+        ).transaction(transaction);
 
         otpResponse.token = otpToken;
         otpResponse.expiresAt = expiresAt;
@@ -141,7 +141,7 @@ class token extends service {
         sent_on: sentOn,
         status: true,
         expiresAt: expiresAt,
-      }, { session: session });
+      }, { transaction: transaction });
 
       return userToken;
     } catch (ex) {

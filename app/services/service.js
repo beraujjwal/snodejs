@@ -1,8 +1,5 @@
-'use strict';
 const autoBind = require( 'auto-bind' );
 const { baseService } = require("../../system/core/service/baseService");
-var mailer =  require('../../config/mailer');
-var crypto = require('crypto');
 
 class service extends baseService {
 
@@ -13,8 +10,6 @@ class service extends baseService {
      */
     constructor( ) {
         super( );
-        this.mailer = mailer;
-        this.crypto = crypto;
         autoBind( this );
     }
 

@@ -7,8 +7,8 @@ const jwt = require('jsonwebtoken');
 
 exports.getExpiresInTime = async (expiresIn) => {
     const expiresInInt = parseInt(expiresIn);
-    const expiresInString =  'd'; //(expiresInInt != expiresIn) ? expiresIn.split(expiresInInt)[1] : 'ms';
-    const expiresInTime = moment().add(expiresInInt, expiresInString).toDate();
+    const expiresInString =  (expiresInInt != expiresIn) ? expiresIn.split(expiresInInt)[1] : 'ms';
+    const expiresInTime = moment().utc(process.env.APP_TIMEZONE).add(expiresInInt, expiresInString).toDate();
     return expiresInTime;
 }
 exports.randomNumber = async (length) => {

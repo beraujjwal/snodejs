@@ -1,7 +1,10 @@
 const  { Sequelize, sequelize, Op } = require('sequelize');
-const autoBind = require('auto-bind');
+//const autoBind = require('auto-bind');
 const { base } = require('../base');
 const { baseError } = require('../error/baseError');
+
+const chalk = require('chalk');
+const log = console.log;
 
 class baseService extends base {
   /**
@@ -11,12 +14,19 @@ class baseService extends base {
    */
   constructor(model) {
     super();
-    this.name = model;
     this.model = this.db[model];
-    this.dataPerPage = this.env.DATA_PER_PAGE;
-    autoBind(this);
+    this.dataPerPage = this.env.DATA_PER_PAGE | 15;
+    this.name = model
+    //autoBind(this);
   }
 
+  /**
+   * @description Fetch list of items with total count
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} param0
+   * @param {*} param1
+   * @returns { rows, count } response
+   */
   async getAll(
     {
       orderby = 'name',
@@ -34,8 +44,10 @@ class baseService extends base {
   ) {
     try {
       const order = ordering.toUpperCase();
+      limit = parseInt(limit);
+      page = parseInt(page);
       if(page < 1) page = 1;
-      const skip = parseInt(page) * parseInt(limit) - parseInt(limit);
+      const skip = ( page * limit ) - limit;
 
       if (filter === null) {
         filter = await this.generateQueryFilterFromQueryParams(search);
@@ -48,7 +60,7 @@ class baseService extends base {
         order: [
           [orderby, order],
         ],
-        limit: parseInt(limit),
+        limit: limit,
         offset: skip,
         transaction
       });
@@ -68,10 +80,24 @@ class baseService extends base {
     }
   }
 
-  async get(search, session) {
+  /**
+   * @description Fetch item by query
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} param0
+   * @param {*} param1
+   * @returns { rows, count } response
+   */
+  async get(search, {
+    filter = null,
+    include,
+    attributes,
+    transaction
+  }) {
     try {
-      const filter = await this.generateQueryFilterFromQueryParams(search);
-      const item = await this.model.findOne(filter).session(session);
+      if (filter === null) {
+        filter = await this.generateQueryFilterFromQueryParams(search);
+      }
+      const item = await this.model.findOne(filter).transaction(transaction);
       if (item) {
         return item;
       }
@@ -82,16 +108,24 @@ class baseService extends base {
     }
   }
 
-  async getById(id, session) {
+  async findByPk(id, { transaction, include, attributes}) {
+
     try {
-      const search = { _id: id,  deleted: false };
-      return await this.get(search, session);
+      let item = await this.model.findByPk(id, {
+        include: include,
+        attributes: attributes,
+        transaction
+      });
+      if (!item) {
+        throw new baseError(`Some error occurred while fetching ${this.name} details.`, 400);
+      }
+      return item;
     } catch (ex) {
-      throw new baseError(ex.message || `Some error occurred while fetching ${this.name} details.`, 400);
+      throw new baseError(ex);
     }
   }
 
-  async addNew(data, { transaction }) {
+  async createNew(data, { transaction } ) {
     try {
       Object.keys(data).forEach(
         (key) => data[key] === undefined && delete data[key],
@@ -106,12 +140,12 @@ class baseService extends base {
     }
   }
 
-  async insertMany(data, session) {
+  async bulkCreate(data, transaction) {
     try {
-      const item = await this.model.insertMany(data).session(session);
+      const items = await this.model.bulkCreate(data, { transaction })
 
-      if (item) {
-        return item;
+      if (items) {
+        return items;
       }
       throw new baseError(`Some error occurred while adding new ${this.name}s.`);
     } catch (ex) {
@@ -119,19 +153,19 @@ class baseService extends base {
     }
   }
 
-  async updateById(id, data, session) {
+  async updateById(id, data, transaction) {
     try {
       const search = { _id: id,  deleted: false };
-      return await this.update(search, data, session);
+      return await this.update(search, data, transaction);
     } catch (ex) {
       throw new baseError(ex.message || `Some error occurred while updating the ${this.name}.`, 400);
     }
   }
 
-  async update(search, data, session) {
+  async update(search, data, transaction) {
     try {
       const filter = await this.generateQueryFilterFromQueryParams(search);
-      const dbItem = await this.get(filter, session);
+      const dbItem = await this.get(filter, transaction);
       if (!dbItem) {
         throw new baseError(`Some error occurred while fetching the ${this.name} details.`, 500);
       }
@@ -139,7 +173,7 @@ class baseService extends base {
         (key) => data[key] === undefined && delete data[key],
       );
 
-      const item = await this.model.updateOne(filter, data).session(session);
+      const item = await this.model.update(filter, data, transaction);
       if (!item) {
         throw new baseError(`Some error occurred while updating the ${this.name}.`, 500);
       }
@@ -153,14 +187,14 @@ class baseService extends base {
     }
   }
 
-  async updateMany(search, data, session) {
+  async updateMany(search, data, transaction) {
     try {
       const filter = await this.generateQueryFilterFromQueryParams(search);
       Object.keys(data).forEach(
         (key) => data[key] === undefined && delete data[key],
       );
 
-      const item = await this.model.updateMany(filter, data).session(session);
+      const item = await this.model.updateMany(filter, data).transaction(transaction);
       if (!item) {
         throw new baseError(`Some error occurred while updating the ${this.name}s.`, 500);
       }
@@ -172,19 +206,19 @@ class baseService extends base {
     }
   }
 
-  async deleteById(id, session) {
+  async deleteById(id, transaction) {
     try {
       let filter = { _id: id,  deleted: false };
-      return await this.delete(filter, session);
+      return await this.delete(filter, transaction);
     } catch (ex) {
       throw new baseError(ex.message || `Some error occurred while deleting the ${this.name}.`, ex.statusCode || 400);
     }
   }
 
-  async delete(search, session) {
+  async delete(search, transaction) {
     try {
       const filter = await this.generateQueryFilterFromQueryParams(search);
-      const item = await this.model.deleteOne(filter).session(session);
+      const item = await this.model.deleteOne(filter).transaction(transaction);
       if (item) {
         return item;
       }
@@ -194,10 +228,10 @@ class baseService extends base {
     }
   }
 
-  async deleteMany(search, session) {
+  async deleteMany(search, transaction) {
     try {
       const filter = await this.generateQueryFilterFromQueryParams(search);
-      const count = await this.model.deleteMany(filter).session(session);
+      const count = await this.model.deleteMany(filter).transaction(transaction);
       if (count) {
         return count;
         //returns {deletedCount: x}
@@ -212,12 +246,26 @@ class baseService extends base {
     try {
       let filter = [];
       for (const field in search) {
-        let filterValue;
-        if (typeof search[field] === 'number' || typeof search[field] === 'boolean') {
+        if(field === 'ids'){
+          filter.push({
+            id : search[field].split(',')
+          });
+        } else if(Number(search[field])) {
+          console.log('HERE');
           filter.push({
             [field] : search[field]
           });
-        } else if (typeof search[field] === 'string') {
+        } else if(search[field].toLowerCase() === "true" || search[field].toLowerCase() === "false") {
+          if(search[field].toLowerCase() === "true"){
+            filter.push({
+              [field] : true
+            });
+          } else {
+            filter.push({
+              [field] : false
+            });
+          }
+        } else {
           filter.push({
             [field] : {
               [Op.like]: `%${search[field]}%`

@@ -4,9 +4,6 @@ const moment = require('moment');
 const bcrypt = require("bcryptjs");
 
 const sequelize = require('../system/core/db.connection');
-const Role = require('./role.model');
-const Permission = require('./permission.model');
-const Resource = require('./resource.model');
 const saltRounds = 9;
 
 const User = sequelize.define("User",
@@ -104,18 +101,17 @@ const User = sequelize.define("User",
       }
     },
     scopes: {
-      withRoles: {
-        attributes: { exclude: ['password'] },
-        // include: [
-        //   { model: SecretClub, as: 'secretClub' },
-        //   { model: Item, as: 'items' }
-        // ]
-      }
+      // withRoles: {
+      //   attributes: { exclude: ['password'] },
+      //   include: [
+      //     { model: Role, as: 'roles' },
+      //   ]
+      // }
     },
     instanceMethods: {
       async generateHash(password) {
         const salt = await bcrypt.genSalt(saltRounds);
-        return bcrypt.hashSync(user.password, salt);
+        return bcrypt.hashSync(password, salt);
       },
       async validPassword(password) {
           return bcrypt.compareSync(password, this.password);
@@ -145,9 +141,7 @@ const User = sequelize.define("User",
 User.associate = function(models) {
   User.belongsToMany(models.Role, { through: 'UserRole', scope: { status: true }, foreignKey: 'userId', as: 'activeRoles' });
   User.belongsToMany(models.Role, { through: 'UserRole', foreignKey: 'userId', as: 'roles' });
-
   User.belongsToMany(models.Resource, { through: 'UserResourcePermission', foreignKey: 'userId', as: 'resources' });
-  User.belongsToMany(models.Permission, { through: 'UserResourcePermission', foreignKey: 'userId', as: 'permissions' });
   User.hasMany(models.Token, { as: 'tokens', foreignKey: 'userId', foreignKeyConstraint: true });
 };
 

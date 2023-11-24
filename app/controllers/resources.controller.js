@@ -25,8 +25,8 @@ class resourcesController extends controller {
    * @param {*} next
    * @author Ujjwal Bera
    */
-  async resourcesList(req, session) {
-    let result = await this.service.resourcesList(req.query, session);
+  async resourcesList(req, transaction) {
+    let result = await this.service.resourcesList(req.query, transaction);
     if (result) {
       return {
         code: 200,
@@ -43,9 +43,9 @@ class resourcesController extends controller {
    * @param {*} res
    * @param {*} next
    */
-  async resourcesDDLList(req, session) {
+  async resourcesDDLList(req, transaction) {
     req.query.return_type = 'ddl';
-    let result = await this.service.resourcesList(req.query, session);
+    let result = await this.service.resourcesList(req.query, transaction);
     if (result) {
       return {
         code: 200,
@@ -64,9 +64,9 @@ class resourcesController extends controller {
    * @param {*} next
    * @author Ujjwal Bera
    */
-  async resourceStore(req, session) {
+  async resourceStore(req, transaction) {
     let { name, parent, rightsAvailable } = req.body;
-    let result = await this.service.resourceStore({ name, parent, rightsAvailable }, session);
+    let result = await this.service.resourceStore({ name, parent, rightsAvailable }, transaction);
     if (result) {
 
       return {
@@ -85,10 +85,10 @@ class resourcesController extends controller {
    * @param {*} next
    * @author Ujjwal Bera
    */
-  async resourceDetails(req, session) {
+  async resourceDetails(req, transaction) {
     let resourceId = req.params.id;
     console.log(`resourceId=>${resourceId}`)
-    let result = await this.service.resourceDetails(resourceId, session);
+    let result = await this.service.resourceDetails(resourceId, transaction);
     if (result) {
       return res
         .status(200)
@@ -104,10 +104,10 @@ class resourcesController extends controller {
    * @param {*} next
    * @author Ujjwal Bera
    */
-  async resourceUpdate(req, session) {
+  async resourceUpdate(req, transaction) {
     let resourceId = req.params.id;
     let { name, status } = req.body;
-    let result = await this.service.resourceUpdate(resourceId, { name, status}, session );
+    let result = await this.service.resourceUpdate(resourceId, { name, status}, transaction );
     if (result) {
       return res
         .status(200)
@@ -123,10 +123,10 @@ class resourcesController extends controller {
    * @param {*} next
    * @author Ujjwal Bera
    */
-  async resourceStatusUpdate(req, session) {
+  async resourceStatusUpdate(req, transaction) {
     let resourceId = req.params.id;
     let { status } = req.body;
-    let result = await this.service.resourceStatusUpdate(resourceId, status, session);
+    let result = await this.service.resourceStatusUpdate(resourceId, status, transaction);
     if (result) {
       return res
         .status(200)
@@ -142,9 +142,9 @@ class resourcesController extends controller {
    * @param {*} next
    * @author Ujjwal Bera
    */
-  async isDeletableResource(req, session) {
+  async isDeletableResource(req, transaction) {
     let resourceId = req.params.id;
-    let result = await this.service.isDeletableResource(resourceId, session);
+    let result = await this.service.isDeletableResource(resourceId, transaction);
     if (result) {
       return res
         .status(200)
@@ -160,9 +160,9 @@ class resourcesController extends controller {
    * @param {*} next
    * @author Ujjwal Bera
    */
-  async resourceDelete(req, session) {
+  async resourceDelete(req, transaction) {
     let resourceId = req.params.id;
-    let result = await this.service.resourceDelete(resourceId, session);
+    let result = await this.service.resourceDelete(resourceId, transaction);
     if (result) {
       return res
         .status(200)

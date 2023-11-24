@@ -60,6 +60,7 @@ class authMiddleware extends middleware {
 
       return;
     } catch (ex) {
+      if(ex.message == 'jwt expired') ex = new baseError(`Invalid authorization token.`, 401);
       next(ex);
     }
   }

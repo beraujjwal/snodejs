@@ -31,7 +31,7 @@ class RolesController extends controller {
    * @param next
    * @returns {Promise<*>}
    */
-  async allRolesList( req, transaction ) {
+  async getAll( req, transaction ) {
 
     const result = await roleService.getAll(req.query, transaction);
     if (result) {
@@ -46,11 +46,11 @@ class RolesController extends controller {
 
 
 
-  async addNewRole( req, transaction ) {
+  async createNewRole( req, transaction ) {
 
     const { name, parentId } = req.body
 
-    const result = await roleService.addNew({ name, parentId }, transaction);
+    const result = await roleService.createNew({ name, parentId }, transaction);
     if (result) {
       return {
         code: 200,

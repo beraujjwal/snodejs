@@ -57,12 +57,26 @@ class role extends service {
         });
       }
 
-      const result = await this.model.unscoped().findAll({
+      const result = await this.model.findAll({
         attributes: {
           exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
         },
         where: query,
         include: [
+          {
+            model: this.user.unscoped() ,
+            as: 'users',
+            attributes: ['id'],
+            through:{
+              where: {
+                status: true,
+              },
+              attributes: []
+            },
+            where: {
+              status: true,
+            },
+          },
           {
             model: this.user.unscoped() ,
             as: 'users',
@@ -101,7 +115,7 @@ class role extends service {
    * @param {*} rights
    * @returns
    */
-  async addNew({ name, parentId, status = true }, transaction) {
+  async createNew({ name, parentId, status = true }, transaction) {
     try {
       let havError = false, resourceName = null, rightSlugs = [], resourceRightsAvailable = [];
       if (rights != null) {
@@ -144,7 +158,7 @@ class role extends service {
         description,
         rights,
         status,
-      }], { session });
+      }], { transaction });
 
       await roleGraph.create(role[0]);
       return role[0];
@@ -294,7 +308,7 @@ class role extends service {
    * @param {*} roleId
    * @returns
    */
-  async checkUserRoleAvailablity( {roles, parentRole, defaultRole = 'admin'}, session ){
+  async checkUserRoleAvailablity( {roles, parentRole, defaultRole = 'admin'}, transaction ){
     try{
       if (!roles) {
         roles = [defaultRole]; // if role is not selected, setting default role for new user
@@ -305,7 +319,7 @@ class role extends service {
         match: {
           slug: parentRole
         }
-      }).session(session).exec();
+      }).transaction(transaction).exec();
       if (dbRoles.length !== roles.length) {
         throw new validationError({ roles: ['You have selected an invalid role.']}, 412);
       }

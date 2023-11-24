@@ -1,170 +1,218 @@
 'use strict';
-const autoBind = require('auto-bind');
+//const autoBind = require('auto-bind');
 const { base } = require('../base');
 
 const { baseError } = require('../error/baseError');
 
 class baseController extends base {
+
   /**
-   * Base Controller Layer
-   * @author Ujjwal Bera
-   * @param null
+   * @description Base Controller Layer
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param service
+   * @returns null
    */
   constructor(service) {
     super();
     this.service = service;
 
-    autoBind(this);
+    //autoBind(this);
   }
 
+  /**
+   * @description Fetch list of items with total count
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} req
+   * @param {*} transaction
+   * @returns {*} object
+   */
   async getAll(req, transaction) {
       const response = await this.service.getAll(req.query, { transaction });
       if (response) {
         return {
           code: 200,
           result: response,
-          message: 'Items was fetched successfully.'
+          message: __("ITEMS_LIST_FETCH_SUCESSFULLY")
         }
       }
-      throw new baseError('Some error occurred while fetching items list.');
+      throw new baseError(__("ITEMS_LIST_FETCH_ERROR"));
   }
 
-  async addNew(req, session) {
-    const response = await this.service.addNew({ ...req.body }, { transaction });
+  /**
+   * @description Add a new item
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} req
+   * @param {*} transaction
+   * @returns {*} object
+   */
+  async createNew(req, transaction) {
+    const response = await this.service.createNew(req.body, { transaction });
     if(response) {
       return {
         code: 200,
         result: response,
-        message: 'The new item was added successfully.'
+        message: __("ITEM_ADDED_SUCESSFULLY")
       }
     }
-    throw new baseError('Some error occurred while adding the new item.');
+    throw new baseError(__("ITEM_ADDED_ERROR"));
   }
 
-  async getById(req, session) {
+  /**
+   * @description Fetch item details by item id
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} req
+   * @param {*} transaction
+   * @returns {*} object
+   */
+  async getById(req, transaction) {
     const { id } = req.params;
-    const response = await this.service.getById(id, session);
+    const response = await this.service.getById(id, transaction);
     if (response) {
       return {
         code: 200,
         result: response,
-        message: 'Item details was fetched successfully.'
+        message: __("ITEM_DETAIL_FETCH_SUCESSFULLY")
       }
     }
-    throw new baseError('Some error occurred while fetching item details.');
+    throw new baseError(__("ITEM_DETAIL_FETCH_ERROR"));
   }
 
-  async get(req, session) {
-    const response = await this.service.get(req.params, session);
+  /**
+   * @description Fetch item details
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} req
+   * @param {*} transaction
+   * @returns {*} object
+   */
+  async get(req, transaction) {
+    const response = await this.service.get(req.params, transaction);
     if (response) {
       return {
         code: 200,
         result: response,
-        message: 'Item details was fetched successfully.'
+        message: __("ITEM_DETAIL_FETCH_SUCESSFULLY")
       }
     }
-    throw new baseError('Some error occurred while fetching item details.');
+    throw new baseError(__("ITEM_DETAIL_FETCH_ERROR"));
   }
 
-  async insertMany(req, session) {
-    const response = await this.service.insertMany(req.body, session);
+  /**
+   * @description Add multiple new items
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} req
+   * @param {*} transaction
+   * @returns {*} object
+   */
+  async addMany(req, transaction) {
+    const response = await this.service.addMany(req.body, transaction);
     if(response) {
       return {
         code: 200,
         result: response,
-        message: 'New items was added successfully.'
+        message: __("ITEMS_ADDED_SUCESSFULLY")
       }
     }
-    throw new baseError('Some error occurred while adding new items.');
+    throw new baseError(__("ITEMS_ADDED_ERROR"));
   }
 
-  async insert(req, session) {
-    const response = await this.service.insert(req.body, session);
-    if(response) {
-      return {
-        code: 200,
-        result: response,
-        message: 'The new item was added successfully.'
-      }
-    }
-    throw new baseError('Some error occurred while adding the new item.');
-  }
-
-  async updateById(req, session) {
+  /**
+   * @description Update item by item id
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} req
+   * @param {*} transaction
+   * @returns {*} object
+   */
+  async updateById(req, transaction) {
     const { id } = req.params;
-    const response = await this.service.updateById(id, req.body, session);
+    const response = await this.service.updateById(id, req.body, transaction);
 
     if(response) {
       return {
         code: 200,
         result: response,
-        message: 'The item was updated successfully.'
+        message: __("ITEM_UPDATED_SUCESSFULLY")
       }
     }
-    throw new baseError('Some error occurred while updating the item.');
+    throw new baseError(__("ITEM_UPDATED_ERROR"));
   }
 
-  async update(req, session) {
-    const response = await this.service.update(req.params, req.body, session);
+  /**
+   * @description Update item
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} req
+   * @param {*} transaction
+   * @returns {*} object
+   */
+  async update(req, transaction) {
+    const response = await this.service.update(req.params, req.body, transaction);
 
     if(response) {
       return {
         code: 200,
         result: response,
-        message: 'The item was updated successfully.'
+        message: __("ITEM_UPDATED_SUCESSFULLY")
       }
     }
-    throw new baseError('Some error occurred while updating the item.');
+    throw new baseError(__("ITEM_UPDATED_ERROR"));
   }
 
-  async updateMany(req, session) {
-    const response = await this.service.updateMany(req.params, req.body, session);
-
-    if(response) {
-      return {
-        code: 200,
-        result: response,
-        message: 'Items was updated successfully.'
-      }
-    }
-    throw new baseError('Some error occurred while updating the items.');
-  }
-
-  async deleteById(req, session) {
+  /**
+   * @description Delete item by item id
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} req
+   * @param {*} transaction
+   * @returns {*} object
+   */
+  async deleteById(req, transaction) {
     const { id } = req.params;
-    const response = await this.service.deleteById(id, session);
+    const response = await this.service.deleteById(id, transaction);
     if(response) {
       return {
         code: 200,
         result: response,
-        message: 'The item Deleted successfully.'
+        message: __("ITEM_DELETED_SUCESSFULLY")
       }
     }
-    throw new baseError('Some error occurred while deleting the item.');
+    throw new baseError(__("ITEM_DELETED_ERROR"));
   }
 
-  async delete(req, session) {
-    const response = await this.service.delete(req.params, session);
+  /**
+   * @description Delete item
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} req
+   * @param {*} transaction
+   * @returns {*} object
+   */
+  async delete(req, transaction) {
+    const response = await this.service.delete(req.params, transaction);
     if(response) {
       return {
         code: 200,
         result: response,
-        message: 'The item was Deleted successfully.'
+        message: __("ITEM_DELETED_SUCESSFULLY")
       }
     }
-    throw new baseError('Some error occurred while deleting the item.');
+    throw new baseError(__("ITEM_DELETED_ERROR"));
   }
 
-  async deleteMany(req, session) {
-    const response = await this.service.delete(req.params, session);
+
+  /**
+   * @description Delete items
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} req
+   * @param {*} transaction
+   * @returns {*} object
+   */
+  async deleteMany(req, transaction) {
+    const response = await this.service.deleteMany(req.params, transaction);
     if(response) {
       return {
         code: 200,
         result: response,
-        message: 'Items was Deleted successfully.'
+        message: __("UNABLE_TO_ADD_PERMISSION")
       }
     }
-    throw new baseError('Some error occurred while deleting items.');
+    throw new baseError(__("UNABLE_TO_ADD_PERMISSION"));
   }
 }
 

@@ -63,7 +63,7 @@ exports.delete = async (key) => {
 };
 
 function getExpiresInTime(expiresIn) {
-    (expiresIn) ? expiresIn : process.env.JWT_EXPIRES_IN;
+    (expiresIn) ? expiresIn : process.env.REDIS_EXPIRES_IN;
     const expiresInInt = parseInt(expiresIn);
     const expiresInString = expiresIn.split(expiresInInt)[1];
     let expiresInTime = expiresInInt

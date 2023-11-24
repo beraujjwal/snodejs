@@ -4,6 +4,16 @@
 	"LOGIN_INVALID_PASSWORD": "Invalid Password!",
 	"LOGIN_USER_NOT_FOUND": "User Not found!",
 	"LOGIN_INVALID_USERNAME_PASSWORD": "You have entered an invalid username or password.",
+	"ITEMS_LIST_FETCH_SUCESSFULLY": "Items list was fetched successfully.",
+	"ITEMS_LIST_FETCH_ERROR": "Some error occurred while fetching list of items.",
+	"ITEM_ADDED_SUCESSFULLY": "New item was added successfully.",
+	"ITEM_ADDED_ERROR": "Some error occurred while trying to add the new item.",
+	"ITEM_DETAIL_FETCH_SUCESSFULLY": "Item details was fetched successfully.",
+	"ITEM_DETAIL_FETCH_ERROR": "Some error occurred while fetching the item details.",
+	"ITEM_UPDATED_SUCESSFULLY": "Item was got updated successfully.",
+	"ITEM_UPDATED_ERROR": "Some error occurred while trying to update the item.",
+	"ITEM_DELETED_SUCESSFULLY": "Item was got deleted successfully.",
+	"ITEM_DELETED_ERROR": "Some error occurred while trying to delete the item.",
 	"You have %s message": {
 		"one": "You have %s message",
 		"other": "You have %s messages"
@@ -59,5 +69,6 @@
 	"PERMISSION_helloLIST_FETCH_SUCESSFULLY": "ROLE.LIST_FETCH_SUCESSFULLY",
 	"ROLE.LIST_FETCH_SUCESSFULLY": "ROLE.LIST_FETCH_SUCESSFULLY",
 	"ROLES.LIST_FETCH_SUCESSFULLY": "ROLES.LIST_FETCH_SUCESSFULLY",
-	"INVALI_ROLES_SELECTED": "INVALI_ROLES_SELECTED"
+	"INVALI_ROLES_SELECTED": "INVALI_ROLES_SELECTED",
+	"UNABLE_TO_ADD_PERMISSION": "UNABLE_TO_ADD_PERMISSION"
 }
