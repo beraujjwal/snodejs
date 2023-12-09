@@ -1,6 +1,5 @@
 'use strict';
 const { service } = require( './service' );
-const autoBind = require( 'auto-bind' );
 
 
 
@@ -18,7 +17,6 @@ class Utilities extends service {
       this.Country = this.db.Country;
       this.State = this.db.State;
       this.City = this.db.City;
-      autoBind( this );
   }
 
 

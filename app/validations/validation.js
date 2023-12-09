@@ -1,6 +1,7 @@
 'use strict';
+//const autoBind = require('auto-bind');
+
 const { baseValidation } = require('../../system/core/validation/baseValidation');
-var autoBind = require('auto-bind');
 
 class validation extends baseValidation {
   /**
@@ -11,7 +12,6 @@ class validation extends baseValidation {
    */
   constructor() {
     super();
-    autoBind(this);
   }
 
 

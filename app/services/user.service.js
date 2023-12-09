@@ -18,7 +18,7 @@ const roleService = new role('Role');
 const { sentOTPMail } = require('../../libraries/email.library');
 const { sentOTPSMS } = require('../../libraries/sms.library');
 
-const { generateOTP, generateAccessToken } = require('../helpers/utility')
+const { generateOTP, generateAccessToken } = require('../../helpers/utility')
 
 class user extends service {
 

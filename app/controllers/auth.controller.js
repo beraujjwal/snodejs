@@ -1,5 +1,4 @@
 'use strict';
-const autoBind = require('auto-bind');
 const { baseError } = require('../../system/core/error/baseError');
 const { controller } = require('./controller');
 const { user } = require('../services/user.service');

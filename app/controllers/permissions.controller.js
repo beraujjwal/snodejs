@@ -29,63 +29,55 @@ class PermissionsController extends controller {
   async getAll( req, transaction ) {
 
     const result = await this.service.getAll(req.query, { transaction });
-    if (result) {
-      return {
-        code: 200,
-        result,
-        message: "PERMISSIONS_LIST_FETCH_SUCESSFULLY"
-      }
+    if (result === undefined || result === null) throw new baseError(__("PERMISSIONS_LIST_FETCH_ERROR"));
+    return {
+      code: 200,
+      result,
+      message: "PERMISSIONS_LIST_FETCH_SUCESSFULLY"
     }
-    throw new baseError(__("PERMISSIONS_LIST_FETCH_ERROR"));
   }
 
 
   /**
-   * @description Fetch list of permissions
+   * @description Create a new permission
    * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
    * @param req : request
    * @param transaction : transaction
    * @returns {*}
    */
-  async createNew( req, transaction ) {
-
-    const result = await this.service.createNew({ ...req.body }, { transaction } );
-    if (result) {
-      return {
-        code: 201,
-        result,
-        message: "PERMISSION_ADDED_SUCESSFULLY"
-      }
+  async create( req, transaction ) {
+    const { name } = req.body;
+    const result = await this.service.create({ name }, { transaction } );
+    if (result === undefined || result === null) throw new baseError(__("UNABLE_TO_ADD_PERMISSION"));
+    return {
+      code: 201,
+      result,
+      message: "PERMISSION_ADDED_SUCESSFULLY"
     }
-    throw new baseError(__("UNABLE_TO_ADD_PERMISSION"));
   }
 
 
   /**
-   * @description Fetch list of permissions
+   * @description Fetch permission details by primary key
    * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
    * @param req : request
    * @param transaction : transaction
    * @returns {*}
    */
   async findByPk( req, transaction ) {
-
     const id = req.params.id;
     const result = await this.service.findByPk(id, { transaction });
-
-    if (result) {
-      return {
-        code: 200,
-        result,
-        message: "PERMISSION_DEATILS_FETCHED_SUCESSFULLY"
-      }
+    if (result === undefined || result === null) throw new baseError(__("UNABLE_TO_FETCH_PERMISSION"));
+    return {
+      code: 200,
+      result,
+      message: "PERMISSION_DEATILS_FETCHED_SUCESSFULLY"
     }
-    throw new baseError(__("UNABLE_TO_FETCH_PERMISSION"));
   }
 
 
   /**
-   * @description Fetch list of permissions
+   * @description Update permission details by primary key
    * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
    * @param req : request
    * @param transaction : transaction
@@ -93,55 +85,34 @@ class PermissionsController extends controller {
    */
   async updateByPk( req, transaction ) {
     const id = req.params.id;
-    const result = await this.service.updateByPk(id, { ...req.body }, { transaction });
-    if (result) {
-      return {
-        code: 200,
-        result,
-        message: "PERMISSION_UPDATED_SUCESSFULLY"
-      }
+    const { name, status } = req.body;
+    const result = await this.service.updateByPk(id, { name, status }, { transaction });
+    if (result === undefined || result === null) throw new baseError(__("UNABLE_TO_UPDATE_PERMISSION"));
+    return {
+      code: 200,
+      result,
+      message: "PERMISSION_UPDATED_SUCESSFULLY"
     }
-    throw new baseError(__("UNABLE_TO_UPDATE_PERMISSION"));
   }
 
 
   /**
-   * @description Fetch list of permissions
+   * @description Delete permission by primary key
    * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
    * @param req : request
    * @param transaction : transaction
    * @returns {*}
    */
-  async adminDeletePermission( req, res, next ) {
+  async deleteByPk( req, res, next ) {
 
-      var id = req.params.id;
-      console.log(id)
-      this.Permission.findOne({
-        where: {
-          [this.Op.and]: [
-            {
-              id: {
-                [this.Op.eq]: id
-              }
-            },
-            {
-              deleted_at: {
-                [this.Op.eq]: null
-              }
-            }
-          ]
-        }
-      })
-      .then(data => {
-        if(data) {
-          res.status(200).json(this.Response.success("OK", { data: data }, res.statusCode));
-        } else {
-          res.status(500).json(this.Response.error("Permission Not found.", res.statusCode));
-        }
-      })
-      .catch(err => {
-          res.status(500).json(this.Response.error(err.message || "Some error occurred while retrieving tutorials.", res.statusCode));
-      });
+    const id = req.params.id;
+    const result = await this.service.deleteByPk(id, { ...req.body }, { transaction });
+    if (result === undefined || result === null) throw new baseError(__("UNABLE_TO_UPDATE_PERMISSION"));
+    return {
+      code: 200,
+      result,
+      message: "PERMISSION_UPDATED_SUCESSFULLY"
+    }
   }
 }
 

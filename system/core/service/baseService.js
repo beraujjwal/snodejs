@@ -1,5 +1,4 @@
 const  { Sequelize, sequelize, Op } = require('sequelize');
-//const autoBind = require('auto-bind');
 const { base } = require('../base');
 const { baseError } = require('../error/baseError');
 
@@ -16,8 +15,7 @@ class baseService extends base {
     super();
     this.model = this.db[model];
     this.dataPerPage = this.env.DATA_PER_PAGE | 15;
-    this.name = model
-    //autoBind(this);
+    this.name = model;
   }
 
   /**
@@ -94,15 +92,11 @@ class baseService extends base {
     transaction
   }) {
     try {
-      if (filter === null) {
-        filter = await this.generateQueryFilterFromQueryParams(search);
-      }
+      if (filter === null) filter = await this.generateQueryFilterFromQueryParams(search);
       const item = await this.model.findOne(filter).transaction(transaction);
-      if (item) {
-        return item;
-      }
+      if (!item)  throw new baseError(`Some error occurred while fetching ${this.name} details.`, 410);
 
-      throw new baseError(`Some error occurred while fetching ${this.name} details.`, 410);
+      return item;
     } catch (ex) {
       throw new baseError(ex.message || `Some error occurred while fetching ${this.name} details.`, 400);
     }
@@ -116,25 +110,22 @@ class baseService extends base {
         attributes: attributes,
         transaction
       });
-      if (!item) {
-        throw new baseError(`Some error occurred while fetching ${this.name} details.`, 400);
-      }
+      if (!item) throw new baseError(`Some error occurred while fetching ${this.name} details.`, 400);
       return item;
     } catch (ex) {
       throw new baseError(ex);
     }
   }
 
-  async createNew(data, { transaction } ) {
+  async create(data, { transaction } ) {
     try {
       Object.keys(data).forEach(
         (key) => data[key] === undefined && delete data[key],
       );
       let item = await this.model.create(data, transaction);
-      if (item) {
-        return item;
-      }
-      throw new baseError(`Some error occurred while adding this new ${this.name}.`);
+      if (!item) throw new baseError(`Some error occurred while adding this new ${this.name}.`);
+      return item;
+
     } catch (ex) {
       throw new baseError(ex.message || `Some error occurred while adding new ${this.name}.`, 400);
     }
@@ -144,10 +135,9 @@ class baseService extends base {
     try {
       const items = await this.model.bulkCreate(data, { transaction })
 
-      if (items) {
-        return items;
-      }
-      throw new baseError(`Some error occurred while adding new ${this.name}s.`);
+      if (!items) throw new baseError(`Some error occurred while adding new ${this.name}s.`);
+      return items;
+
     } catch (ex) {
       throw new baseError(ex.message || `Some error occurred while adding new ${this.name}s.`, 400);
     }
@@ -174,9 +164,7 @@ class baseService extends base {
       );
 
       const item = await this.model.update(filter, data, transaction);
-      if (!item) {
-        throw new baseError(`Some error occurred while updating the ${this.name}.`, 500);
-      }
+      if (!item) throw new baseError(`Some error occurred while updating the ${this.name}.`, 500);
 
       const oldDBItem = JSON.parse(JSON.stringify(dbItem));
       const newTeamDetails = { ...oldDBItem, ...data };
@@ -195,9 +183,7 @@ class baseService extends base {
       );
 
       const item = await this.model.updateMany(filter, data).transaction(transaction);
-      if (!item) {
-        throw new baseError(`Some error occurred while updating the ${this.name}s.`, 500);
-      }
+      if (!item) throw new baseError(`Some error occurred while updating the ${this.name}s.`, 500);
 
       return item;
 
@@ -219,10 +205,8 @@ class baseService extends base {
     try {
       const filter = await this.generateQueryFilterFromQueryParams(search);
       const item = await this.model.deleteOne(filter).transaction(transaction);
-      if (item) {
-        return item;
-      }
-      throw new baseError(`Some error occurred while deleting the ${this.name}.`, 500);
+      if (!item) throw new baseError(`Some error occurred while deleting the ${this.name}.`, 500);
+      return item;
     } catch (ex) {
       throw new baseError(ex.message || `Some error occurred while deleting the ${this.name}.`, ex.statusCode || 400);
     }

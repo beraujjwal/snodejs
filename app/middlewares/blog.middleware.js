@@ -1,4 +1,3 @@
-const autoBind = require('auto-bind');
 const { middleware } = require('./middleware');
 
 class blogMiddleware extends middleware {
@@ -9,7 +8,6 @@ class blogMiddleware extends middleware {
    */
   constructor() {
     super();
-    autoBind(this);
   }
 
   /**

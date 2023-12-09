@@ -1,19 +1,38 @@
 'use strict';
-const { DataTypes } = require('sequelize');
-const sequelize = require('../system/core/db.connection');
+const { sequelize, DataTypes } = require('../system/core/db.connection');
 
 const UserRole = sequelize.define("UserRole",
     {
       id: {
-        type: DataTypes.BIGINT(11),
+        type: DataTypes.BIGINT,
         primaryKey: true,
         autoIncrement: true,
         unique: true,
         allowNull: false
       },
-      userId: DataTypes.INTEGER,
-      roleId: DataTypes.INTEGER,
-      status: DataTypes.BOOLEAN,
+      userId: {
+        type: DataTypes.BIGINT,
+        required : true,
+        index : true,
+        references: {
+          model: 'User',
+          key: 'id',
+        }
+      },
+      roleId: {
+        type: DataTypes.BIGINT,
+        required : true,
+        index : true,
+        references: {
+          model: 'Role',
+          key: 'id',
+        }
+      },
+      status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+      },
     },
     {
       timestamps: true,

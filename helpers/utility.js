@@ -1,21 +1,22 @@
 'use strict';
 require('dotenv').config();
 const moment = require('moment');
-const { baseError } = require('../../system/core/error/baseError');
+const { baseError } = require('../system/core/error/baseError');
 const otpGenerator = require('otp-generator');
 const jwt = require('jsonwebtoken');
 
 exports.getExpiresInTime = async (expiresIn) => {
+    if(!expiresIn) expiresIn = process.env.JWT_EXPIRES_IN;
     const expiresInInt = parseInt(expiresIn);
     const expiresInString =  (expiresInInt != expiresIn) ? expiresIn.split(expiresInInt)[1] : 'ms';
     const expiresInTime = moment().utc(process.env.APP_TIMEZONE).add(expiresInInt, expiresInString).toDate();
     return expiresInTime;
 }
 exports.randomNumber = async (length) => {
-  var text = '';
-  var possible = '123456789';
-  for (var i = 0; i < length; i++) {
-    var sup = Math.floor(Math.random() * possible.length);
+  const text = '';
+  const possible = '123456789';
+  for (const i = 0; i < length; i++) {
+    const sup = Math.floor(Math.random() * possible.length);
     text += i > 0 && sup == i ? '0' : possible.charAt(sup);
   }
   return Number(text);

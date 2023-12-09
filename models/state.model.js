@@ -1,11 +1,10 @@
 'use strict';
-const { DataTypes } = require('sequelize');
-const sequelize = require('../system/core/db.connection');
+const { sequelize, DataTypes } = require('../system/core/db.connection');
 
 const State = sequelize.define("State",
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false
@@ -16,8 +15,20 @@ const State = sequelize.define("State",
         index : true,
         allowNull: false
       },
-      countryId: DataTypes.INTEGER,
-      status: DataTypes.BOOLEAN,
+      countryId: {
+        type: DataTypes.BIGINT,
+        required : true,
+        index : true,
+        references: {
+          model: 'Country',
+          key: 'id',
+        }
+      },
+      status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+      },
     },
     {
       timestamps: true,
@@ -25,11 +36,11 @@ const State = sequelize.define("State",
       sequelize,
       modelName: 'State',
       tableName: 'states',
-      /*defaultScope: {
+      defaultScope: {
         where: {
           deleted_at: null
         }
-      },*/
+      },
       scopes: {
         activeCountries: {
           where: {

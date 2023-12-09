@@ -1,5 +1,5 @@
-'use strict';
-const autoBind = require('auto-bind');
+//const autoBind = require('auto-bind');
+
 const { base } = require('../base');
 const validator = require('../helpers/validate');
 const { validationError } = require('../helpers/apiResponse');
@@ -11,7 +11,6 @@ class baseValidation extends base {
    */
   constructor() {
     super();
-    autoBind(this);
   }
 
   async validate(req, res, next, validationRule, customMessages = {}) {
@@ -22,6 +21,11 @@ class baseValidation extends base {
         next();
       }
     });
+  }
+
+  async customValidationError(req, res, next, err) {
+    if (err) return res.status(412).json(validationError(err));
+    next();
   }
 }
 

@@ -5,7 +5,7 @@ const {
   generatePassword,
   generateOTP,
   generateToken,
-} = require('../helpers/utility');
+} = require('../../helpers/utility');
 
 const { sentOTPMail } = require('../../libraries/email.library');
 const { sentOTPSMS } = require('../../libraries/sms.library');

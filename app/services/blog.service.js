@@ -1,4 +1,3 @@
-const autoBind = require('auto-bind');
 const { service } = require( './service' );
 
 class blog extends service {
@@ -10,7 +9,6 @@ class blog extends service {
   constructor(model) {
     super(model);
     this.model = this.db[model];
-    autoBind(this);
   }
 
   //   async blogList(queries) {

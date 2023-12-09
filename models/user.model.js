@@ -1,15 +1,15 @@
 'use strict';
-const { DataTypes } = require('sequelize');
+require('dotenv').config();
 const moment = require('moment');
 const bcrypt = require("bcryptjs");
 
-const sequelize = require('../system/core/db.connection');
-const saltRounds = 9;
+const { sequelize, DataTypes } = require('../system/core/db.connection');
+const saltRounds = process.env.SALT_FACTOR;
 
 const User = sequelize.define("User",
   {
     id: {
-      type: DataTypes.BIGINT(11),
+      type: DataTypes.BIGINT,
       primaryKey: true,
       autoIncrement: true,
       unique: true,

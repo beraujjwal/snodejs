@@ -32,33 +32,26 @@ class RolesController extends controller {
    * @returns {Promise<*>}
    */
   async getAll( req, transaction ) {
-
     const result = await roleService.getAll(req.query, transaction);
-    if (result) {
-      return {
-        code: 200,
-        result,
-        message: "ROLES_LIST_FETCH_SUCESSFULLY"
-      }
+    if (result === undefined || result === null) throw new baseError(__("ROLES_LIST_FETCH_ERROR"));
+    return {
+      code: 200,
+      result,
+      message: "ROLES_LIST_FETCH_SUCESSFULLY"
     }
-    throw new baseError(__("ROLES_LIST_FETCH_ERROR"));
   }
 
 
 
-  async createNewRole( req, transaction ) {
-
-    const { name, parentId } = req.body
-
-    const result = await roleService.createNew({ name, parentId }, transaction);
-    if (result) {
-      return {
-        code: 200,
-        result,
-        message: "ROLE_ADDED_SUCESSFULLY"
-      }
+  async create( req, transaction ) {
+    const { name, parentId } = req.body;
+    const result = await roleService.create({ name, parentId }, transaction);
+    if (result === undefined || result === null) throw new baseError(__("UNABLE_TO_ADD_NEW_ROLE"));
+    return {
+      code: 200,
+      result,
+      message: "ROLE_ADDED_SUCESSFULLY"
     }
-    throw new baseError(__("UNABLE_TO_ADD_NEW_ROLE"));
   }
 
 
@@ -171,6 +164,29 @@ class RolesController extends controller {
       .catch(err => {
           res.status(500).json(this.Response.error(err.message || "Some error occurred while retrieving tutorials.", res.statusCode));
       });
+  }
+
+
+  /**
+   * @description Delete role by primary key
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param req : request
+   * @param transaction : transaction
+   * @returns {*}
+   */
+  async deleteByPk( req, transaction ) {
+
+    const id = req.params.id;
+
+    console.log('this.service', this.service);
+
+    const result = await roleService.deleteByPk(id, transaction );
+    if (!result) throw new baseError(__("UNABLE_TO_UPDATE_PERMISSION"));
+    return {
+      code: 200,
+      result,
+      message: "PERMISSION_UPDATED_SUCESSFULLY"
+    }
   }
 }
 

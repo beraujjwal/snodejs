@@ -86,7 +86,7 @@ exports.validationError = (data, msg = null) => {
     error: true,
     code: 412,
     message: msg,
-    errors: data.errors
+    errors: data?.errors
   };
 };
 

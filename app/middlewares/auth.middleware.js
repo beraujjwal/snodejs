@@ -1,6 +1,5 @@
 'use strict';
 const jwt = require('jsonwebtoken');
-const autoBind = require('auto-bind');
 const { middleware } = require('./middleware');
 const { baseError } = require('../../system/core/error/baseError');
 const redisClient = require('../../libraries/redis.library'); //Enable this line if you want to config redis also with line no 56

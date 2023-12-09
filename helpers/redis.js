@@ -1,6 +1,6 @@
 'use strict';
-const { baseError } = require('../../system/core/error/baseError');
-const { config } = require('../../config/redis.config');
+const { baseError } = require('../system/core/error/baseError');
+const { config } = require('../config/redis.config');
 const redis = require('redis');
 
 let redisClient = null;

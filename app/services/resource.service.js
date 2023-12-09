@@ -1,4 +1,3 @@
-const autoBind = require('auto-bind');
 const { service } = require( './service' );
 const { baseError } = require('../../system/core/error/baseError');
 
@@ -13,7 +12,6 @@ class resource extends service {
   constructor(model) {
     super(model);
     this.model = this.db[model];
-    autoBind(this);
   }
 
   async getAll(queries, transaction) {

@@ -2,7 +2,7 @@
 require('dotenv').config();
 const chalk = require('chalk');
 const { baseError } = require('../system/core/error/baseError');
-const { redisClient } = require('../app/helpers/redis');
+const { redisClient } = require('../helpers/redis');
 const log = console.log;
 let isRedis = false;
 
@@ -19,12 +19,11 @@ if(redisClient) {
 
 exports.set = async (key, value, timeout = '5m') => {
     try {
-        if(isRedis) {
-            await redisClient.set(key, value, redisClient.print);
-            await redisClient.expire(key, getExpiresInTime(timeout));
-            return true;
-        }
-        return null;
+        if(!isRedis) return null;
+
+        await redisClient.set(key, value, redisClient.print);
+        await redisClient.expire(key, getExpiresInTime(timeout));
+        return true;
     } catch (ex) {
         throw new baseError(ex);
     }
@@ -34,9 +33,7 @@ exports.get = async (key) => {
     try {
         if(isRedis) {
             return await redisClient.get(key, function (err, result) {
-                if (err) {
-                    throw new baseError(err);
-                }
+                if (err) throw new baseError(err);
                 return result;
             });
         }
@@ -50,9 +47,7 @@ exports.delete = async (key) => {
     try {
         if(isRedis) {
             return await redisClient.del(key, function(err, response) {
-                if (err) {
-                    throw new baseError(err);
-                }
+                if (err) throw new baseError(err);
                 return response;
             });
         }

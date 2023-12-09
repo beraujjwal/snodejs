@@ -1,5 +1,5 @@
 const { response } = require('../../system/core/helpers/apiResponse');
-const sequelize = require('../../system/core/db.connection');
+const { sequelize } = require('../../system/core/db.connection');
 
 exports.exceptionHandler = (controllerFunction) => {
   return async (req, res, next) => {

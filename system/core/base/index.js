@@ -1,6 +1,5 @@
 'use strict';
 require('dotenv').config();
-const autoBind = require('auto-bind');
 const db = require('../model');
 
 
@@ -13,11 +12,17 @@ class index {
   constructor() {
     this.db = db;
     this.env = process.env;
-    autoBind(this);
-    
+
+    // Get all defined class methods
+    const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
+
+    // Bind all methods
+    methods
+      .filter(method => (method !== 'constructor'))
+      .forEach((method) => { this[method] = this[method].bind(this); });
   }
 
-  
+
 }
 
 module.exports = { base: index };

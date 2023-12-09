@@ -1,19 +1,46 @@
 'use strict';
-const { DataTypes } = require('sequelize');
-const sequelize = require('../system/core/db.connection');
+const { sequelize, DataTypes } = require('../system/core/db.connection');
 
 const UserResourcePermission = sequelize.define("UserResourcePermission",
     {
       id: {
-        type: DataTypes.BIGINT(11),
+        type: DataTypes.BIGINT,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false
       },
-      userId: DataTypes.INTEGER,
-      resourceId: DataTypes.INTEGER,
-      permissionId: DataTypes.INTEGER,
-      status: DataTypes.BOOLEAN,
+      userId: {
+        type: DataTypes.BIGINT,
+        required : true,
+        index : true,
+        references: {
+          model: 'User',
+          key: 'id',
+        }
+      },
+      resourceId: {
+        type: DataTypes.BIGINT,
+        required : true,
+        index : true,
+        references: {
+          model: 'Resource',
+          key: 'id',
+        }
+      },
+      permissionId: {
+        type: DataTypes.BIGINT,
+        required : true,
+        index : true,
+        references: {
+          model: 'Permission',
+          key: 'id',
+        }
+      },
+      status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+      },
     },
     {
       timestamps: true,
@@ -21,7 +48,7 @@ const UserResourcePermission = sequelize.define("UserResourcePermission",
       sequelize,
       modelName: 'UserResourcePermission',
       tableName: 'user_resource_permissions',
-      indexes: [{ unique: true, fields: [ 'userId', 'roleId'] }]
+      indexes: [{ unique: true, fields: [ 'userId', 'resourceId', 'permissionId'] }]
     }
 );
 

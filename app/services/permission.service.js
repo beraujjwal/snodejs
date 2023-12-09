@@ -104,9 +104,9 @@ class permission extends service {
    * @param {*} others
    * @returns
    */
-  async createNew( { name, status = true }, { transaction }) {
+  async create( { name, status = true }, { transaction }) {
     try {
-      const permission = await super.createNew({
+      const permission = await super.create({
         name,
         status,
       }, transaction);
@@ -131,7 +131,6 @@ class permission extends service {
 
   async updateByPk(id, data, { transaction }) {
     try {
-      console.log(data);
       await this.model.update(data, {
         where: {
           id: id

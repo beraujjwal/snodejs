@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const { middleware } = require('./middleware');
 const { baseError } = require('../../system/core/error/baseError');
 const redisClient = require('../../libraries/redis.library');
-const sequelize = require('../../system/core/db.connection');
+const { sequelize } = require('../../system/core/db.connection');
 const { user } = require('../services/user.service');
 
 const userService = new user('User');
@@ -29,7 +29,6 @@ class aclMiddleware extends middleware {
     return async function (req, res, next) {
       try {
         const userData = req.user;
-        console.log('userData', userData);
 
         if(!userData?.id) throw new baseError(`Invalid authorization token.`, 401);
         let user = await redisClient.get(`${userData.id}#${userData.tokenSalt}`);
@@ -44,9 +43,6 @@ class aclMiddleware extends middleware {
         }
         const userRoles = user.roles;
         const userResources = user.resources;
-
-        console.log('userRoles', userRoles);
-        console.log('userResources', userResources);
         let haveAccess = false;
         let runLoop = true;
         loop1: if (haveAccess === false && runLoop === true) {

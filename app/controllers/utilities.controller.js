@@ -1,6 +1,5 @@
 'use strict';
 const { controller } = require( './controller' );
-const autoBind = require( 'auto-bind' );
 
 
 
@@ -18,7 +17,6 @@ class UtilitiesController extends controller {
       this.Country = this.db.Country;
       this.State = this.db.State;
       this.City = this.db.City;
-      autoBind( this );
   }
 
 

@@ -2,7 +2,7 @@
 require('dotenv').config();
 const chalk = require('chalk');
 
-const { kafka } = require('../app/helpers/kafka');
+const { kafka } = require('../helpers/kafka');
 const { consumerCallTopicsService } = require('../kafka');
 const log = console.log;
 const groupId = process.env.KAFKA_GROUP_ID;
@@ -11,6 +11,8 @@ let topics = [];
 let consumerKafkaMessage = function() { return undefined; };
 
 if(kafka) {
+
+  //console.log('kafka', kafka);
 
   if(topicsString)
     topics = topicsString.split(',');

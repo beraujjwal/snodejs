@@ -69,8 +69,9 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW
       }
-    }).then(() => queryInterface.addIndex('user_resource_permissions', ['userId', 'resourceId', 'permissionId']));
+    });
   },
+
 
   async down (queryInterface, Sequelize) {
     await queryInterface.dropTable('user_resource_permissions');

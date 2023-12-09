@@ -3,7 +3,7 @@ const neo4j = require('neo4j-driver');
 const  { database } = require('../config/neo4j.config');
 const { baseError } = require('../system/core/error/baseError');
 
-const { neo4jDriver } = require('../app/helpers/neo4j');
+const { neo4jDriver } = require('../helpers/neo4j');
 
 module.exports = {
     read: async (cypher, params = {}) => {

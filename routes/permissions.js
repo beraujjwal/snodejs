@@ -22,7 +22,7 @@ router.group('/v1.0', (versionRouter) => {
         aclMiddleware.hasPermission('createNew', 'permission-section'),
         permissionValidation.create,
       ],
-      exceptionHandler(permissionsController.createNew)
+      exceptionHandler(permissionsController.create)
     );
 
     permissionRouter.get(
@@ -43,7 +43,7 @@ router.group('/v1.0', (versionRouter) => {
     permissionRouter.delete(
       '/:id',
       [aclMiddleware.hasPermission('deleteExisting', 'permission-section')],
-      exceptionHandler(permissionsController.permissionDelete)
+      exceptionHandler(permissionsController.deleteByPk)
     );
   });
 

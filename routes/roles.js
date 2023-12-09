@@ -12,28 +12,33 @@ const router = express.Router();
 router.group('/v1.0', (versionRouter) => {
 
 
-  versionRouter.get('/roles', /*authMiddleware.verifyToken,*/ exceptionHandler(rolesController.getAll));
+  versionRouter.get('/roles', [authMiddleware.verifyToken, aclMiddleware.hasPermission('listView', 'role-section')], exceptionHandler(rolesController.getAll));
   versionRouter.get( '/roles-ddl', [authMiddleware.verifyToken, aclMiddleware.hasPermission('dropDownList', 'role-section')], exceptionHandler(rolesController.rolesDDLList) );
 
   versionRouter.group('/role', (roleRouter) => {
     roleRouter.post(
       '',
       [
+        authMiddleware.verifyToken,
         aclMiddleware.hasPermission('createNew', 'role-section'),
         roleValidation.create,
       ],
-      exceptionHandler(rolesController.roleStore)
+      exceptionHandler(rolesController.insert)
     );
 
     roleRouter.get(
       '/:id',
-      [aclMiddleware.hasPermission('singleDetailsView', 'role-section')],
+      [
+        authMiddleware.verifyToken,
+        aclMiddleware.hasPermission('singleDetailsView', 'role-section')
+      ],
       exceptionHandler(rolesController.roleDetails)
     );
 
     roleRouter.put(
       '/:id',
       [
+        authMiddleware.verifyToken,
         aclMiddleware.hasPermission('updateExisting', 'role-section'),
         roleValidation.update,
       ],
@@ -42,8 +47,12 @@ router.group('/v1.0', (versionRouter) => {
 
     roleRouter.delete(
       '/:id',
-      [aclMiddleware.hasPermission('deleteExisting', 'role-section')],
-      exceptionHandler(rolesController.roleDelete)
+      [
+        authMiddleware.verifyToken,
+        aclMiddleware.hasPermission('deleteExisting', 'role-section'),
+        roleValidation.canDelete,
+      ],
+      exceptionHandler(rolesController.deleteByPk)
     );
   });
 

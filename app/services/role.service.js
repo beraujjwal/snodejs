@@ -115,12 +115,12 @@ class role extends service {
    * @param {*} rights
    * @returns
    */
-  async createNew({ name, parentId, status = true }, transaction) {
+  async create({ name, parentId, resources, status = true }, transaction) {
     try {
       let havError = false, resourceName = null, rightSlugs = [], resourceRightsAvailable = [];
-      if (rights != null) {
+      if (resources != null) {
 
-        for await (const right of rights) {
+        for await (const resource of resources) {
           if(right.resource === 'root') throw new baseError('You have selected an invalid resource.');
 
           rightSlugs.push(right.resource);
@@ -153,7 +153,7 @@ class role extends service {
       if(havError === true) throw new baseError(`You have selected an invalid right for ${resourceName}.`, 412);
 
       const role = await this.model.create([{
-        parent,
+        parentId,
         name,
         description,
         rights,
@@ -447,6 +447,40 @@ class role extends service {
 
     } catch (ex) {
         throw new baseError(ex.message);
+    }
+  }
+
+  /**
+   * @author Ujjwal Bera
+   *
+   * @param {*} roleId
+   * @returns
+   */
+  async deleteByPk(roleId, transaction) {
+    try {
+      const role = await this.model.findOne({
+        _id: roleId,
+        deleted: false,
+      });
+      if (!role) {
+        throw new baseError('Role not found.');
+      }
+
+      //If role have child roles then don't allow delete operation
+      const childs = await this.model.find({ parent: roleId, deleted: false });
+      if(childs.length > 0) throw new baseError('Some child role belongs to this role. If you still want to delete the role? Then delete those child role belongs to this role or shift them into a different role or make them parent role.', 401);
+
+      //If role have users then don't allow delete operation
+      const users = await this.db['User'].find({ roles : { $all : [roleId] }});
+      if(users.length > 0) throw new baseError('Some user belongs to this role. If you still want to delete the role? Then delete those user belongs to this role or shift them into a different role.', 401);
+
+      await role.delete();
+      return await this.model.findOne({
+        _id: roleId,
+        deleted: true,
+      });
+    } catch (ex) {
+      throw new baseError(ex);
     }
   }
 

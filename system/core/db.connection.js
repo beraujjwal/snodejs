@@ -2,7 +2,7 @@
 require( 'dotenv' ).config();
 const chalk = require('chalk');
 const log = console.log;
-const Sequelize = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 
 const database = process.env.DB_DATABASE || 'node';
 const user = process.env.DB_USERNAME || 'root';
@@ -28,4 +28,10 @@ sequelize.authenticate().then(() => {
   log(chalk.red.bgWhite.bold(`✘ Unable to connect to the database:: ${ex.message}`));
 });
 
-module.exports = sequelize;
+// sequelize.sync().then(() => {
+//   console.log('Tables created successfully!');
+// }).catch((error) => {
+//   console.error('Unable to create table : ', error);
+// });
+
+module.exports = { sequelize, DataTypes };

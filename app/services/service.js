@@ -1,4 +1,3 @@
-const autoBind = require( 'auto-bind' );
 const { baseService } = require("../../system/core/service/baseService");
 
 class service extends baseService {
@@ -10,7 +9,6 @@ class service extends baseService {
      */
     constructor( ) {
         super( );
-        autoBind( this );
     }
 
 

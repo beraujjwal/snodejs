@@ -1,10 +1,10 @@
 'use strict';
 const fs = require('fs');
 const util = require('util');
-const { baseError } = require('../../system/core/error/baseError');
-const { admin } = require('../../config/firebase.config');
+const { baseError } = require('../system/core/error/baseError');
+const { admin } = require('../config/firebase.config');
 
-const log_file = fs.createWriteStream(__dirname + '/../../logs/notifications.log', {flags : 'w'});
+const log_file = fs.createWriteStream(__dirname + '/../logs/notifications.log', {flags : 'w'});
 const log_stdout = process.stdout;
 
 console.log = function(d) { //

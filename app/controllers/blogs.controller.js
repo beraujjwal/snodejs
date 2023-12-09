@@ -1,6 +1,3 @@
-'use strict';
-const autoBind = require('auto-bind');
-
 const { controller } = require('./controller');
 const { blog } = require('@service/blog.service');
 const blogService = new blog('Blog');
@@ -14,7 +11,6 @@ class blogsController extends controller {
   constructor(service) {
     super(service);
     this.service = service;
-    autoBind(this);
   }
 
   /**

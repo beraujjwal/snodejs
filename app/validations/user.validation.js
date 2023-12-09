@@ -1,5 +1,4 @@
 'use strict';
-const autoBind = require('auto-bind');
 const { validation } = require('./validation');
 
 class userValidation extends validation {
@@ -11,7 +10,6 @@ class userValidation extends validation {
   constructor() {
     super();
     this.regexEmail = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-    autoBind(this);
   }
 
   async signup(req, res, next) {

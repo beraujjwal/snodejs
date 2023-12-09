@@ -1,5 +1,3 @@
-'use strict';
-const autoBind = require('auto-bind');
 const {
   baseMiddleware,
 } = require('../../system/core/middleware/baseMiddleware');
@@ -12,7 +10,6 @@ class middleware extends baseMiddleware {
    */
   constructor() {
     super();
-    autoBind(this);
   }
 }
 

@@ -1,5 +1,3 @@
-'use strict';
-const autoBind = require('auto-bind');
 const { base } = require('../base');
 
 class baseMiddleware extends base {
@@ -10,7 +8,6 @@ class baseMiddleware extends base {
    */
   constructor() {
     super();
-    autoBind(this);
   }
 }
 

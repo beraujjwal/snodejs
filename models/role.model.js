@@ -1,17 +1,16 @@
 'use strict';
-const { DataTypes } = require('sequelize');
-const sequelize = require('../system/core/db.connection');
+const { sequelize, DataTypes } = require('../system/core/db.connection');
 
 const Role = sequelize.define("Role",
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false
       },
       parentId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         references: {
            model: 'roles',
            key: 'id',
@@ -39,7 +38,11 @@ const Role = sequelize.define("Role",
           }
         }
       },
-      status: DataTypes.BOOLEAN,
+      status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+      },
     },
     {
       timestamps: true,

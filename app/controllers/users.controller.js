@@ -1,7 +1,6 @@
 'use strict';
 const { controller } = require( './controller' );
 const { Utilities } = require('../services/utilitie.service');
-const autoBind = require( 'auto-bind' );
 const nodemailer = require('nodemailer');
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
@@ -26,7 +25,6 @@ class UsersController extends controller {
       this.User = this.db.User;
       this.Role = this.db.Role;
       this.UserRole = this.db.UserRole;
-      autoBind( this );
   }
 
 

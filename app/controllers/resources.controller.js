@@ -1,6 +1,3 @@
-'use strict';
-const autoBind = require('auto-bind');
-
 const { controller } = require('./controller');
 const { resource } = require('../services/resource.service');
 const resourceService = new resource('Resource');
@@ -15,7 +12,6 @@ class resourcesController extends controller {
   constructor(service) {
     super(service);
     this.service = resourceService;
-    autoBind(this);
   }
 
   /**
@@ -66,7 +62,7 @@ class resourcesController extends controller {
    */
   async resourceStore(req, transaction) {
     let { name, parent, rightsAvailable } = req.body;
-    let result = await this.service.resourceStore({ name, parent, rightsAvailable }, transaction);
+    let result = await this.service.insert({ name, parent, rightsAvailable }, transaction);
     if (result) {
 
       return {

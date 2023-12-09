@@ -1,5 +1,4 @@
 'use strict';
-const autoBind = require('auto-bind');
 const { validation } = require('./validation');
 
 class resourceValidation extends validation {
@@ -10,7 +9,6 @@ class resourceValidation extends validation {
    */
   constructor() {
     super();
-    autoBind(this);
   }
 
   async create(req, res, next) {

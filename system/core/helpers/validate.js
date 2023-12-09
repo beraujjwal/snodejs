@@ -95,6 +95,57 @@ Validator.registerAsync('exists', async (value, attribute, param, passes) => {
 });
 
 /**
+ * Checks if incoming value already exist for exists and non-exists fields in the database
+ * e.g role: required|role|multipleExists:User,role
+ */
+Validator.registerAsync('multipleExists', async (value, attribute, param, passes) => {
+  if (!attribute) {
+    passes(false, 'Specify Requirements i.e fieldName: multipleExists:table,column');
+    return;
+  }
+
+
+  //split table and column
+  let attArr = attribute.split(',');
+  if (attArr.length < 1) {
+    passes(false, `Invalid format for validation rule on ${attribute}`);
+    return;
+  }
+
+  //assign array index 0 and 1 to table and column respectively
+  const { 0: table, 1: column } = attArr;
+
+  //define custom error message
+  let msg = `The ${param} whose value (${value}) was not found.`;
+  let isArray = false;
+  //check if incoming value already exists in the database
+  let criteria = { deleted: false, status: true };
+  if(Array.isArray(value)) {
+    criteria = { ...criteria,  [column]: { $in: value } };
+    msg = `The ${param} whose value (${value.toString()}) was not founds.`;
+    isArray = true
+  } else {
+    criteria = { ...criteria,  [column]: value };
+  }
+
+  const datas = await Models[table].findOne(criteria);
+
+  if (!datas) {
+    passes(false, msg); // return false if value exists
+    return;
+  } else if(isArray) {
+    if(datas.length != value.length) {
+      passes(false, msg); // return false if value exists
+      return;
+    }
+  }
+
+
+  passes();
+  return;
+});
+
+/**
  * Checks if incoming value already exist for unique by group and non-unique fields in the database
  * e.g name: required|name|group_unique:User,name,parent
  */

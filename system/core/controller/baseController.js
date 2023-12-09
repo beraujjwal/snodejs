@@ -1,7 +1,4 @@
-'use strict';
-//const autoBind = require('auto-bind');
 const { base } = require('../base');
-
 const { baseError } = require('../error/baseError');
 
 class baseController extends base {
@@ -15,8 +12,6 @@ class baseController extends base {
   constructor(service) {
     super();
     this.service = service;
-
-    //autoBind(this);
   }
 
   /**
@@ -28,33 +23,12 @@ class baseController extends base {
    */
   async getAll(req, transaction) {
       const response = await this.service.getAll(req.query, { transaction });
-      if (response) {
-        return {
-          code: 200,
-          result: response,
-          message: __("ITEMS_LIST_FETCH_SUCESSFULLY")
-        }
-      }
-      throw new baseError(__("ITEMS_LIST_FETCH_ERROR"));
-  }
-
-  /**
-   * @description Add a new item
-   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
-   * @param {*} req
-   * @param {*} transaction
-   * @returns {*} object
-   */
-  async createNew(req, transaction) {
-    const response = await this.service.createNew(req.body, { transaction });
-    if(response) {
+      if (!response) throw new baseError(__("ITEMS_LIST_FETCH_ERROR"));
       return {
         code: 200,
         result: response,
-        message: __("ITEM_ADDED_SUCESSFULLY")
+        message: __("ITEMS_LIST_FETCH_SUCESSFULLY")
       }
-    }
-    throw new baseError(__("ITEM_ADDED_ERROR"));
   }
 
   /**
@@ -67,14 +41,12 @@ class baseController extends base {
   async getById(req, transaction) {
     const { id } = req.params;
     const response = await this.service.getById(id, transaction);
-    if (response) {
-      return {
-        code: 200,
-        result: response,
-        message: __("ITEM_DETAIL_FETCH_SUCESSFULLY")
-      }
+    if (!response) throw new baseError(__("ITEM_DETAIL_FETCH_ERROR"));
+    return {
+      code: 200,
+      result: response,
+      message: __("ITEM_DETAIL_FETCH_SUCESSFULLY")
     }
-    throw new baseError(__("ITEM_DETAIL_FETCH_ERROR"));
   }
 
   /**
@@ -86,14 +58,29 @@ class baseController extends base {
    */
   async get(req, transaction) {
     const response = await this.service.get(req.params, transaction);
-    if (response) {
-      return {
-        code: 200,
-        result: response,
-        message: __("ITEM_DETAIL_FETCH_SUCESSFULLY")
-      }
+    if (!response) throw new baseError(__("ITEM_DETAIL_FETCH_ERROR"));
+    return {
+      code: 200,
+      result: response,
+      message: __("ITEM_DETAIL_FETCH_SUCESSFULLY")
     }
-    throw new baseError(__("ITEM_DETAIL_FETCH_ERROR"));
+  }
+
+  /**
+   * @description Add a new item
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} req
+   * @param {*} transaction
+   * @returns {*} object
+   */
+  async create(req, transaction) {
+    const response = await this.service.create(req.body, { transaction });
+    if(!response) throw new baseError(__("ITEM_ADDED_ERROR"));
+    return {
+      code: 200,
+      result: response,
+      message: __("ITEM_ADDED_SUCESSFULLY")
+    }
   }
 
   /**
@@ -103,16 +90,14 @@ class baseController extends base {
    * @param {*} transaction
    * @returns {*} object
    */
-  async addMany(req, transaction) {
-    const response = await this.service.addMany(req.body, transaction);
-    if(response) {
-      return {
-        code: 200,
-        result: response,
-        message: __("ITEMS_ADDED_SUCESSFULLY")
-      }
+  async bulkCreate(req, transaction) {
+    const response = await this.service.bulkCreate(req.body, transaction);
+    if(!response) throw new baseError(__("ITEMS_ADDED_ERROR"));
+    return {
+      code: 200,
+      result: response,
+      message: __("ITEMS_ADDED_SUCESSFULLY")
     }
-    throw new baseError(__("ITEMS_ADDED_ERROR"));
   }
 
   /**
@@ -126,14 +111,12 @@ class baseController extends base {
     const { id } = req.params;
     const response = await this.service.updateById(id, req.body, transaction);
 
-    if(response) {
-      return {
-        code: 200,
-        result: response,
-        message: __("ITEM_UPDATED_SUCESSFULLY")
-      }
+    if(!response) throw new baseError(__("ITEM_UPDATED_ERROR"));
+    return {
+      code: 200,
+      result: response,
+      message: __("ITEM_UPDATED_SUCESSFULLY")
     }
-    throw new baseError(__("ITEM_UPDATED_ERROR"));
   }
 
   /**
@@ -146,14 +129,12 @@ class baseController extends base {
   async update(req, transaction) {
     const response = await this.service.update(req.params, req.body, transaction);
 
-    if(response) {
-      return {
-        code: 200,
-        result: response,
-        message: __("ITEM_UPDATED_SUCESSFULLY")
-      }
+    if(!response) throw new baseError(__("ITEM_UPDATED_ERROR"));
+    return {
+      code: 200,
+      result: response,
+      message: __("ITEM_UPDATED_SUCESSFULLY")
     }
-    throw new baseError(__("ITEM_UPDATED_ERROR"));
   }
 
   /**
@@ -166,14 +147,12 @@ class baseController extends base {
   async deleteById(req, transaction) {
     const { id } = req.params;
     const response = await this.service.deleteById(id, transaction);
-    if(response) {
-      return {
-        code: 200,
-        result: response,
-        message: __("ITEM_DELETED_SUCESSFULLY")
-      }
+    if(!response) throw new baseError(__("ITEM_DELETED_ERROR"));
+    return {
+      code: 200,
+      result: response,
+      message: __("ITEM_DELETED_SUCESSFULLY")
     }
-    throw new baseError(__("ITEM_DELETED_ERROR"));
   }
 
   /**
@@ -185,14 +164,12 @@ class baseController extends base {
    */
   async delete(req, transaction) {
     const response = await this.service.delete(req.params, transaction);
-    if(response) {
-      return {
-        code: 200,
-        result: response,
-        message: __("ITEM_DELETED_SUCESSFULLY")
-      }
+    if(!response) throw new baseError(__("ITEM_DELETED_ERROR"));
+    return {
+      code: 200,
+      result: response,
+      message: __("ITEM_DELETED_SUCESSFULLY")
     }
-    throw new baseError(__("ITEM_DELETED_ERROR"));
   }
 
 
@@ -205,14 +182,12 @@ class baseController extends base {
    */
   async deleteMany(req, transaction) {
     const response = await this.service.deleteMany(req.params, transaction);
-    if(response) {
-      return {
-        code: 200,
-        result: response,
-        message: __("UNABLE_TO_ADD_PERMISSION")
-      }
+    if(!response) throw new baseError(__("UNABLE_TO_ADD_PERMISSION"));
+    return {
+      code: 200,
+      result: response,
+      message: __("UNABLE_TO_ADD_PERMISSION")
     }
-    throw new baseError(__("UNABLE_TO_ADD_PERMISSION"));
   }
 }
 
