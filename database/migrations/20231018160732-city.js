@@ -34,16 +34,31 @@ module.exports = {
       },
       deletedAt: {
         type: Sequelize.DATE,
-        allowNull: true
+        allowNull: true,
+        defaultValue: null
+      },
+      deletedBy: {
+        type: Sequelize.BIGINT(11),
+        allowNull: true,
       },
       createdAt: {
+        type: Sequelize.DATE,
         allowNull: false,
-        type: Sequelize.DATE
+        defaultValue: Sequelize.NOW
+      },
+      createdBy: {
+        type: Sequelize.BIGINT(11),
+        allowNull: true,
       },
       updatedAt: {
+        type: Sequelize.DATE,
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        defaultValue: Sequelize.NOW
+      },
+      updatedBy: {
+        type: Sequelize.BIGINT(11),
+        allowNull: true,
+      },
     }).then(() => queryInterface.addIndex('cities', ['name', 'stateId']));
   },
 

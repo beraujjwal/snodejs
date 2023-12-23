@@ -17,9 +17,10 @@ module.exports = {
         return await txc.run(cypher, params).then( async(result) => {
             await txc.commit();
             return result;
-        }).catch(async(err) => {
+        }).catch(async(ex) => {
             await txc.rollback();
-            throw new baseError(err);
+            error(ex.message);
+            throw new baseError(ex);
         }).finally( async() => {
             await session.close()
         });
@@ -34,9 +35,10 @@ module.exports = {
         return await txc.run(cypher, params).then(async(result) => {
             await txc.commit();
             return result.records;
-        }).catch(async(err) => {
+        }).catch(async(ex) => {
             await txc.rollback();
-            throw new baseError(err);
+            error(ex.message);
+            throw new baseError(ex);
         }).finally( async() => {
             await session.close()
         });

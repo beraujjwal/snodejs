@@ -1,5 +1,7 @@
 'use strict';
 require('dotenv').config();
+
+const { baseError } = require('../system/core/error/baseError');
 const { sendMail } = require('../helpers/mailer');
 const path = require('path');
 
@@ -21,6 +23,7 @@ exports.sentOTPMail = function (email, token) {
 
         sendMail(mailOptions);
     } catch (ex) {
-        console.log(ex);
+        error(ex.message);
+        throw new baseError(ex);
     }
 };

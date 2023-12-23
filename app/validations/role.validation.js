@@ -15,7 +15,7 @@ class roleValidation extends validation {
   async create(req, res, next) {
     const validationRule = {
       parent: 'string|exists:Role,slug',
-      resources: 'required|multipleExists:Resource,id,',
+      //resources: 'required|multipleExists:Resource,id,',
       name: 'required|string',
     };
     return await this.validate(req, res, next, validationRule);
@@ -26,7 +26,7 @@ class roleValidation extends validation {
     const validationRule = {
       parent: 'string|exists:Role,slug',
       name: 'required|string',
-      resources: 'required|multipleExists',
+      //resources: 'required|multipleExists',
       status: 'required|boolean',
     };
     return await this.validate(req, res, next, validationRule);

@@ -6,7 +6,7 @@ const { config } = require('../config/kafka.config');
 const PERFORMANCE_TEST = true;
 
 const serviceLogger = () => ({ label, log }) => {
-    if (!PERFORMANCE_TEST) console.log(label + " namespace:" + log.message, log);
+    if (!PERFORMANCE_TEST) log(label + " namespace:" + log.message, log);
 };
 
 let brokers = [];

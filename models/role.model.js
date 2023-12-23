@@ -14,13 +14,21 @@ const Role = sequelize.define("Role",
         references: {
            model: 'roles',
            key: 'id',
+        },
+        validate: {
+          isInt: true,
+          notIn: [[1, 2]]
         }
       },
       name: {
         type: DataTypes.STRING,
         required : true,
         index : true,
-        allowNull: false
+        allowNull: false,
+        validate: {
+          isAlpha: true,
+          notIn: [['Super Admin', 'Admin']]
+        }
       },
       slug: {
         type: DataTypes.STRING,
@@ -31,12 +39,16 @@ const Role = sequelize.define("Role",
         validate: {
           isLowercase: true,
           async isUnique(value) {
-            var role = await sequelize.models.Role.findOne({ where: { slug: value }});
-            if (role != null) {
+            const role = await sequelize.models.Role.findOne({ where: { slug: value, parentId: this.parentId }});
+            if (role) {
               throw new Error('Role name already used.');
             }
           }
         }
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
       status: {
         type: DataTypes.BOOLEAN,
@@ -54,7 +66,7 @@ const Role = sequelize.define("Role",
       defaultScope: {
         attributes: {
           // include: [[Sequelize.fn("COUNT", Sequelize.col("users.id")), "UsersCount"]],
-          exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
+          exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ]
         },
         include: [
           // {

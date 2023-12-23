@@ -15,6 +15,9 @@ class role extends service {
     this.model = this.db[model];
     this.user = this.db['User'];
     this.userRole = this.db['UserRole'];
+
+    this.resource = this.db['Resource'];
+    this.resourcePermission = this.db['ResourcePermission'];
   }
 
   async getAll(queries, transaction) {
@@ -117,46 +120,40 @@ class role extends service {
    */
   async create({ name, parentId, resources, status = true }, transaction) {
     try {
-      let havError = false, resourceName = null, rightSlugs = [], resourceRightsAvailable = [];
-      if (resources != null) {
+      let havError = false, resourceName = null, resourceIds = [], resourceRightsAvailable = [];
+      if (resources) {
 
         for await (const resource of resources) {
-          if(right.resource === 'root') throw new baseError('You have selected an invalid resource.');
-
-          rightSlugs.push(right.resource);
-          const resource = right.resource;
-          delete right.resource;
-          resourceRightsAvailable[resource] = right;
+          if(resource?.id === 1) throw new baseError('You have selected an invalid resource.');
+          resourceIds.push(resource?.id);
         }
-        let dbResources = await this.resource.find({
-          slug: { $in: rightSlugs },
+
+        const dbResources = await this.resource.find({
+          slug: { $in: resourceIds },
+          status: true
         });
+
         if (dbResources.length != rights.length) {
           throw new baseError('You have selected an invalid resource.', 412);
         }
 
-        await dbResources.forEach(async(resource) => {
-          const selectedResourceRights = resourceRightsAvailable[resource.slug];
-          for (const key in selectedResourceRights) {
-            if (selectedResourceRights.hasOwnProperty(key)) {
-              const rightsAvailable = resource.rightsAvailable;
-              if (!rightsAvailable.includes(key)) {
-                havError = true;
-                resourceName = resource.name;
-                break;
-              }
-            }
-          }
-        });
-      }
+        for await (const resource of resources) {
+          const dbResourcePermissions = await this.resourcePermission.find({
+            resourceId: resource.id,
+            permissionId: { $in: resource.rights },
+            status: true
+          });
 
-      if(havError === true) throw new baseError(`You have selected an invalid right for ${resourceName}.`, 412);
+          if (dbResourcePermissions.length != resource.rights.length) {
+            throw new baseError('You have selected an invalid permission for some resource.', 412);
+          }
+        }
+      }
 
       const role = await this.model.create([{
         parentId,
         name,
         description,
-        rights,
         status,
       }], { transaction });
 
@@ -343,7 +340,7 @@ class role extends service {
       const dbRoles = await this.model.findAll({
         attribuites: ['id'],
         where: {
-          slug: { [Op.or]: roles }
+          id: { [Op.or]: roles }
         }
       });
 

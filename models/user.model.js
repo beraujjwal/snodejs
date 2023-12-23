@@ -4,7 +4,7 @@ const moment = require('moment');
 const bcrypt = require("bcryptjs");
 
 const { sequelize, DataTypes } = require('../system/core/db.connection');
-const saltRounds = process.env.SALT_FACTOR;
+const saltRounds = parseInt(process.env.SALT_FACTOR);
 
 const User = sequelize.define("User",
   {
@@ -30,7 +30,12 @@ const User = sequelize.define("User",
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
+      validate: {
+        notEmpty: true,
+        isEmail: true,
+        isLowercase: true
+      }
     },
     isEmailVerified: {
       type: DataTypes.BOOLEAN,
@@ -39,7 +44,10 @@ const User = sequelize.define("User",
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        is: /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/i
+      }
     },
     tokenSalt: {
       type: DataTypes.STRING,
@@ -95,7 +103,7 @@ const User = sequelize.define("User",
     tableName: 'users',
     indexes: [ { unique: true, fields: [ 'name', 'phone', 'email'] } ],
     defaultScope: {
-      attributes: { exclude: [ 'password', 'tokenSalt', 'createdAt', 'updatedAt', 'deletedAt' ] },
+      attributes: { exclude: [ 'password', 'tokenSalt', 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
       where: {
         status: true,
       }
@@ -110,21 +118,25 @@ const User = sequelize.define("User",
     },
     instanceMethods: {
       async generateHash(password) {
+        console.log('saltRounds1', saltRounds);
         const salt = await bcrypt.genSalt(saltRounds);
         return bcrypt.hashSync(password, salt);
       },
       async validPassword(password) {
+        console.log('saltRounds2', saltRounds);
           return bcrypt.compareSync(password, this.password);
       }
     },
     hooks: {
       beforeCreate: async (user) => {
+        console.log('saltRounds3', saltRounds);
         if (user.password) {
           const salt = await bcrypt.genSalt(saltRounds);
           user.password = bcrypt.hashSync(user.password, salt);
         }
        },
        beforeUpdate:async (user) => {
+        console.log('saltRounds4', saltRounds);
         if (user.password) {
           const salt = await bcrypt.genSalt(saltRounds);
           user.password = bcrypt.hashSync(user.password, salt);
@@ -143,6 +155,13 @@ User.associate = function(models) {
   User.belongsToMany(models.Role, { through: 'UserRole', foreignKey: 'userId', as: 'roles' });
   User.belongsToMany(models.Resource, { through: 'UserResourcePermission', foreignKey: 'userId', as: 'resources' });
   User.hasMany(models.Token, { as: 'tokens', foreignKey: 'userId', foreignKeyConstraint: true });
+
+  User.hasMany(User, { as: 'children', foreignKey: 'createdBy'});
+  User.belongsTo(User, { as: 'addedBy', foreignKey: 'createdBy'});
+
+  // User.hasMany(User, {as: 'children', foreignKey: 'updatedBy'});
+  User.belongsTo(User, {as: 'editedBy', foreignKey: 'updatedBy'});
+
 };
 
 

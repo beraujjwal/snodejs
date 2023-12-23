@@ -35,8 +35,8 @@ exports.send = function (fcmTokens, title, message, options) {
     } else {
         admin.messaging().sendToDevice(fcmTokens, payload, newOptions).then( response => {
             return true;
-        }).catch( err => {
-            console.debug(err.message);
+        }).catch( ex => {
+            error(ex.message);
         });
     }
 };

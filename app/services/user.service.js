@@ -46,19 +46,23 @@ class user extends service {
   async singup({name, email, phone, password, roles}, transaction) {
 
     try {
+      console.log('roles', roles);
       //Registering new user
-      if (!roles) throw new baseError(__('INVALI_ROLES_SELECTED'))
+      if (!roles) throw new baseError(__('INVALI_ROLES_SELECTED'));
+
+      const tokenSalt = await generateOTP(6, {digits: true,});
       const user = await this.model.create({
         name,
         phone,
         email,
         password, //: bcrypt.hashSync(password, 8),
         status: true,
-        verified: false
+        verified: false,
+        tokenSalt
       }, { transaction });
 
       const userId = user.id;
-      const sentOn = email || phone;;
+      const sentOn = email || phone;
       const userToken = await tokenService.createToken({ userId, type: 'ACTIVATION', sentOn }, transaction);
       const userRoles = await roleService.createUserRole({ userId, roles }, transaction);
 
@@ -100,7 +104,7 @@ class user extends service {
       if (!user) {
         throw new baseError(__('LOGIN_INVALID_USERNAME_PASSWORD'), 401)
       }
-
+      console.log(JSON.parse(JSON.stringify(user)));
       const passwordIsValid = bcrypt.compareSync(
         password,
         user?.password
@@ -137,6 +141,7 @@ class user extends service {
 
       return loginRes; //.toJson();
     } catch (ex) {
+      console.log('ex', ex);
       throw new baseError(ex);
     }
   }
@@ -492,7 +497,7 @@ class user extends service {
             model: this.role,
             as: 'roles',
             required: true,
-            attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+            //attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
             through:{
               where: {
                 status: true,
@@ -503,6 +508,16 @@ class user extends service {
               status: true,
             },
           },
+          {
+            model: this.model,
+            as: 'addedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+          },
+          {
+            model: this.model,
+            as: 'editedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+          }
         ],
         transaction: transaction
       });
@@ -513,7 +528,7 @@ class user extends service {
         const rolesWithDetails = await Promise.all(
           allRoles.map(async (role) => {
             const resources = await this.resource.findAll({
-              attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+              //attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
               where: {
                 status: true,
               },
@@ -521,7 +536,7 @@ class user extends service {
                 {
                   model: this.permission,
                   as: 'roleResourcePermissions',
-                  attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+                  //attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
                   where: {
                     status: true,
                   },
@@ -538,7 +553,7 @@ class user extends service {
         );
 
         const resources = await this.resource.findAll({
-          attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+          attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
           where: {
             status: true,
           },
@@ -546,7 +561,7 @@ class user extends service {
             {
               model: this.permission,
               as: 'userResourcePermissions',
-              attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+              attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
               where: {
                 status: true,
               },
@@ -565,6 +580,7 @@ class user extends service {
 
       return user;
     } catch (ex) {
+      console.log('ex', ex);
       throw new baseError(ex);
     }
   }

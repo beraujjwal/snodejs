@@ -43,6 +43,11 @@ const Resource = sequelize.define("Resource",
       sequelize,
       modelName: 'Resource',
       tableName: 'resources',
+      defaultScope: {
+        attributes: {
+          exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ]
+        }
+      },
     }
 );
 

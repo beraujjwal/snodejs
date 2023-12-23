@@ -131,7 +131,7 @@ class baseService extends base {
     }
   }
 
-  async bulkCreate(data, transaction) {
+  async bulkCreate(data, { transaction }) {
     try {
       const items = await this.model.bulkCreate(data, { transaction })
 
@@ -166,7 +166,7 @@ class baseService extends base {
       const item = await this.model.update(filter, data, transaction);
       if (!item) throw new baseError(`Some error occurred while updating the ${this.name}.`, 500);
 
-      const oldDBItem = JSON.parse(JSON.stringify(dbItem));
+      const oldDBItem = dbItem.toJSON();
       const newTeamDetails = { ...oldDBItem, ...data };
       return newTeamDetails;
 

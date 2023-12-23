@@ -78,16 +78,28 @@ module.exports = {
         allowNull: true,
         defaultValue: null
       },
+      deletedBy: {
+        type: Sequelize.BIGINT(11),
+        allowNull: true,
+      },
       createdAt: {
-        allowNull: false,
         type: Sequelize.DATE,
+        allowNull: false,
         defaultValue: Sequelize.NOW
       },
+      createdBy: {
+        type: Sequelize.BIGINT(11),
+        allowNull: true,
+      },
       updatedAt: {
-        allowNull: false,
         type: Sequelize.DATE,
+        allowNull: false,
         defaultValue: Sequelize.NOW
-      }
+      },
+      updatedBy: {
+        type: Sequelize.BIGINT(11),
+        allowNull: true,
+      },
     }).then(() => queryInterface.addIndex('users', ['name', 'phone', 'email']))
   },
 

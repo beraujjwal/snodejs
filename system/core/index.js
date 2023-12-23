@@ -1,9 +1,26 @@
 'use strict';
-const chalk = require('chalk');
-const log = console.log;
 require('dotenv').config();
-log(chalk.green.bgWhite.bold('✔ Bootstrapping Application'));
+const chalk = require('chalk');
+
+global.log = function log(message) {
+  if (process.env.APP_ENV !== 'production') console.log(chalk.green.bgWhite.bold(`✔ ${message}`));
+}
+global.info = function info(message) {
+  if (process.env.APP_ENV !== 'production') console.log(chalk.green.bgWhite.bold(`✔ ${message}`));
+}
+global.echo = function echo(message) {
+  if (process.env.APP_ENV !== 'production') console.log(chalk.green.bgWhite.bold(`✔ ${message}`));
+}
+global.error = function error(message) {
+  if (process.env.APP_ENV !== 'production') console.log(chalk.red.bgWhite.bold(`✘ ${message}`));
+}
+global.warn = function warn(message) {
+  if (process.env.APP_ENV !== 'production') console.log(chalk.red.bgWhite.bold(`✘ ${message}`));
+}
+
+log('Bootstrapping Application');
 const express = require('express');
+const { engine } = require('express-handlebars');
 const helmet = require('helmet');
 const cors = require('cors');
 const path = require('path');
@@ -14,12 +31,13 @@ const winston = require('../../config/winston');
 const { errorResponse } = require('./helpers/apiResponse');
 const { consumerKafkaMessage } = require('../../libraries/consumer.library');  //Enable this line if you want to config kafkajs also with line no 94
 const limiter = require('../../config/rateLimit.config');
+
 const app = express();
 let apiHitCount = 0;
 let errorCount = 0;
 //const Sentry = require('@sentry/node');
 // Sentry.init({
-//   dsn: "https://e8bf701c3e4444ea9a9f1d0725cac7ce@o4505588600471553.ingest.sentry.io/4505589025079296",
+//   dsn: 'https://e8bf701c3e4444ea9a9f1d0725cac7ce@o4505588600471553.ingest.sentry.io/4505589025079296',
 //   integrations: [
 //     // enable HTTP calls tracing
 //     new Sentry.Integrations.Http({ tracing: true }),
@@ -35,6 +53,18 @@ let errorCount = 0;
 //   debug: false
 // });
 
+const hbs = engine({
+  partialsDir: 'resources/views/layouts/partials',
+  layoutsDir: 'resources/views/layouts/',
+  defaultLayout: 'main',
+  extname: '.hbs',
+  //helpers: Specify helpers which are only registered on this instance.
+  helpers: {
+    getCurrentDate: () => new Date(),
+    getFullName(firstName, lastName) { return `${firstName} ${lastName}`; },
+  }
+});
+
 const corsOptions = {
   credentials: true,
   allowedHeaders: '*',
@@ -43,6 +73,14 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+app.use(express.static('public'))
+
+app.engine('handlebars', hbs);
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'resources/views'));
+
 // i18n
 app.use(i18n);
 
@@ -55,8 +93,8 @@ app.use(helmet());
 const PORT = parseInt(process.env.APP_PORT) || 5445;
 const MODE = process.env.APP_ENV || 'development';
 
-log(chalk.green.bgWhite.bold(`✔ Mode: ${MODE}`));
-log(chalk.green.bgWhite.bold(`✔ Port: ${PORT}`));
+log(`Mode: ${MODE}`);
+log(`Port: ${PORT}`);
 
 require('./db.connection');
 
@@ -65,7 +103,7 @@ if (process.env.APP_ENV === 'development') {
   app.use(logger('dev', { stream: winston.stream }));
 }
 //app.use(Sentry.Handlers.requestHandler());
-log(chalk.green.bgWhite.bold('✔ Mapping Routes'));
+log('Mapping Routes');
 //app.use(Sentry.Handlers.tracingHandler());
 
 app.use(function (req, res, next) {
@@ -80,16 +118,6 @@ const routers = require('../route');
 
 //Route Prefixes
 app.use('/', routers);
-
-app.all('/*', (req, res) => {
-  //Sentry.captureException(new Error('Request location not found in User Service'));
-  res.status(404).json({
-    code: 404,
-    error: true,
-    indicate: "Page not Found",
-    message: 'Request location not found in User Service'
-  });
-});
 
 consumerKafkaMessage();
 

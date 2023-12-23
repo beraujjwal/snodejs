@@ -74,8 +74,8 @@ exports.generateAccessToken = async ( id, email, phone, tokenSalt ) => {
     }
 
     return accessToken;
-  } catch (error) {
-    console.log(error);
+  } catch (ex) {
+    error(ex.message);
     throw new baseError(error);
   }
 }

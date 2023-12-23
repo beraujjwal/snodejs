@@ -118,7 +118,7 @@ class authMiddleware extends middleware {
         }
       }
 
-      req.user = JSON.parse(JSON.stringify(user));
+      req.user = user.toJSON();
       next();
 
       return;

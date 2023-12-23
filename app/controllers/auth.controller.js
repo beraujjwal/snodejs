@@ -239,47 +239,5 @@ class authController extends controller {
         500
       );
   }
-
-  /**
-   * @desc reset user password
-   * @param {*} req
-   */
-  async samplePage(req, transaction) {
-      let { email } = req.query;
-      let result = await userService.getUserDetailsByUsername(email);
-      if (result) {
-        return {
-          code: 200,
-          result,
-          message: 'User acctivated successfully!'
-        }
-      }
-
-      throw new baseError(
-        'Some error occurred while verify your account. Please try again.',
-        500
-      );
-  }
-
-  /**
-   * @desc reset user password
-   * @param {*} req
-   */
-  async samplePagePost(req, transaction) {
-      let { page } = req.query;
-      let result = await userService.getUserDetailsByUsername('administrator@mail.com');
-      if (result) {
-        return {
-          code: 200,
-          result,
-          message: 'Sample Page response send successfully!'
-        }
-      }
-
-      throw new baseError(
-        'Some error occurred while verify your account. Please try again.',
-        500
-      );
-  }
 }
 module.exports = new authController(userService);

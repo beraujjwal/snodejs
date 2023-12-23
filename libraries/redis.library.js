@@ -1,18 +1,16 @@
 'use strict';
 require('dotenv').config();
-const chalk = require('chalk');
 const { baseError } = require('../system/core/error/baseError');
 const { redisClient } = require('../helpers/redis');
-const log = console.log;
 let isRedis = false;
 
 if(redisClient) {
-    redisClient.connect().catch((err)=> {
-        log(chalk.red.bgWhite.bold('✘ Redis client setup process failed!'));
+    redisClient.connect().catch((ex)=> {
+        error(`Redis client setup process failed!. - ${ex.message}`);
     });
 
     redisClient.on("connect", function () {
-        log(chalk.green.bgWhite.bold('✔ Redis client connected successfully!'));
+        log('Redis client connected successfully!');
         isRedis = true;
     });
 }
@@ -25,6 +23,7 @@ exports.set = async (key, value, timeout = '5m') => {
         await redisClient.expire(key, getExpiresInTime(timeout));
         return true;
     } catch (ex) {
+        error(ex.message);
         throw new baseError(ex);
     }
 };
@@ -39,6 +38,7 @@ exports.get = async (key) => {
         }
         return null;
     } catch (ex) {
+        error(ex.message);
         throw new baseError(ex);
     }
 };
@@ -53,6 +53,7 @@ exports.delete = async (key) => {
         }
         return null;
     } catch (ex) {
+        error(ex.message);
         throw new baseError(ex);
     }
 };

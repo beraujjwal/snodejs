@@ -50,7 +50,7 @@ const Permission = sequelize.define("Permission",
       tableName: 'permissions',
       indexes: [ { unique: true, fields: [ 'name', 'slug'] } ],
       defaultScope: {
-        attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ] },
+        attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
         // where: {
         //   status: true,
         // },

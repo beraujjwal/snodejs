@@ -3,7 +3,7 @@ const { baseError } = require('../../system/core/error/baseError');
 
 const resourceGraph = require('../../neo4j/services/resource');
 
-class resource extends service {
+class resourcePermission extends service {
   /**
    * @description resource service constructor
    * @param null
@@ -91,23 +91,40 @@ class resource extends service {
   }
 
   /**
-   * @description Storing a new resource with given data source
+   * @description Storing a new resource permission
    * @param {object} object
    * @returns object
    * @author Ujjwal Bera
    */
-  async create( { name, parent, rightsAvailable,  status = true }, transaction ) {
+  async create( { resourceId, permissionId, status = true }, transaction ) {
     try {
-
-      const resource = await super.create([{
-        name,
-        parent,
+      const resourcPermission = await super.create({
+        resourceId,
+        permissionId,
         status,
-      }], transaction);
-      return resource;
+      }, { transaction });
+      return resourcPermission;
     } catch (ex) {
       throw new baseError(
-        ex.message || 'An error occurred while storing a new resource.',
+        ex.message || 'An error occurred while storing a new resource permission.',
+        ex.status
+      );
+    }
+  }
+
+  /**
+   * @description Storing new resource permissions in bulk
+   * @param {object} object
+   * @returns object
+   * @author Ujjwal Bera
+   */
+  async bulkcreate( resourcePermissions, { transaction } ) {
+    try {
+      const resourcePermissionsData = await super.bulkcreate(resourcePermissions, { transaction });
+      return resourcePermissionsData;
+    } catch (ex) {
+      throw new baseError(
+        ex.message || 'An error occurred while storing a new resource permission.',
         ex.status
       );
     }
@@ -275,4 +292,4 @@ class resource extends service {
   }
 }
 
-module.exports = { resource };
+module.exports = { resourcePermission };

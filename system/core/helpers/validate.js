@@ -1,5 +1,5 @@
 const Validator = require('validatorjs');
-const Models = require('../model/index');
+const Models = require('../model');
 const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$/;
 
 /**
@@ -27,12 +27,12 @@ Validator.registerAsync('unique', async (value, attribute, req, passes) => {
       ? `This ${column} has already been taken.`
       : `This ${column} is already associated with an account.`;
   //check if incoming value already exists in the database
-  let criteria = { [column]: value, deleted: false };
+  let criteria = { [column]: value, deletedAt: null };
   if (pk != null && pkvalue != null) {
     criteria = { ...criteria, [pk]: { $ne: pkvalue } };
   }
 
-  let user = await Models[table].findOne(criteria);
+  let user = await Models[table].findOne({ where: criteria });
 
   if (user) {
     passes(false, msg); // return false if value exists
@@ -53,7 +53,6 @@ Validator.registerAsync('exists', async (value, attribute, param, passes) => {
     return;
   }
 
-
   //split table and column
   let attArr = attribute.split(',');
   if (attArr.length < 1) {
@@ -66,29 +65,20 @@ Validator.registerAsync('exists', async (value, attribute, param, passes) => {
 
   //define custom error message
   let msg = `The ${param} whose value (${value}) was not found.`;
-  let isArray = false;
   //check if incoming value already exists in the database
-  let criteria = { deleted: false, status: true };
-  if(Array.isArray(value)) {
-    criteria = { ...criteria,  [column]: { $in: value } };
-    msg = `The ${param} whose value (${value.toString()}) was not founds.`;
-    isArray = true
-  } else {
-    criteria = { ...criteria,  [column]: value };
-  }
-
-  const datas = await Models[table].findOne(criteria);
+  let criteria = { status: true, [column]: value };
+  const datas = await Models[table].findAll({ where: criteria, attributes: ['id'] });
 
   if (!datas) {
     passes(false, msg); // return false if value exists
     return;
-  } else if(isArray) {
+  } else if(Array.isArray(value)) {
     if(datas.length != value.length) {
+      msg = `The ${param} whose value (${value.toString()}) was not founds.`;
       passes(false, msg); // return false if value exists
       return;
     }
   }
-
 
   passes();
   return;
@@ -104,7 +94,6 @@ Validator.registerAsync('multipleExists', async (value, attribute, param, passes
     return;
   }
 
-
   //split table and column
   let attArr = attribute.split(',');
   if (attArr.length < 1) {
@@ -116,7 +105,7 @@ Validator.registerAsync('multipleExists', async (value, attribute, param, passes
   const { 0: table, 1: column } = attArr;
 
   //define custom error message
-  let msg = `The ${param} whose value (${value}) was not found.`;
+  let msg = `The ${param} whose value (${value.toString()}) was not found.`;
   let isArray = false;
   //check if incoming value already exists in the database
   let criteria = { deleted: false, status: true };

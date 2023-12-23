@@ -11,6 +11,7 @@ exports.sentOTPSMS = function (email, token) {
 
         sendSMS(smsOptions);
     } catch (ex) {
-        console.log(ex);
+        error(ex.message);
+        throw new baseError(ex);
     }
 };

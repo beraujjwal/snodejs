@@ -1,15 +1,8 @@
 'use strict';
 const { controller } = require( './controller' );
-const { Utilities } = require('../services/utilitie.service');
-const nodemailer = require('nodemailer');
-var jwt = require("jsonwebtoken");
-var bcrypt = require("bcryptjs");
-
 const { user } = require('../services/user.service');
 
 const userService = new user('User');
-
-
 
 class UsersController extends controller {
 
@@ -67,7 +60,7 @@ class UsersController extends controller {
     try {
       //logger.debug('This is the "/" route.')
       var usersList = await this.User.usersListService(req, res);
-      var userDatas = JSON.parse(JSON.stringify(usersList));
+      var userDatas = usersList.toJSON();
       //console.log(userDatas)
       if(userDatas) {
         res.render('admin/users/users', {userDatas: userDatas});
@@ -112,7 +105,7 @@ class UsersController extends controller {
     try {
       var userDetails = await this.User.usersDetailsService(req, res);
 
-      var userDatas = JSON.parse(JSON.stringify(userDetails));
+      var userDatas = userDetails.toJSON();
       res.render('admin/users/user_edit', { title: 'User Edit', msg: 'Edit Users', error: false, userDatas: userDatas, languages: languages })
     } catch ( err ) {
       console.log(err);
@@ -138,7 +131,7 @@ class UsersController extends controller {
   async adminDeleteUser(req, res) {
     try {
       var usersList = await this.User.usersListService(req, res);
-      var userDatas = JSON.parse(JSON.stringify(usersList));
+      var userDatas = usersList.toJSON();
       if(userDatas) {
         res.render('admin/users/users', {userDatas: userDatas});
       }else {

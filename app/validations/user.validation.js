@@ -18,7 +18,7 @@ class userValidation extends validation {
       email: 'required|email',
       phone: 'required|numeric',
       password: 'required|string|strict|min:6',
-      role: 'string|exists:Role,slug'
+      roles: 'exists:Role,id'
     };
     //return await this.validate(req, res, next, validationRule);
     console.log('Calling Validation');

@@ -15,7 +15,6 @@ class PermissionsController extends controller {
    */
   constructor( service ) {
       super( service );
-      this.service = service;
   }
 
 
@@ -28,7 +27,7 @@ class PermissionsController extends controller {
    */
   async getAll( req, transaction ) {
 
-    const result = await this.service.getAll(req.query, { transaction });
+    const result = await permissionService.getAll(req.query, { transaction });
     if (result === undefined || result === null) throw new baseError(__("PERMISSIONS_LIST_FETCH_ERROR"));
     return {
       code: 200,
@@ -47,7 +46,7 @@ class PermissionsController extends controller {
    */
   async create( req, transaction ) {
     const { name } = req.body;
-    const result = await this.service.create({ name }, { transaction } );
+    const result = await permissionService.create({ name }, { transaction } );
     if (result === undefined || result === null) throw new baseError(__("UNABLE_TO_ADD_PERMISSION"));
     return {
       code: 201,
@@ -66,7 +65,7 @@ class PermissionsController extends controller {
    */
   async findByPk( req, transaction ) {
     const id = req.params.id;
-    const result = await this.service.findByPk(id, { transaction });
+    const result = await permissionService.findByPk(id, { transaction });
     if (result === undefined || result === null) throw new baseError(__("UNABLE_TO_FETCH_PERMISSION"));
     return {
       code: 200,
@@ -86,7 +85,7 @@ class PermissionsController extends controller {
   async updateByPk( req, transaction ) {
     const id = req.params.id;
     const { name, status } = req.body;
-    const result = await this.service.updateByPk(id, { name, status }, { transaction });
+    const result = await permissionService.updateByPk(id, { name, status }, { transaction });
     if (result === undefined || result === null) throw new baseError(__("UNABLE_TO_UPDATE_PERMISSION"));
     return {
       code: 200,
@@ -106,7 +105,7 @@ class PermissionsController extends controller {
   async deleteByPk( req, res, next ) {
 
     const id = req.params.id;
-    const result = await this.service.deleteByPk(id, { ...req.body }, { transaction });
+    const result = await permissionService.deleteByPk(id, { ...req.body }, { transaction });
     if (result === undefined || result === null) throw new baseError(__("UNABLE_TO_UPDATE_PERMISSION"));
     return {
       code: 200,

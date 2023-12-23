@@ -1,9 +1,6 @@
 'use strict';
 require('dotenv').config();
-const chalk = require('chalk');
-
 const { kafka } = require('../helpers/kafka');
-const log = console.log;
 let producer = null;
 if(kafka) {
   producer = kafka.producer({
@@ -16,7 +13,7 @@ exports.sendMessage = async (messageTopic, messageBody) => {
 
         await producer.connect()
         .then((value) => log("Producer connected"))
-        .catch((err) => log(chalk.red.bgWhite.bold('✘ Kafka producer connect failed!')));
+        .catch((err) => error('Kafka producer connect failed!'));
 
         await producer.send({
           topic: messageTopic,
@@ -25,12 +22,13 @@ exports.sendMessage = async (messageTopic, messageBody) => {
           log('producerData: ', resp);
         })
         .catch((err) => {
-          console.error('error: ', err);
+          error('error: ', err);
         })
         await producer.disconnect();
 
     } catch (ex) {
-      log(ex);
+      error(ex.message);
+      throw new baseError(ex);
     }
 };
 

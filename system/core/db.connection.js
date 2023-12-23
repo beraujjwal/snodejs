@@ -1,31 +1,44 @@
 'use strict';
 require( 'dotenv' ).config();
-const chalk = require('chalk');
-const log = console.log;
 const { Sequelize, DataTypes } = require('sequelize');
 
-const database = process.env.DB_DATABASE || 'node';
-const user = process.env.DB_USERNAME || 'root';
-const password = process.env.DB_PASSWORD || '';
-const host = process.env.DB_HOST || '127.0.0.1';
-const port = process.env.DB_PORT || '3306';
-const dialect = process.env.DB_CONNECTION || 'mysql';
+const { config } = require('../../config/db.config');
 
-const sequelize = new Sequelize(database, user, password, {
-  host,
-  port,
-  dialect,
+const sequelize = new Sequelize(config.database, config.username, config.password, {
+  host: config.host,
+  port: config.port,
+  dialect: config.dialect,
   operatorsAliases: 'false',
   logging: process.env.APP_ENV === 'production' ? false : console.log,
   logging: function (str) {
-    console.log('\x1b[32m%s\x1b[0m', str);
+    log('\x1b[32m%s\x1b[0m', str);
   }
 });
 
 sequelize.authenticate().then(() => {
-  log(chalk.green.bgWhite.bold('✔ Database Connection has been established successfully'));
+  log('Database Connection has been established successfully');
 }).catch((ex) => {
-  log(chalk.red.bgWhite.bold(`✘ Unable to connect to the database:: ${ex.message}`));
+  error(`Unable to connect to the database. - ${ex.message}`);
+});
+
+sequelize.beforeDefine(function(attributes) {
+  attributes.status = {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true
+  }
+  attributes.createdBy = {
+    type: DataTypes.BIGINT,
+    defaultValue: null
+  }
+  attributes.updatedBy = {
+    type: DataTypes.BIGINT,
+    defaultValue: null
+  }
+  attributes.deletedBy = {
+    type: DataTypes.BIGINT,
+    defaultValue: null
+  }
 });
 
 // sequelize.sync().then(() => {

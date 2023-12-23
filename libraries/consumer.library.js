@@ -1,18 +1,13 @@
 'use strict';
 require('dotenv').config();
-const chalk = require('chalk');
-
 const { kafka } = require('../helpers/kafka');
 const { consumerCallTopicsService } = require('../kafka');
-const log = console.log;
 const groupId = process.env.KAFKA_GROUP_ID;
 const topicsString = process.env.KAFKA_SUBSCRIBE_TOPICS;
 let topics = [];
 let consumerKafkaMessage = function() { return undefined; };
 
 if(kafka) {
-
-  //console.log('kafka', kafka);
 
   if(topicsString)
     topics = topicsString.split(',');
@@ -21,8 +16,8 @@ if(kafka) {
     try{
       if(topicsString && groupId) {
         const consumer = kafka.consumer({ groupId: groupId });
-        await consumer.connect().then((value) => console.log("Consumer connected"))
-        .catch((err) => log(chalk.red.bgWhite.bold('✘ Kafka consumer connect failed!')));
+        await consumer.connect().then((value) => log("Consumer connected"))
+        .catch((ex) => error(`Kafka consumer connect failed!. - ${ex.message}`));
 
         if(topics.length > 0) {
           topics.forEach(topic => {
@@ -38,7 +33,8 @@ if(kafka) {
       }
 
     } catch (ex) {
-      console.log(ex);
+      error(ex.message);
+      throw new baseError(ex);
     }
   };
 }

@@ -17,20 +17,20 @@ exports.sendMail = function (mailOptions) {
 
   transporter.use('compile', hbs({
     viewEngine: {
-      extName: '.handlebars',
+      extName: '.hbs',
       // partialsDir: viewPath,
       layoutsDir: viewPath,
       defaultLayout: false,
       partialsDir: partialsPath,
     },
     viewPath: viewPath,
-    extName: '.handlebars',
+    extName: '.hbs',
   }))
 
   // send mail with defined transport object
   // visit https://nodemailer.com/ for more options
   return transporter.sendMail(mailOptions, function (error, info) {
-    if (error) return console.log(error);
+    if (error) return error(error);
     console.debug('mail sent:', info.response);
   });
 };

@@ -11,7 +11,6 @@ class resourcesController extends controller {
    */
   constructor(service) {
     super(service);
-    this.service = resourceService;
   }
 
   /**
@@ -21,8 +20,8 @@ class resourcesController extends controller {
    * @param {*} next
    * @author Ujjwal Bera
    */
-  async resourcesList(req, transaction) {
-    let result = await this.service.resourcesList(req.query, transaction);
+  async getAll(req, transaction) {
+    let result = await resourceService.getAll(req.query, transaction);
     if (result) {
       return {
         code: 200,
@@ -41,7 +40,7 @@ class resourcesController extends controller {
    */
   async resourcesDDLList(req, transaction) {
     req.query.return_type = 'ddl';
-    let result = await this.service.resourcesList(req.query, transaction);
+    let result = await resourceService.resourcesList(req.query, transaction);
     if (result) {
       return {
         code: 200,
@@ -60,9 +59,19 @@ class resourcesController extends controller {
    * @param {*} next
    * @author Ujjwal Bera
    */
-  async resourceStore(req, transaction) {
-    let { name, parent, rightsAvailable } = req.body;
-    let result = await this.service.insert({ name, parent, rightsAvailable }, transaction);
+  async create(req, transaction) {
+    let { name, parent, resourcPermissions } = req.body;
+    const resource = await resourceService.create({ name, parent }, transaction);
+    if(resource){
+      const resourcPermissionsDataSet = [];
+      await resourcPermissions.forEach(resourcPermission => {
+        resourcPermissionsDataSet.push({
+          resourceId: resource.id,
+          permissionId: resourcPermission
+        })
+      });
+      resourcPermissions = await resourceService.bulkCreate(resourcPermissionsDataSet, transaction);
+    }
     if (result) {
 
       return {
@@ -81,10 +90,9 @@ class resourcesController extends controller {
    * @param {*} next
    * @author Ujjwal Bera
    */
-  async resourceDetails(req, transaction) {
+  async findByPk(req, transaction) {
     let resourceId = req.params.id;
-    console.log(`resourceId=>${resourceId}`)
-    let result = await this.service.resourceDetails(resourceId, transaction);
+    let result = await resourceService.findByPk(resourceId, transaction);
     if (result) {
       return res
         .status(200)
@@ -100,10 +108,10 @@ class resourcesController extends controller {
    * @param {*} next
    * @author Ujjwal Bera
    */
-  async resourceUpdate(req, transaction) {
+  async updateByPk(req, transaction) {
     let resourceId = req.params.id;
     let { name, status } = req.body;
-    let result = await this.service.resourceUpdate(resourceId, { name, status}, transaction );
+    let result = await resourceService.updateByPk(resourceId, { name, status}, transaction );
     if (result) {
       return res
         .status(200)
@@ -122,7 +130,7 @@ class resourcesController extends controller {
   async resourceStatusUpdate(req, transaction) {
     let resourceId = req.params.id;
     let { status } = req.body;
-    let result = await this.service.resourceStatusUpdate(resourceId, status, transaction);
+    let result = await resourceService.resourceStatusUpdate(resourceId, status, transaction);
     if (result) {
       return res
         .status(200)
@@ -132,33 +140,15 @@ class resourcesController extends controller {
   }
 
   /**
-   * @desc Checking if it a deletable resource
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
-   * @author Ujjwal Bera
-   */
-  async isDeletableResource(req, transaction) {
-    let resourceId = req.params.id;
-    let result = await this.service.isDeletableResource(resourceId, transaction);
-    if (result) {
-      return res
-        .status(200)
-        .json(this.success(result, 'You can delete this resource!'));
-    }
-    throw new baseError('Some error occurred while deleting resource.');
-  }
-
-  /**
    * @desc Delete a resource
    * @param {*} req
    * @param {*} res
    * @param {*} next
    * @author Ujjwal Bera
    */
-  async resourceDelete(req, transaction) {
+  async deleteByPk(req, transaction) {
     let resourceId = req.params.id;
-    let result = await this.service.resourceDelete(resourceId, transaction);
+    let result = await resourceService.deleteByPk(resourceId, transaction);
     if (result) {
       return res
         .status(200)
