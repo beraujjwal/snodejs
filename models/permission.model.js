@@ -1,5 +1,6 @@
 'use strict';
 const { sequelize, DataTypes } = require('../system/core/db.connection');
+const User = require('./user.model');
 
 const Permission = sequelize.define("Permission",
     {
@@ -39,7 +40,8 @@ const Permission = sequelize.define("Permission",
       status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: true,
+        comment: 'This column is for checking if the permission is active or not.'
       },
     },
     {
@@ -50,10 +52,24 @@ const Permission = sequelize.define("Permission",
       tableName: 'permissions',
       indexes: [ { unique: true, fields: [ 'name', 'slug'] } ],
       defaultScope: {
-        attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
-        // where: {
-        //   status: true,
-        // },
+        attributes: { exclude: [ 'deletedAt', 'deletedBy', 'createdBy','updatedBy' ] },
+        where: {
+          status: true,
+        },
+        include: [
+          {
+            model: User,
+            as: 'addedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+          {
+            model: User,
+            as: 'editedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+        ]
       },
       scopes: {
         // withRoles: {
@@ -122,8 +138,71 @@ const Permission = sequelize.define("Permission",
 );
 
 Permission.associate = function(models) {
-  Permission.belongsToMany(models.User, {through: 'UserResourcePermission', foreignKey: 'permissionId', as: 'userPermissions'});
-  Permission.belongsToMany(models.Role, {through: 'RoleResourcePermission', foreignKey: 'permissionId', as: 'rolePermissions'});
+
+
+
+
+  Permission.belongsToMany(models.Resource, {
+    through: {
+      model: models.RoleResourcePermission,
+      //unique: false,
+      scope: {
+        status: true
+      }
+    },
+    //otherKey: 'permissionID',
+    foreignKey: 'permissionID',
+    as: 'roleResourcePermissions',
+    constraints: true
+  });
+
+  Permission.belongsToMany(models.Resource, {
+    through: {
+      model: models.UserResourcePermission,
+      //unique: false,
+      scope: {
+        status: true
+      }
+    },
+    //otherKey: 'permissionID',
+    foreignKey: 'permissionID',
+    as: 'userResourcePermissions',
+    constraints: true
+  });
+
+
+
+
+  Permission.belongsToMany(models.Permission, {
+    through: {
+      model: models.UserResourcePermission,
+      unique: false,
+      scope: {
+        status: true
+      }
+    },
+    //targetKey: 'id',
+    foreignKey: 'permissionID',
+    as: 'userPermissions',
+    //constraints: false
+  });
+
+  Permission.belongsToMany(models.Permission, {
+    through: {
+      model: models.RoleResourcePermission,
+      unique: false,
+      scope: {
+        status: true
+      }
+    },
+    //targetKey: 'id',
+    foreignKey: 'permissionID',
+    as: 'rolePermissions',
+    constraints: true
+  });
+
+  Permission.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
+  Permission.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
 };
 
 module.exports = Permission;

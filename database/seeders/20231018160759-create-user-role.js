@@ -6,8 +6,8 @@ module.exports = {
     await queryInterface.bulkInsert('user_roles', [
       {
         id: 1,
-        userId: 1,
-        roleId: 1,
+        userID: 1,
+        roleID: 1,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
@@ -15,8 +15,8 @@ module.exports = {
       },
       {
         id: 2,
-        userId: 2,
-        roleId: 2,
+        userID: 2,
+        roleID: 2,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
@@ -24,8 +24,8 @@ module.exports = {
       },
       {
         id: 3,
-        userId: 3,
-        roleId: 3,
+        userID: 3,
+        roleID: 3,
         status:true,
         deletedAt: null,
         createdAt: new Date(),

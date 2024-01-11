@@ -6,7 +6,7 @@ module.exports = {
     await queryInterface.bulkInsert('tokens', [
       {
         id: 1,
-        userId: 1,
+        userID: 1,
         token: '951753',
         sentTo: 'phone',
         sentOn: '9876543210',
@@ -19,7 +19,7 @@ module.exports = {
       },
       {
         id: 2,
-        userId: 2,
+        userID: 2,
         token: '951357',
         sentTo: 'phone',
         sentOn: '9876543211',

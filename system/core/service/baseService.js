@@ -2,10 +2,8 @@ const  { Sequelize, sequelize, Op } = require('sequelize');
 const { base } = require('../base');
 const { baseError } = require('../error/baseError');
 
-const chalk = require('chalk');
-const log = console.log;
-
 class baseService extends base {
+
   /**
    * Base Service Layer
    * @author Ujjwal Bera
@@ -25,7 +23,7 @@ class baseService extends base {
    * @param {*} param1
    * @returns { rows, count } response
    */
-  async getAll(
+  async list(
     {
       orderby = 'name',
       ordering = 'ASC',
@@ -85,7 +83,7 @@ class baseService extends base {
    * @param {*} param1
    * @returns { rows, count } response
    */
-  async get(search, {
+  async read(search, {
     filter = null,
     include,
     attributes,
@@ -102,7 +100,7 @@ class baseService extends base {
     }
   }
 
-  async findByPk(id, { transaction, include, attributes}) {
+  async readById(id, { transaction, include, attributes}) {
 
     try {
       let item = await this.model.findByPk(id, {
@@ -117,7 +115,7 @@ class baseService extends base {
     }
   }
 
-  async create(data, { transaction } ) {
+  async add(data, { transaction } ) {
     try {
       Object.keys(data).forEach(
         (key) => data[key] === undefined && delete data[key],
@@ -131,7 +129,7 @@ class baseService extends base {
     }
   }
 
-  async bulkCreate(data, { transaction }) {
+  async addMany(data, { transaction }) {
     try {
       const items = await this.model.bulkCreate(data, { transaction })
 
@@ -143,16 +141,7 @@ class baseService extends base {
     }
   }
 
-  async updateById(id, data, transaction) {
-    try {
-      const search = { _id: id,  deleted: false };
-      return await this.update(search, data, transaction);
-    } catch (ex) {
-      throw new baseError(ex.message || `Some error occurred while updating the ${this.name}.`, 400);
-    }
-  }
-
-  async update(search, data, transaction) {
+  async edit(search, data, transaction) {
     try {
       const filter = await this.generateQueryFilterFromQueryParams(search);
       const dbItem = await this.get(filter, transaction);
@@ -175,7 +164,16 @@ class baseService extends base {
     }
   }
 
-  async updateMany(search, data, transaction) {
+  async editById(id, data, transaction) {
+    try {
+      const search = { _id: id,  deleted: false };
+      return await this.update(search, data, transaction);
+    } catch (ex) {
+      throw new baseError(ex.message || `Some error occurred while updating the ${this.name}.`, 400);
+    }
+  }
+
+  async editMany(search, data, transaction) {
     try {
       const filter = await this.generateQueryFilterFromQueryParams(search);
       Object.keys(data).forEach(
@@ -192,21 +190,21 @@ class baseService extends base {
     }
   }
 
-  async deleteById(id, transaction) {
-    try {
-      let filter = { _id: id,  deleted: false };
-      return await this.delete(filter, transaction);
-    } catch (ex) {
-      throw new baseError(ex.message || `Some error occurred while deleting the ${this.name}.`, ex.statusCode || 400);
-    }
-  }
-
   async delete(search, transaction) {
     try {
       const filter = await this.generateQueryFilterFromQueryParams(search);
       const item = await this.model.deleteOne(filter).transaction(transaction);
       if (!item) throw new baseError(`Some error occurred while deleting the ${this.name}.`, 500);
       return item;
+    } catch (ex) {
+      throw new baseError(ex.message || `Some error occurred while deleting the ${this.name}.`, ex.statusCode || 400);
+    }
+  }
+
+  async deleteById(id, transaction) {
+    try {
+      let filter = { _id: id,  deleted: false };
+      return await this.delete(filter, transaction);
     } catch (ex) {
       throw new baseError(ex.message || `Some error occurred while deleting the ${this.name}.`, ex.statusCode || 400);
     }

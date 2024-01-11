@@ -3,6 +3,7 @@ const { baseError } = require('../error/baseError');
 
 class baseController extends base {
 
+
   /**
    * @description Base Controller Layer
    * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
@@ -21,8 +22,8 @@ class baseController extends base {
    * @param {*} transaction
    * @returns {*} object
    */
-  async getAll(req, transaction) {
-      const response = await this.service.getAll(req.query, { transaction });
+  async list(req, transaction) {
+      const response = await this.service.list(req.query, { transaction });
       if (!response) throw new baseError(__("ITEMS_LIST_FETCH_ERROR"));
       return {
         code: 200,
@@ -31,16 +32,16 @@ class baseController extends base {
       }
   }
 
+
   /**
-   * @description Fetch item details by item id
+   * @description Read item details
    * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
    * @param {*} req
    * @param {*} transaction
    * @returns {*} object
    */
-  async getById(req, transaction) {
-    const { id } = req.params;
-    const response = await this.service.getById(id, transaction);
+  async read(req, transaction) {
+    const response = await this.service.read(req.params, transaction);
     if (!response) throw new baseError(__("ITEM_DETAIL_FETCH_ERROR"));
     return {
       code: 200,
@@ -49,15 +50,17 @@ class baseController extends base {
     }
   }
 
+
   /**
-   * @description Fetch item details
+   * @description Read item details by item id
    * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
    * @param {*} req
    * @param {*} transaction
    * @returns {*} object
    */
-  async get(req, transaction) {
-    const response = await this.service.get(req.params, transaction);
+  async readById(req, transaction) {
+    const { id } = req.params;
+    const response = await this.service.readById(id, transaction);
     if (!response) throw new baseError(__("ITEM_DETAIL_FETCH_ERROR"));
     return {
       code: 200,
@@ -65,6 +68,7 @@ class baseController extends base {
       message: __("ITEM_DETAIL_FETCH_SUCESSFULLY")
     }
   }
+
 
   /**
    * @description Add a new item
@@ -73,8 +77,8 @@ class baseController extends base {
    * @param {*} transaction
    * @returns {*} object
    */
-  async create(req, transaction) {
-    const response = await this.service.create(req.body, { transaction });
+  async add(req, transaction) {
+    const response = await this.service.add(req.body, transaction);
     if(!response) throw new baseError(__("ITEM_ADDED_ERROR"));
     return {
       code: 200,
@@ -83,6 +87,7 @@ class baseController extends base {
     }
   }
 
+
   /**
    * @description Add multiple new items
    * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
@@ -90,8 +95,8 @@ class baseController extends base {
    * @param {*} transaction
    * @returns {*} object
    */
-  async bulkCreate(req, transaction) {
-    const response = await this.service.bulkCreate(req.body, transaction);
+  async addMany(req, transaction) {
+    const response = await this.service.addMany(req.body, { transaction });
     if(!response) throw new baseError(__("ITEMS_ADDED_ERROR"));
     return {
       code: 200,
@@ -100,17 +105,16 @@ class baseController extends base {
     }
   }
 
+
   /**
-   * @description Update item by item id
+   * @description Edit item
    * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
    * @param {*} req
    * @param {*} transaction
    * @returns {*} object
    */
-  async updateById(req, transaction) {
-    const { id } = req.params;
-    const response = await this.service.updateById(id, req.body, transaction);
-
+  async edit(req, transaction) {
+    const response = await this.service.edit(req.params, req.body, transaction);
     if(!response) throw new baseError(__("ITEM_UPDATED_ERROR"));
     return {
       code: 200,
@@ -119,16 +123,17 @@ class baseController extends base {
     }
   }
 
+
   /**
-   * @description Update item
+   * @description Edit item by item id
    * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
    * @param {*} req
    * @param {*} transaction
    * @returns {*} object
    */
-  async update(req, transaction) {
-    const response = await this.service.update(req.params, req.body, transaction);
-
+  async editById(req, transaction) {
+    const { id } = req.params;
+    const response = await this.service.editById(id, req.body, transaction);
     if(!response) throw new baseError(__("ITEM_UPDATED_ERROR"));
     return {
       code: 200,
@@ -137,23 +142,24 @@ class baseController extends base {
     }
   }
 
+
   /**
-   * @description Delete item by item id
+   * @description Edit multiple items by item id
    * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
    * @param {*} req
    * @param {*} transaction
    * @returns {*} object
    */
-  async deleteById(req, transaction) {
-    const { id } = req.params;
-    const response = await this.service.deleteById(id, transaction);
-    if(!response) throw new baseError(__("ITEM_DELETED_ERROR"));
+  async editMany(req, session) {
+    const response = await this.service.editMany(req.params, req.body, session);
+    if(!response) throw new baseError(__("UNABLE_TO_UPDATED_ITEMS"));
     return {
       code: 200,
       result: response,
-      message: __("ITEM_DELETED_SUCESSFULLY")
+      message: __("ITEMS_UPDATED_SUCESSFULLY")
     }
   }
+
 
   /**
    * @description Delete item
@@ -174,7 +180,26 @@ class baseController extends base {
 
 
   /**
-   * @description Delete items
+   * @description Delete item by item id
+   * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
+   * @param {*} req
+   * @param {*} transaction
+   * @returns {*} object
+   */
+  async deleteById(req, transaction) {
+    const { id } = req.params;
+    const response = await this.service.deleteById(id, transaction);
+    if(!response) throw new baseError(__("UNABLE_TO_DELETE_ITEM"));
+    return {
+      code: 200,
+      result: response,
+      message: __("ITEM_DELETED_SUCESSFULLY")
+    }
+  }
+
+
+  /**
+   * @description Delete multiple items
    * @author Ujjwal Bera<ujjwalbera.dev@gmail.com>
    * @param {*} req
    * @param {*} transaction
@@ -182,11 +207,11 @@ class baseController extends base {
    */
   async deleteMany(req, transaction) {
     const response = await this.service.deleteMany(req.params, transaction);
-    if(!response) throw new baseError(__("UNABLE_TO_ADD_PERMISSION"));
+    if(!response) throw new baseError(__("UNABLE_TO_DELETE_ITEMS"));
     return {
       code: 200,
       result: response,
-      message: __("UNABLE_TO_ADD_PERMISSION")
+      message: __("ITEMS_DELETED_SUCESSFULLY")
     }
   }
 }

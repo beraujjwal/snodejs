@@ -83,16 +83,17 @@ const User = sequelize.define("User",
       type: DataTypes.STRING,
       allowNull: true
     },
-    status: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true
-    },
     verified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
       comment: 'This column is for checking if the user verify himself or not.'
+    },
+    status: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      comment: 'This column is for checking if the user is active or not.'
     },
   },
   {
@@ -104,9 +105,6 @@ const User = sequelize.define("User",
     indexes: [ { unique: true, fields: [ 'name', 'phone', 'email'] } ],
     defaultScope: {
       attributes: { exclude: [ 'password', 'tokenSalt', 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
-      where: {
-        status: true,
-      }
     },
     scopes: {
       // withRoles: {
@@ -125,6 +123,9 @@ const User = sequelize.define("User",
       async validPassword(password) {
         console.log('saltRounds2', saltRounds);
           return bcrypt.compareSync(password, this.password);
+      },
+      async update(values, options) {
+        return super.update(values, { ...options, individualHooks: true });
       }
     },
     hooks: {
@@ -151,16 +152,28 @@ const User = sequelize.define("User",
 // }
 
 User.associate = function(models) {
-  User.belongsToMany(models.Role, { through: 'UserRole', scope: { status: true }, foreignKey: 'userId', as: 'activeRoles' });
-  User.belongsToMany(models.Role, { through: 'UserRole', foreignKey: 'userId', as: 'roles' });
-  User.belongsToMany(models.Resource, { through: 'UserResourcePermission', foreignKey: 'userId', as: 'resources' });
-  User.hasMany(models.Token, { as: 'tokens', foreignKey: 'userId', foreignKeyConstraint: true });
+  //User.belongsToMany(models.Role, { through: "UserRole", scope: { status: true }, foreignKey: "userID", as: "activeRoles" });
+  User.belongsToMany(models.Role,
+    {
+      through: {
+      model: models.UserRole,
+      unique: true,
+      scope: {
+        status: true
+      }
+    },
+    foreignKey: "userID",
+    as: "roles",
+    constraints: true
+  });
+  User.belongsToMany(models.Resource, { through: 'UserResourcePermission', foreignKey: 'userID', as: 'resources' });
+  User.hasMany(models.Token, { as: 'tokens', foreignKey: 'userID', foreignKeyConstraint: true, sourceKey: 'id' });
 
-  User.hasMany(User, { as: 'children', foreignKey: 'createdBy'});
-  User.belongsTo(User, { as: 'addedBy', foreignKey: 'createdBy'});
+  User.hasMany(User, { as: 'children', foreignKey: 'createdBy', sourceKey: 'id'});
+  User.belongsTo(User, { as: 'addedBy', foreignKey: 'createdBy', sourceKey: 'id'});
 
-  // User.hasMany(User, {as: 'children', foreignKey: 'updatedBy'});
-  User.belongsTo(User, {as: 'editedBy', foreignKey: 'updatedBy'});
+  // User.hasMany(User, {as: 'children', foreignKey: 'updatedBy', sourceKey: 'id'});
+  User.belongsTo(User, {as: 'editedBy', foreignKey: 'updatedBy', sourceKey: 'id'});
 
 };
 

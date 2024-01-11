@@ -3,85 +3,121 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('role_resource_permissions', {
-      id: {
-        type: Sequelize.BIGINT(11),
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      roleId: {
-        type: Sequelize.BIGINT(11),
-        references: {
-          model: {
-            tableName: 'roles',
-            modelName: 'Role'
-          },
-          key: 'id'
+    const transaction = await queryInterface.sequelize.transaction();
+    try {
+      await queryInterface.createTable('role_resource_permissions', {
+        id: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
         },
-        allowNull: false,
-        onUpdate: 'cascade',
-        onDelete: 'cascade'
-      },
-      resourceId: {
-        type: Sequelize.BIGINT(11),
-        references: {
-          model: {
-            tableName: 'resources',
-            modelName: 'Resource'
+        roleID: {
+          type: Sequelize.BIGINT,
+          references: {
+            model: {
+              tableName: 'roles',
+              modelName: 'Role'
+            },
+            key: 'id'
           },
-          key: 'id'
+          allowNull: false,
+          onUpdate: 'cascade',
+          onDelete: 'cascade'
         },
-        allowNull: false,
-        onUpdate: 'cascade',
-        onDelete: 'cascade'
-      },
-      permissionId: {
-        type: Sequelize.BIGINT(11),
-        references: {
-          model: {
-            tableName: 'permissions',
-            modelName: 'Permission'
+        resourceID: {
+          type: Sequelize.BIGINT,
+          references: {
+            model: {
+              tableName: 'resources',
+              modelName: 'Resource'
+            },
+            key: 'id'
           },
-          key: 'id'
+          allowNull: false,
+          onUpdate: 'cascade',
+          onDelete: 'cascade'
         },
-        allowNull: false,
-        onUpdate: 'cascade',
-        onDelete: 'cascade'
-      },
-      status: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
-      },
-      deletedAt: {
-        type: Sequelize.DATE,
-        allowNull: true,
-        defaultValue: null
-      },
-      deletedBy: {
-        type: Sequelize.BIGINT(11),
-        allowNull: true,
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-      },
-      createdBy: {
-        type: Sequelize.BIGINT(11),
-        allowNull: true,
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-      },
-      updatedBy: {
-        type: Sequelize.BIGINT(11),
-        allowNull: true,
-      },
-    });
+        permissionID: {
+          type: Sequelize.BIGINT,
+          references: {
+            model: {
+              tableName: 'permissions',
+              modelName: 'Permission'
+            },
+            key: 'id'
+          },
+          allowNull: false,
+          onUpdate: 'cascade',
+          onDelete: 'cascade'
+        },
+        status: {
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+          defaultValue: true
+        },
+        deletedAt: {
+          type: Sequelize.DATE,
+          allowNull: true,
+          defaultValue: null
+        },
+        deletedBy: {
+          type: Sequelize.BIGINT,
+          references: {
+            model: {
+              tableName: 'users',
+              modelName: 'User'
+            },
+            key: 'id'
+          },
+          onUpdate: 'cascade',
+          onDelete: 'cascade',
+          allowNull: true,
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          allowNull: false,
+          defaultValue: Sequelize.NOW
+        },
+        createdBy: {
+          type: Sequelize.BIGINT,
+          allowNull: true,
+          references: {
+            model: {
+              tableName: 'users',
+              modelName: 'User'
+            },
+            key: 'id'
+          },
+          onUpdate: 'cascade',
+          onDelete: 'cascade'
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          allowNull: false,
+          defaultValue: Sequelize.NOW
+        },
+        updatedBy: {
+          type: Sequelize.BIGINT,
+          allowNull: true,
+          references: {
+            model: {
+              tableName: 'users',
+              modelName: 'User'
+            },
+            key: 'id'
+          },
+          onUpdate: 'cascade',
+          onDelete: 'cascade'
+        },
+      }, { transaction });
+
+      await queryInterface.addIndex('role_resource_permissions', ['roleID', 'resourceID', 'permissionID'], { transaction });
+      await transaction.commit();
+    } catch (err) {
+      await transaction.rollback();
+      throw err;
+    }
 
 
 
@@ -115,6 +151,17 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('role_resource_permissions');
+    const transaction = await queryInterface.sequelize.transaction();
+    try {
+      await queryInterface.removeColumn("role_resource_permissions", "roleID");
+      await queryInterface.removeColumn("role_resource_permissions", "resourceID");
+      await queryInterface.removeColumn("role_resource_permissions", "permissionID");
+
+      await queryInterface.dropTable('role_resource_permissions', { transaction });
+      await transaction.commit();
+    } catch (err) {
+      await transaction.rollback();
+      throw err;
+    }
   }
 };

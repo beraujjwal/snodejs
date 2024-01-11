@@ -1,5 +1,6 @@
 'use strict';
 const { sequelize, DataTypes } = require('../system/core/db.connection');
+const User = require('./user.model');
 
 const Resource = sequelize.define("Resource",
     {
@@ -34,7 +35,8 @@ const Resource = sequelize.define("Resource",
       status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: true,
+        comment: 'This column is for checking if the resource is active or not.'
       },
     },
     {
@@ -44,31 +46,63 @@ const Resource = sequelize.define("Resource",
       modelName: 'Resource',
       tableName: 'resources',
       defaultScope: {
-        attributes: {
-          exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ]
-        }
+        attributes: { exclude: [ 'deletedAt', 'deletedBy', 'createdBy','updatedBy' ] },
+        where: {
+          status: true,
+        },
+        include: [
+          {
+            model: User,
+            as: 'addedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+          {
+            model: User,
+            as: 'editedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+        ]
       },
     }
 );
 
 Resource.associate = function(models) {
-  Resource.belongsToMany(models.Role, {through: 'RoleResourcePermission', foreignKey: 'resourceId', as: 'roles'});
-  Resource.belongsToMany(models.Permission, {through: 'RoleResourcePermission', foreignKey: 'resourceId', as: 'resourcePermissions'});
+
+
+  //Resource.belongsToMany(models.Role, {through: 'RoleResourcePermission', foreignKey: 'resourceID', as: 'roles'});
+  //Resource.belongsToMany(models.Permission, {through: 'RoleResourcePermission', foreignKey: 'resourceID', as: 'resourcePermissions'});
+
+
   Resource.belongsToMany(models.Permission, {
     through: {
       model: models.RoleResourcePermission,
-      unique: false,
+      //unique: false,
       scope: {
         status: true
       }
     },
-    sourceKey: 'id',
-    foreignKey: 'resourceId',
+    //otherKey: 'permissionID',
+    foreignKey: 'resourceID',
     as: 'roleResourcePermissions',
-    constraints: false
+    constraints: true
   });
 
-  Resource.belongsToMany(models.Permission, {through: 'UserResourcePermission', foreignKey: 'resourceId', as: 'permissions'});
+  Resource.belongsToMany(models.Permission, {
+    through: {
+      model: models.UserResourcePermission,
+      //unique: false,
+      scope: {
+        status: true
+      }
+    },
+    //targetKey: 'id',
+    foreignKey: 'resourceID',
+    as: 'permissions',
+    constraints: true
+  });
+
   Resource.belongsToMany(models.Permission, {
     through: {
       model: models.UserResourcePermission,
@@ -77,11 +111,14 @@ Resource.associate = function(models) {
         status: true
       }
     },
-    sourceKey: 'id',
-    foreignKey: 'resourceId',
+    //targetKey: 'id',
+    foreignKey: 'resourceID',
     as: 'userResourcePermissions',
-    constraints: false
+    constraints: true
   });
+
+  Resource.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
+  Resource.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
 };
 
 module.exports = Resource;

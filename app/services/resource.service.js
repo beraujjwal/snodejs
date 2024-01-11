@@ -12,6 +12,7 @@ class resource extends service {
   constructor(model) {
     super(model);
     this.model = this.db[model];
+    this.user = this.db['User'];
   }
 
   async getAll(queries, transaction) {

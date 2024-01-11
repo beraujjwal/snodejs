@@ -1,7 +1,9 @@
 'use strict';
+require('dotenv').config();
+
 const Umzug = require("umzug");
 const models = require("../model");
-const sequelize = require('../db.connection');
+const { sequelize } = require('../db.connection');
 
 const seedsConfig = {
   storage: "sequelize",

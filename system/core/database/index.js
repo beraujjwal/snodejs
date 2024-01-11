@@ -1,11 +1,28 @@
 'use strict';
 const chalk = require('chalk');
 
+global.log = function log(message) {
+    if (process.env.APP_ENV !== 'production') console.log(chalk.green.bgWhite.bold(`✔ ${message}`));
+}
+global.info = function info(message) {
+    if (process.env.APP_ENV !== 'production') console.log(chalk.green.bgWhite.bold(`✔ ${message}`));
+}
+global.echo = function echo(message) {
+    if (process.env.APP_ENV !== 'production') console.log(chalk.green.bgWhite.bold(`✔ ${message}`));
+}
+global.error = function error(message) {
+    if (process.env.APP_ENV !== 'production') console.log(chalk.red.bgWhite.bold(`✘ ${message}`));
+}
+global.warn = function warn(message) {
+    if (process.env.APP_ENV !== 'production') console.log(chalk.red.bgWhite.bold(`✘ ${message}`));
+}
+global.currentLoginUserId = 1;
 const  { migrator } = require('./migrator');
 const  { seeder } = require('./seeder');
 
 module.exports = async function (moduleArg) {
     try {
+        const processStep = moduleArg[2];
         const processName = moduleArg[1];
         const processAction = moduleArg[0].slice(4);
 
@@ -22,10 +39,10 @@ module.exports = async function (moduleArg) {
 
         switch (processAction) {
             case 'migration':
-                await runMigration( processName );
+                await runMigration( processName, processStep );
                 break;
             case 'seeder':
-                await runSeeder( processName );
+                await runSeeder( processName, processStep );
                 break;
             default:
                 break;
@@ -40,7 +57,7 @@ module.exports = async function (moduleArg) {
 };
 
 
-async function runMigration( processName = 'up' ) {
+async function runMigration( processName = 'up', processStep = 'ALL' ) {
     if(processName === 'up')
         await migrator.up().then((data) => {
 
@@ -56,7 +73,7 @@ async function runMigration( processName = 'up' ) {
 }
 
 
-async function runSeeder( processName = 'up' ) {
+async function runSeeder( processName = 'up', processStep = 'ALL' ) {
     if(processName === 'up')
         await seeder.up().then((data) => {
             data.forEach(element => {

@@ -1,5 +1,6 @@
 'use strict';
 const { sequelize, DataTypes } = require('../system/core/db.connection');
+const User = require('./user.model');
 
 const Role = sequelize.define("Role",
     {
@@ -9,7 +10,7 @@ const Role = sequelize.define("Role",
         autoIncrement: true,
         allowNull: false
       },
-      parentId: {
+      parentID: {
         type: DataTypes.BIGINT,
         references: {
            model: 'roles',
@@ -53,7 +54,8 @@ const Role = sequelize.define("Role",
       status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: true,
+        comment: 'This column is for checking if the role is active or not.'
       },
     },
     {
@@ -64,40 +66,21 @@ const Role = sequelize.define("Role",
       tableName: 'roles',
       indexes: [ { unique: true, fields: [ 'name', 'slug'] } ],
       defaultScope: {
-        attributes: {
-          // include: [[Sequelize.fn("COUNT", Sequelize.col("users.id")), "UsersCount"]],
-          exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ]
-        },
+        attributes: { exclude: [ 'deletedAt', 'deletedBy', 'createdBy','updatedBy' ] },
         include: [
-          // {
-          //   model: User,
-          //   as: 'users',
-          //   attributes: { include: ['id', 'name', 'phone', 'status'] },
-          //   through:{
-          //     where: {
-          //       status: true,
-          //     },
-          //     attributes: []
-          //   },
-          //   where: {
-          //     status: true,
-          //   },
-          // },
-          // {
-          //   model: Resource,
-          //   as: 'resources',
-          //   attributes: { include: ['id', 'name', 'phone', 'status'] },
-          //   through:{
-          //     where: {
-          //       status: true,
-          //     },
-          //     attributes: []
-          //   },
-          //   where: {
-          //     status: true,
-          //   },
-          // }
-        ],
+          {
+            model: User,
+            as: 'addedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+          {
+            model: User,
+            as: 'editedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+        ]
       },
       scopes: {
         withPermissions: {
@@ -139,9 +122,9 @@ Role.associate = function(models) {
         status: true
       }
     },
-    foreignKey: 'roleId',
-    as: 'users',
-    constraints: false
+    foreignKey: "roleID",
+    as: "users",
+    //constraints: false
   });
 
   Role.belongsToMany(models.Resource, {
@@ -152,10 +135,13 @@ Role.associate = function(models) {
         status: true
       }
     },
-    foreignKey: 'roleId',
+    foreignKey: 'roleID',
     as: 'resources',
     constraints: false
   });
+
+  Role.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
+  Role.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
 };
 
 module.exports = Role;

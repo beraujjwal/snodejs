@@ -3,63 +3,99 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('states', {
-      id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      name: {
-        type: Sequelize.STRING(100),
-        allowNull: false
-      },
-      countryId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: {
-            tableName: 'countries',
-            modelName: 'Country'
-          },
-          key: 'id'
+    const transaction = await queryInterface.sequelize.transaction();
+    try {
+      await queryInterface.createTable('states', {
+        id: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
         },
-        allowNull: false,
-        onUpdate: 'cascade',
-        onDelete: 'cascade'
-      },
-      status: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
-      },
-      deletedAt: {
-        type: Sequelize.DATE,
-        allowNull: true,
-        defaultValue: null
-      },
-      deletedBy: {
-        type: Sequelize.BIGINT(11),
-        allowNull: true,
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-      },
-      createdBy: {
-        type: Sequelize.BIGINT(11),
-        allowNull: true,
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-      },
-      updatedBy: {
-        type: Sequelize.BIGINT(11),
-        allowNull: true,
-      },
-    }).then(() => queryInterface.addIndex('states', ['name', 'countryId']));
+        name: {
+          type: Sequelize.STRING(100),
+          allowNull: false
+        },
+        countryID: {
+          type: Sequelize.BIGINT,
+          references: {
+            model: {
+              tableName: 'countries',
+              modelName: 'Country'
+            },
+            key: 'id'
+          },
+          allowNull: false,
+          onUpdate: 'cascade',
+          onDelete: 'cascade'
+        },
+        status: {
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+          defaultValue: true
+        },
+        deletedAt: {
+          type: Sequelize.DATE,
+          allowNull: true,
+          defaultValue: null
+        },
+        deletedBy: {
+          type: Sequelize.BIGINT,
+          allowNull: true,
+          references: {
+            model: {
+              tableName: 'users',
+              modelName: 'User'
+            },
+            key: 'id'
+          },
+          onUpdate: 'cascade',
+          onDelete: 'cascade'
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          allowNull: false,
+          defaultValue: Sequelize.NOW
+        },
+        createdBy: {
+          type: Sequelize.BIGINT,
+          allowNull: true,
+          references: {
+            model: {
+              tableName: 'users',
+              modelName: 'User'
+            },
+            key: 'id'
+          },
+          onUpdate: 'cascade',
+          onDelete: 'cascade'
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          allowNull: false,
+          defaultValue: Sequelize.NOW
+        },
+        updatedBy: {
+          type: Sequelize.BIGINT,
+          allowNull: true,
+          references: {
+            model: {
+              tableName: 'users',
+              modelName: 'User'
+            },
+            key: 'id'
+          },
+          onUpdate: 'cascade',
+          onDelete: 'cascade'
+        },
+      }, { transaction });
+
+      await queryInterface.addIndex('states', ['name', 'countryID'], { transaction });
+      await transaction.commit();
+    } catch (err) {
+      await transaction.rollback();
+      throw err;
+    }
   },
 
   async down (queryInterface, Sequelize) {

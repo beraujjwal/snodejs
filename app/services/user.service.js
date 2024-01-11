@@ -104,7 +104,7 @@ class user extends service {
       if (!user) {
         throw new baseError(__('LOGIN_INVALID_USERNAME_PASSWORD'), 401)
       }
-      console.log(JSON.parse(JSON.stringify(user)));
+
       const passwordIsValid = bcrypt.compareSync(
         password,
         user?.password
@@ -490,14 +490,14 @@ class user extends service {
     try {
 
       let user = await this.model.unscoped().findOne({
-        attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt', 'isEmailVerified', 'isPhoneVerified' ] },
+        attributes: { exclude: [ 'createdAt', 'updatedAt', 'deletedAt', 'isEmailVerified', 'isPhoneVerified', 'createdBy', 'updatedBy', 'deletedBy' ] },
         where: criteria,
         include: [
           {
             model: this.role,
-            as: 'roles',
+            as: "roles",
+            attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
             required: true,
-            //attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
             through:{
               where: {
                 status: true,
@@ -512,11 +512,13 @@ class user extends service {
             model: this.model,
             as: 'addedBy',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
           },
           {
             model: this.model,
             as: 'editedBy',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
           }
         ],
         transaction: transaction
@@ -527,21 +529,21 @@ class user extends service {
 
         const rolesWithDetails = await Promise.all(
           allRoles.map(async (role) => {
-            const resources = await this.resource.findAll({
-              //attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
+            const resources = await this.resource.unscoped().findAll({
+              attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
               where: {
                 status: true,
               },
               include: [
                 {
-                  model: this.permission,
+                  model: this.permission.unscoped(),
                   as: 'roleResourcePermissions',
-                  //attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
+                  attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
                   where: {
                     status: true,
                   },
                   through: {
-                    where: { roleId: role.id, status: true },
+                    where: { roleID: role.id, status: true },
                     attributes: [] // To exclude the join table attributes
                   }
                 }
@@ -552,21 +554,21 @@ class user extends service {
           })
         );
 
-        const resources = await this.resource.findAll({
+        const resources = await this.resource.unscoped().findAll({
           attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
           where: {
             status: true,
           },
           include: [
             {
-              model: this.permission,
+              model: this.permission.unscoped(),
               as: 'userResourcePermissions',
               attributes: { exclude: [ 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
               where: {
                 status: true,
               },
               through: {
-                where: { userId: user.id, status: true },
+                where: { userID: user.id, status: true },
                 attributes: [] // To exclude the join table attributes
               }
             }

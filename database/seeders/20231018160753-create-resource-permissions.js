@@ -5,456 +5,456 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.bulkInsert('resource_permissions', [
       {
-        resourceId: 1,
-        permissionId: 1,
+        resourceID: 1,
+        permissionID: 1,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 1,
-        permissionId: 11,
+        resourceID: 1,
+        permissionID: 11,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 2,
-        permissionId: 1,
+        resourceID: 2,
+        permissionID: 1,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 2,
-        permissionId: 2,
+        resourceID: 2,
+        permissionID: 2,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 2,
-        permissionId: 3,
+        resourceID: 2,
+        permissionID: 3,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 2,
-        permissionId: 4,
+        resourceID: 2,
+        permissionID: 4,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 2,
-        permissionId: 5,
+        resourceID: 2,
+        permissionID: 5,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 2,
-        permissionId: 6,
+        resourceID: 2,
+        permissionID: 6,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 2,
-        permissionId: 7,
+        resourceID: 2,
+        permissionID: 7,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 2,
-        permissionId: 8,
+        resourceID: 2,
+        permissionID: 8,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 2,
-        permissionId: 9,
+        resourceID: 2,
+        permissionID: 9,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 2,
-        permissionId: 10,
+        resourceID: 2,
+        permissionID: 10,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 2,
-        permissionId: 11,
+        resourceID: 2,
+        permissionID: 11,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 3,
-        permissionId: 1,
+        resourceID: 3,
+        permissionID: 1,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 3,
-        permissionId: 2,
+        resourceID: 3,
+        permissionID: 2,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 3,
-        permissionId: 3,
+        resourceID: 3,
+        permissionID: 3,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 3,
-        permissionId: 4,
+        resourceID: 3,
+        permissionID: 4,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 3,
-        permissionId: 5,
+        resourceID: 3,
+        permissionID: 5,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 3,
-        permissionId: 6,
+        resourceID: 3,
+        permissionID: 6,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 3,
-        permissionId: 7,
+        resourceID: 3,
+        permissionID: 7,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 3,
-        permissionId: 8,
+        resourceID: 3,
+        permissionID: 8,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 3,
-        permissionId: 9,
+        resourceID: 3,
+        permissionID: 9,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 3,
-        permissionId: 10,
+        resourceID: 3,
+        permissionID: 10,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 3,
-        permissionId: 11,
+        resourceID: 3,
+        permissionID: 11,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 4,
-        permissionId: 1,
+        resourceID: 4,
+        permissionID: 1,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 4,
-        permissionId: 2,
+        resourceID: 4,
+        permissionID: 2,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 4,
-        permissionId: 3,
+        resourceID: 4,
+        permissionID: 3,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 4,
-        permissionId: 4,
+        resourceID: 4,
+        permissionID: 4,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 4,
-        permissionId: 5,
+        resourceID: 4,
+        permissionID: 5,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 4,
-        permissionId: 6,
+        resourceID: 4,
+        permissionID: 6,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 4,
-        permissionId: 7,
+        resourceID: 4,
+        permissionID: 7,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 4,
-        permissionId: 8,
+        resourceID: 4,
+        permissionID: 8,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 4,
-        permissionId: 9,
+        resourceID: 4,
+        permissionID: 9,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 4,
-        permissionId: 10,
+        resourceID: 4,
+        permissionID: 10,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 4,
-        permissionId: 11,
+        resourceID: 4,
+        permissionID: 11,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 5,
-        permissionId: 1,
+        resourceID: 5,
+        permissionID: 1,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 5,
-        permissionId: 2,
+        resourceID: 5,
+        permissionID: 2,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 5,
-        permissionId: 3,
+        resourceID: 5,
+        permissionID: 3,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 5,
-        permissionId: 4,
+        resourceID: 5,
+        permissionID: 4,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 5,
-        permissionId: 5,
+        resourceID: 5,
+        permissionID: 5,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 5,
-        permissionId: 6,
+        resourceID: 5,
+        permissionID: 6,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 5,
-        permissionId: 7,
+        resourceID: 5,
+        permissionID: 7,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 5,
-        permissionId: 8,
+        resourceID: 5,
+        permissionID: 8,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 5,
-        permissionId: 9,
+        resourceID: 5,
+        permissionID: 9,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 5,
-        permissionId: 10,
+        resourceID: 5,
+        permissionID: 10,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 5,
-        permissionId: 11,
+        resourceID: 5,
+        permissionID: 11,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 6,
-        permissionId: 1,
+        resourceID: 6,
+        permissionID: 1,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 6,
-        permissionId: 2,
+        resourceID: 6,
+        permissionID: 2,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 6,
-        permissionId: 3,
+        resourceID: 6,
+        permissionID: 3,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 6,
-        permissionId: 4,
+        resourceID: 6,
+        permissionID: 4,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 6,
-        permissionId: 5,
+        resourceID: 6,
+        permissionID: 5,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 6,
-        permissionId: 6,
+        resourceID: 6,
+        permissionID: 6,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 6,
-        permissionId: 7,
+        resourceID: 6,
+        permissionID: 7,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 6,
-        permissionId: 8,
+        resourceID: 6,
+        permissionID: 8,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 6,
-        permissionId: 9,
+        resourceID: 6,
+        permissionID: 9,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 6,
-        permissionId: 10,
+        resourceID: 6,
+        permissionID: 10,
         status:true,
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        resourceId: 6,
-        permissionId: 11,
+        resourceID: 6,
+        permissionID: 11,
         status:true,
         deletedAt: null,
         createdAt: new Date(),

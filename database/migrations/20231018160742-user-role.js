@@ -8,10 +8,10 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.BIGINT(11)
+        type: Sequelize.BIGINT
       },
-      userId: {
-        type: Sequelize.BIGINT(11),
+      userID: {
+        type: Sequelize.BIGINT,
         references: {
           model: {
             tableName: 'users',
@@ -23,8 +23,8 @@ module.exports = {
         onUpdate: 'cascade',
         onDelete: 'cascade'
       },
-      roleId: {
-        type: Sequelize.BIGINT(11),
+      roleID: {
+        type: Sequelize.BIGINT,
         references: {
           model: {
             tableName: 'roles',
@@ -46,8 +46,17 @@ module.exports = {
         defaultValue: null
       },
       deletedBy: {
-        type: Sequelize.BIGINT(11),
+        type: Sequelize.BIGINT,
         allowNull: true,
+        references: {
+          model: {
+            tableName: 'users',
+            modelName: 'User'
+          },
+          key: 'id'
+        },
+        onUpdate: 'cascade',
+        onDelete: 'cascade'
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -55,8 +64,17 @@ module.exports = {
         defaultValue: Sequelize.NOW
       },
       createdBy: {
-        type: Sequelize.BIGINT(11),
+        type: Sequelize.BIGINT,
         allowNull: true,
+        references: {
+          model: {
+            tableName: 'users',
+            modelName: 'User'
+          },
+          key: 'id'
+        },
+        onUpdate: 'cascade',
+        onDelete: 'cascade'
       },
       updatedAt: {
         type: Sequelize.DATE,
@@ -64,10 +82,19 @@ module.exports = {
         defaultValue: Sequelize.NOW
       },
       updatedBy: {
-        type: Sequelize.BIGINT(11),
+        type: Sequelize.BIGINT,
         allowNull: true,
+        references: {
+          model: {
+            tableName: 'users',
+            modelName: 'User'
+          },
+          key: 'id'
+        },
+        onUpdate: 'cascade',
+        onDelete: 'cascade'
       },
-    }).then(() => queryInterface.addIndex('user_roles', ['roleId', 'userId']));
+    }).then(() => queryInterface.addIndex('user_roles', ['roleID', 'userID']));
   },
 
   async down (queryInterface, Sequelize) {

@@ -1,5 +1,6 @@
 'use strict';
 const { sequelize, DataTypes } = require('../system/core/db.connection');
+const User = require('./user.model');
 
 const UserResourcePermission = sequelize.define("UserResourcePermission",
     {
@@ -9,7 +10,7 @@ const UserResourcePermission = sequelize.define("UserResourcePermission",
         autoIncrement: true,
         allowNull: false
       },
-      userId: {
+      userID: {
         type: DataTypes.BIGINT,
         required : true,
         index : true,
@@ -18,7 +19,7 @@ const UserResourcePermission = sequelize.define("UserResourcePermission",
           key: 'id',
         }
       },
-      resourceId: {
+      resourceID: {
         type: DataTypes.BIGINT,
         required : true,
         index : true,
@@ -27,7 +28,7 @@ const UserResourcePermission = sequelize.define("UserResourcePermission",
           key: 'id',
         }
       },
-      permissionId: {
+      permissionID: {
         type: DataTypes.BIGINT,
         required : true,
         index : true,
@@ -39,7 +40,8 @@ const UserResourcePermission = sequelize.define("UserResourcePermission",
       status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: true,
+        comment: 'This column is for checking if the user resource permission is active or not.'
       },
     },
     {
@@ -48,14 +50,37 @@ const UserResourcePermission = sequelize.define("UserResourcePermission",
       sequelize,
       modelName: 'UserResourcePermission',
       tableName: 'user_resource_permissions',
-      indexes: [{ unique: true, fields: [ 'userId', 'resourceId', 'permissionId'] }]
+      indexes: [{ unique: true, fields: [ 'userID', 'resourceID', 'permissionID'] }],
+      defaultScope: {
+        attributes: { exclude: [ 'deletedAt', 'deletedBy', 'createdBy','updatedBy' ] },
+        where: {
+          status: true,
+        },
+        include: [
+          {
+            model: User,
+            as: 'addedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+          {
+            model: User,
+            as: 'editedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+        ]
+      },
     }
 );
 
 UserResourcePermission.associate = function(models) {
-  UserResourcePermission.belongsTo(models.User, {foreignKey: 'userId'});
-  UserResourcePermission.belongsTo(models.Resource, {foreignKey: 'resourceId'});
-  UserResourcePermission.belongsTo(models.Permission, {foreignKey: 'permissionId'});
+  UserResourcePermission.belongsTo(models.User, {foreignKey: 'userID'});
+  UserResourcePermission.belongsTo(models.Resource, {foreignKey: 'resourceID'});
+  UserResourcePermission.belongsTo(models.Permission, {foreignKey: 'permissionID'});
+
+  UserResourcePermission.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
+  UserResourcePermission.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
 };
 
 module.exports = UserResourcePermission;

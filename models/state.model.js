@@ -1,5 +1,6 @@
 'use strict';
 const { sequelize, DataTypes } = require('../system/core/db.connection');
+const User = require('./user.model');
 
 const State = sequelize.define("State",
     {
@@ -15,7 +16,7 @@ const State = sequelize.define("State",
         index : true,
         allowNull: false
       },
-      countryId: {
+      countryID: {
         type: DataTypes.BIGINT,
         required : true,
         index : true,
@@ -27,7 +28,8 @@ const State = sequelize.define("State",
       status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: true,
+        comment: 'This column is for checking if the state is active or not.'
       },
     },
     {
@@ -37,9 +39,24 @@ const State = sequelize.define("State",
       modelName: 'State',
       tableName: 'states',
       defaultScope: {
+        attributes: { exclude: [ 'deletedAt', 'deletedBy', 'createdBy','updatedBy' ] },
         where: {
-          deleted_at: null
-        }
+          status: true,
+        },
+        include: [
+          {
+            model: User,
+            as: 'addedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+          {
+            model: User,
+            as: 'editedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+        ]
       },
       scopes: {
         activeCountries: {
@@ -53,8 +70,11 @@ const State = sequelize.define("State",
 );
 
 State.associate = function(models) {
-  State.belongsTo(models.Country, {foreignKey: 'countryId', as: 'country'});
-  State.hasMany(models.City, {foreignKey: 'stateId', as: 'cities'});
+  State.belongsTo(models.Country, {foreignKey: 'countryID', as: 'country'});
+  State.hasMany(models.City, {foreignKey: 'stateID', as: 'cities'});
+
+  State.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
+  State.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
 };
 
 module.exports = State;

@@ -1,5 +1,6 @@
 'use strict';
 const { sequelize, DataTypes } = require('../system/core/db.connection');
+const User = require('./user.model');
 
 const Token = sequelize.define("Token",
     {
@@ -9,7 +10,7 @@ const Token = sequelize.define("Token",
         autoIncrement: true,
         allowNull: false
       },
-      userId: {
+      userID: {
         type: DataTypes.BIGINT,
         required : true,
         index : true,
@@ -26,8 +27,9 @@ const Token = sequelize.define("Token",
       status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
-      }
+        defaultValue: true,
+        comment: 'This column is for checking if the token is active or not.'
+      },
     },
     {
       timestamps: true,
@@ -39,7 +41,7 @@ const Token = sequelize.define("Token",
 );
 
 Token.associate = function(models) {
-  Token.belongsTo(models.User, {foreignKey: 'userId', as: 'user', foreignKeyConstraint: true});
+  Token.belongsTo(models.User, {foreignKey: 'userID', as: 'user', constraints: true});
 };
 
 module.exports = Token;

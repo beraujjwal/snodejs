@@ -12,7 +12,7 @@ const router = express.Router();
 router.group('/v1.0', (versionRouter) => {
 
 
-  versionRouter.get('/resources', [authMiddleware.verifyToken, aclMiddleware.hasPermission('listView', 'resource-section')], exceptionHandler(resourcesController.getAll));
+  versionRouter.get('/resources', /*[authMiddleware.verifyToken, aclMiddleware.hasPermission('listView', 'resource-section')],*/ exceptionHandler(resourcesController.getAll));
   versionRouter.get( '/resources-ddl', [authMiddleware.verifyToken, aclMiddleware.hasPermission('dropDownList', 'resource-section')], exceptionHandler(resourcesController.resourcesDDLList) );
 
   versionRouter.group('/resource', authMiddleware.verifyToken, (resourceRouter) => {

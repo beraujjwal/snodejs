@@ -1,5 +1,6 @@
 'use strict';
 const { sequelize, DataTypes } = require('../system/core/db.connection');
+const User = require('./user.model');
 
 const Country = sequelize.define("Country",
     {
@@ -29,7 +30,8 @@ const Country = sequelize.define("Country",
       status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: true,
+        comment: 'This column is for checking if the country is active or not.'
       },
     },
     {
@@ -39,9 +41,24 @@ const Country = sequelize.define("Country",
       modelName: 'Country',
       tableName: 'countries',
       defaultScope: {
+        attributes: { exclude: [ 'deletedAt', 'deletedBy', 'createdBy','updatedBy' ] },
         where: {
-          deleted_at: null
-        }
+          status: true,
+        },
+        include: [
+          {
+            model: User,
+            as: 'addedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+          {
+            model: User,
+            as: 'editedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+        ]
       },
       scopes: {
         activeCountries: {
@@ -55,7 +72,10 @@ const Country = sequelize.define("Country",
 );
 
 Country.associate = function(models) {
-  Country.hasMany(models.State, {foreignKey: 'countryId', as: 'states'});
+  Country.hasMany(models.State, {foreignKey: 'countryID', as: 'states'});
+
+  Country.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
+  Country.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
 };
 
 module.exports = Country;

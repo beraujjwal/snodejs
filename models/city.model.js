@@ -1,5 +1,6 @@
 'use strict';
 const { sequelize, DataTypes } = require('../system/core/db.connection');
+const User = require('./user.model');
 
 const City = sequelize.define("City",
     {
@@ -13,21 +14,24 @@ const City = sequelize.define("City",
         type: DataTypes.STRING(100),
         required : true,
         index : true,
-        allowNull: false
+        allowNull: false,
+        comment: 'This column is for name of the city.'
       },
-      stateId: {
+      stateID: {
         type: DataTypes.BIGINT,
         required : true,
         index : true,
         references: {
           model: 'State',
           key: 'id',
-        }
+        },
+        comment: 'This column is for making relation between city and state.'
       },
       status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: true,
+        comment: 'This column is for checking if the city is active or not.'
       },
     },
     {
@@ -37,9 +41,24 @@ const City = sequelize.define("City",
       modelName: 'City',
       tableName: 'cities',
       defaultScope: {
+        attributes: { exclude: [ 'deletedAt', 'deletedBy', 'createdBy','updatedBy' ] },
         where: {
-          deleted_at: null
-        }
+          status: true,
+        },
+        include: [
+          {
+            model: User,
+            as: 'addedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+          {
+            model: User,
+            as: 'editedBy',
+            attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+            required: false,
+          },
+        ]
       },
       scopes: {
         activeCities: {
@@ -52,7 +71,10 @@ const City = sequelize.define("City",
 );
 
 City.associate = function(models) {
-  City.belongsTo(models.State, {foreignKey: 'stateId', as: 'state'});
+  City.belongsTo(models.State, {foreignKey: 'stateID', as: 'state'});
+
+  City.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
+  City.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
 };
 
 module.exports = City;

@@ -6,7 +6,7 @@ module.exports = {
     await queryInterface.bulkInsert('roles', [
       {
         id: 1,
-        parentId: null,
+        parentID: null,
         name: 'Super Admin',
         slug: 'super-admin',
         status:true,
@@ -15,7 +15,7 @@ module.exports = {
       },
       {
         id: 2,
-        parentId: null,
+        parentID: null,
         name: 'Admin',
         slug: 'admin',
         status:true,
@@ -24,7 +24,7 @@ module.exports = {
       },
       {
         id: 3,
-        parentId: null,
+        parentID: null,
         name: 'Manager',
         slug: 'manager',
         status:true,

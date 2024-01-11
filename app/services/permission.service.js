@@ -18,12 +18,27 @@ class permission extends service {
   constructor(model) {
     super(model);
     this.model = this.db[model];
+    this.user = this.db['User'];
 
   }
 
   async getAll(queries, { transaction }) {
     try {
-      return await super.getAll(queries, { transaction })
+      const include = [
+        {
+          model: this.user,
+          as: 'addedBy',
+          attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+          required: false,
+        },
+        {
+          model: this.user,
+          as: 'editedBy',
+          attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+          required: false,
+        }
+      ]
+      return await super.getAll(queries, { transaction, include })
       // const {
       //   id = null,
       //   ids = null,
@@ -135,6 +150,8 @@ class permission extends service {
         where: {
           id: id
         },
+        //returning: true,
+        //individualHooks: true,
         transaction,
       });
 

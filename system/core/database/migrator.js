@@ -1,7 +1,7 @@
 'use strict';
-const Umzug = require("umzug");
+const Umzug = require('umzug');
 const models = require("../model");
-const sequelize = require('../db.connection');
+const { sequelize } = require('../db.connection');
 
 const migrationsConfig = {
   storage: "sequelize",
@@ -15,7 +15,9 @@ const migrationsConfig = {
       sequelize.constructor
     ],
     path: "./database/migrations", // path to folder containing migrations
-    pattern: /\.js$/
+    pattern: /\.js$/,
+    // context: sequelize.getQueryInterface(),
+    logger: console,
   }
 };
 

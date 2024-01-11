@@ -2,6 +2,8 @@
 require('dotenv').config();
 const chalk = require('chalk');
 
+global.currentLoginUserId = 1;
+
 global.log = function log(message) {
   if (process.env.APP_ENV !== 'production') console.log(chalk.green.bgWhite.bold(`✔ ${message}`));
 }
@@ -25,6 +27,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const path = require('path');
 const logger = require('morgan');
+//const Sentry = require('@sentry/node');
 
 const i18n = require('../../config/i18n.config');
 const winston = require('../../config/winston');
@@ -35,9 +38,9 @@ const limiter = require('../../config/rateLimit.config');
 const app = express();
 let apiHitCount = 0;
 let errorCount = 0;
-//const Sentry = require('@sentry/node');
+
 // Sentry.init({
-//   dsn: 'https://e8bf701c3e4444ea9a9f1d0725cac7ce@o4505588600471553.ingest.sentry.io/4505589025079296',
+//   dsn: process.env.SENTRY_DNS,
 //   integrations: [
 //     // enable HTTP calls tracing
 //     new Sentry.Integrations.Http({ tracing: true }),
@@ -50,7 +53,7 @@ let errorCount = 0;
 //     }),
 //   ],
 //   tracesSampleRate: 1.0,
-//   debug: false
+//   debug: Boolean(process.env.SENTRY_DEBUG)
 // });
 
 const hbs = engine({
@@ -123,21 +126,19 @@ consumerKafkaMessage();
 
 app.use(function (err, req, res, next) {
 
-  console.log(err);
   let showErrorNumber = '';
   const code = err.code || err.statusCode;
   let errorMessage = err.toString();
 
   if(code == 500) {
-    console.log('code', code);
     errorCount++;
     errorMessage = 'Internal Server error. Please try after sometime.';
-    showErrorNumber = `No.- ${errorCount} - `;
+    showErrorNumber = `No.- ${errorCount}`;
   }
 
   if (MODE !== 'test') {
     winston.error(
-      `${showErrorNumber}${code || 500} - ${errorMessage} - ${req.originalUrl} - ${req.method} - ${req.ip}`,
+      `${showErrorNumber} - ${code || 500} - ${errorMessage} - ${req.originalUrl} - ${req.method} - ${req.ip}`,
     );
   }
 

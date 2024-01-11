@@ -12,8 +12,8 @@ exports.sendMessage = async (messageTopic, messageBody) => {
     try{
 
         await producer.connect()
-        .then((value) => log("Producer connected"))
-        .catch((err) => error('Kafka producer connect failed!'));
+        .then((value) => log(`Producer connected - ${JSON.stringify(value)}`))
+        .catch((ex) => error(`Kafka producer connect failed! - ${ex.message}`));
 
         await producer.send({
           topic: messageTopic,
@@ -22,7 +22,7 @@ exports.sendMessage = async (messageTopic, messageBody) => {
           log('producerData: ', resp);
         })
         .catch((err) => {
-          error('error: ', err);
+          error(`Kafka producer unable to send the message - ${ex.message}`);
         })
         await producer.disconnect();
 

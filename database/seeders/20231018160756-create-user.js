@@ -1,10 +1,12 @@
 'use strict';
 const bcrypt = require("bcryptjs");
+require('dotenv').config();
+
+const saltRounds = parseInt(process.env.SALT_FACTOR);
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    const saltRounds = 9;
     const salt = await bcrypt.genSalt(saltRounds);
     const passsword1 = bcrypt.hashSync('9876543210', salt);
     const passsword2 = bcrypt.hashSync('9876543211', salt);

@@ -5,13 +5,13 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.createTable('user_resource_permissions', {
       id: {
-        type: Sequelize.BIGINT(11),
+        type: Sequelize.BIGINT,
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
       },
-      userId: {
-        type: Sequelize.BIGINT(11),
+      userID: {
+        type: Sequelize.BIGINT,
         references: {
           model: {
             tableName: 'users',
@@ -23,8 +23,8 @@ module.exports = {
         onUpdate: 'cascade',
         onDelete: 'cascade'
       },
-      resourceId: {
-        type: Sequelize.BIGINT(11),
+      resourceID: {
+        type: Sequelize.BIGINT,
         references: {
           model: {
             tableName: 'resources',
@@ -36,8 +36,8 @@ module.exports = {
         onUpdate: 'cascade',
         onDelete: 'cascade'
       },
-      permissionId: {
-        type: Sequelize.BIGINT(11),
+      permissionID: {
+        type: Sequelize.BIGINT,
         references: {
           model: {
             tableName: 'permissions',
@@ -60,8 +60,17 @@ module.exports = {
         defaultValue: null
       },
       deletedBy: {
-        type: Sequelize.BIGINT(11),
+        type: Sequelize.BIGINT,
         allowNull: true,
+        references: {
+          model: {
+            tableName: 'users',
+            modelName: 'User'
+          },
+          key: 'id'
+        },
+        onUpdate: 'cascade',
+        onDelete: 'cascade'
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -69,8 +78,17 @@ module.exports = {
         defaultValue: Sequelize.NOW
       },
       createdBy: {
-        type: Sequelize.BIGINT(11),
+        type: Sequelize.BIGINT,
         allowNull: true,
+        references: {
+          model: {
+            tableName: 'users',
+            modelName: 'User'
+          },
+          key: 'id'
+        },
+        onUpdate: 'cascade',
+        onDelete: 'cascade'
       },
       updatedAt: {
         type: Sequelize.DATE,
@@ -78,12 +96,20 @@ module.exports = {
         defaultValue: Sequelize.NOW
       },
       updatedBy: {
-        type: Sequelize.BIGINT(11),
+        type: Sequelize.BIGINT,
         allowNull: true,
+        references: {
+          model: {
+            tableName: 'users',
+            modelName: 'User'
+          },
+          key: 'id'
+        },
+        onUpdate: 'cascade',
+        onDelete: 'cascade'
       },
     });
   },
-
 
   async down (queryInterface, Sequelize) {
     await queryInterface.dropTable('user_resource_permissions');

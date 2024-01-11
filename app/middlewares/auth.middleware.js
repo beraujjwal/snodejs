@@ -54,6 +54,8 @@ class authMiddleware extends middleware {
         throw new baseError(`Invalid authorization token.`, 401);
       }
 
+      global.currentLoginUserId = decoded.id;
+
       req.user = user;
       next();
 
@@ -106,6 +108,8 @@ class authMiddleware extends middleware {
       if (user === null) {
         next('Invalid authorization token5.');
       }
+
+      global.currentLoginUserId = req.user_id;
 
       const authorities = [];
       for await (const role of user.roles) {

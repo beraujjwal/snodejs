@@ -20,7 +20,7 @@ class role extends service {
     this.resourcePermission = this.db['ResourcePermission'];
   }
 
-  async getAll(queries, transaction) {
+  async list(queries, transaction) {
     try {
       const {
         id = null,

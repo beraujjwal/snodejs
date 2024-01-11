@@ -6,7 +6,7 @@ module.exports = {
     await queryInterface.bulkInsert('resources', [
       {
         id: 1,
-        parentId: null,
+        parentID: null,
         name: 'Root',
         slug: 'root',
         status:true,
@@ -15,7 +15,7 @@ module.exports = {
       },
       {
         id: 2,
-        parentId: null,
+        parentID: null,
         name: 'User Management',
         slug: 'user-management',
         status:true,
@@ -24,7 +24,7 @@ module.exports = {
       },
       {
         id: 3,
-        parentId: null,
+        parentID: null,
         name: 'ACL Management',
         slug: 'acl-management',
         status:true,
@@ -33,7 +33,7 @@ module.exports = {
       },
       {
         id: 4,
-        parentId: 3,
+        parentID: 3,
         name: 'Role Section',
         slug: 'role-section',
         status:true,
@@ -42,7 +42,7 @@ module.exports = {
       },
       {
         id: 5,
-        parentId: 3,
+        parentID: 3,
         name: 'Resource Section',
         slug: 'resource-section',
         status:true,
@@ -51,7 +51,7 @@ module.exports = {
       },
       {
         id: 6,
-        parentId: 3,
+        parentID: 3,
         name: 'Permission Section',
         slug: 'permission-section',
         status:true,
