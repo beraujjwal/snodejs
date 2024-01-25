@@ -11,7 +11,7 @@ class resourcePermission extends service {
    */
   constructor(model) {
     super(model);
-    this.model = this.db[model];
+    this.model = this.getModel(model);
   }
 
   async getAll(queries, transaction) {

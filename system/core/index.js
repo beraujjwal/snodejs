@@ -27,10 +27,10 @@ const helmet = require('helmet');
 const cors = require('cors');
 const path = require('path');
 const logger = require('morgan');
-//const Sentry = require('@sentry/node');
+const Sentry = require('@sentry/node');
 
 const i18n = require('../../config/i18n.config');
-const winston = require('../../config/winston');
+const winston = require('../../config/winston.config');
 const { errorResponse } = require('./helpers/apiResponse');
 const { consumerKafkaMessage } = require('../../libraries/consumer.library');  //Enable this line if you want to config kafkajs also with line no 94
 const limiter = require('../../config/rateLimit.config');
@@ -38,23 +38,22 @@ const limiter = require('../../config/rateLimit.config');
 const app = express();
 let apiHitCount = 0;
 let errorCount = 0;
-
-// Sentry.init({
-//   dsn: process.env.SENTRY_DNS,
-//   integrations: [
-//     // enable HTTP calls tracing
-//     new Sentry.Integrations.Http({ tracing: true }),
-//     // enable Express.js middleware tracing
-//     new Sentry.Integrations.Express({
-//       // to trace all requests to the default router
-//       app,
-//       // alternatively, you can specify the routes you want to trace:
-//       // router: someRouter,
-//     }),
-//   ],
-//   tracesSampleRate: 1.0,
-//   debug: Boolean(process.env.SENTRY_DEBUG)
-// });
+if(process.env.SENTRY_DNS) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DNS,
+    environment: process.env.APP_ENV,
+    integrations: [
+      new Sentry.Integrations.Http({ tracing: true }),
+      new Sentry.Integrations.Express({
+        app,
+        // alternatively, you can specify the routes you want to trace:
+        // router: someRouter,
+      }),
+    ],
+    tracesSampleRate: parseFloat(process.env.SENTRY_TRACES_SAMPLE_RATE),
+    debug: Boolean(process.env.SENTRY_DEBUG)
+  });
+}
 
 const hbs = engine({
   partialsDir: 'resources/views/layouts/partials',
@@ -105,20 +104,11 @@ require('./db.connection');
 if (process.env.APP_ENV === 'development') {
   app.use(logger('dev', { stream: winston.stream }));
 }
-//app.use(Sentry.Handlers.requestHandler());
+if(process.env.SENTRY_DNS) app.use(Sentry.Handlers.requestHandler());
 log('Mapping Routes');
-//app.use(Sentry.Handlers.tracingHandler());
-
-app.use(function (req, res, next) {
-  apiHitCount++
-  winston.info(
-    `Call: ${apiHitCount} - ${req.originalUrl} - ${req.method} - ${req.ip}`,
-  );
-  next();
-});
+if(process.env.SENTRY_DNS) app.use(Sentry.Handlers.tracingHandler());
 
 const routers = require('../route');
-
 //Route Prefixes
 app.use('/', routers);
 
@@ -142,11 +132,11 @@ app.use(function (err, req, res, next) {
     );
   }
 
-  //Sentry.captureException(err);
+  if(process.env.SENTRY_DNS) Sentry.captureException(err);
   return res.status(code || 500).json(errorResponse(err, code || 500));
 });
 
 //Sentry.close().then(() => process.exit(0));
-//app.use(Sentry.Handlers.errorHandler());
+if(process.env.SENTRY_DNS) app.use(Sentry.Handlers.errorHandler());
 
 module.exports = app;

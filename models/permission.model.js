@@ -59,13 +59,13 @@ const Permission = sequelize.define("Permission",
         include: [
           {
             model: User,
-            as: 'addedBy',
+            as: 'createdByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
           {
             model: User,
-            as: 'editedBy',
+            as: 'updatedByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
@@ -114,6 +114,9 @@ const Permission = sequelize.define("Permission",
         afterValidate: (permission, options) => {
 
         },
+        beforeCreate: (async (permission, options) => {
+          permission.createdBy = global.currentLoginUserId;
+        }),
         afterCreate: (async (permission, options) => {
 
           // const admins = await sequelize.models.Role.findAll({ where: {slug: 'admin'}});
@@ -134,13 +137,11 @@ const Permission = sequelize.define("Permission",
 
         })
       },
+      version:true
     }
 );
 
 Permission.associate = function(models) {
-
-
-
 
   Permission.belongsToMany(models.Resource, {
     through: {
@@ -201,8 +202,8 @@ Permission.associate = function(models) {
     constraints: true
   });
 
-  Permission.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
-  Permission.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
+  Permission.belongsTo(models.User, { as: 'createdByUser', foreignKey: 'createdBy'});
+  Permission.belongsTo(models.User, { as: 'updatedByUser', foreignKey: 'updatedBy'});
 };
 
 module.exports = Permission;

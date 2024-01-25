@@ -6,13 +6,11 @@ const authMiddleware = require('../app/middlewares/auth.middleware');
 const aclMiddleware = require('../app/middlewares/acl.middleware');
 
 const { exceptionHandler } = require('../app/middlewares/exceptionHandler.middleware');
-
 const router = express.Router();
 
 router.group('/v1.0', (versionRouter) => {
 
-
-  versionRouter.get('/permissions', /*[authMiddleware.verifyToken, aclMiddleware.hasPermission('listView', 'permission-section')],*/ exceptionHandler(permissionsController.getAll));
+  versionRouter.get('/permissions', /*[authMiddleware.verifyToken, aclMiddleware.hasPermission('listView', 'permission-section')],*/ exceptionHandler(permissionsController.findAll));
   versionRouter.get( '/permissions-ddl', [authMiddleware.verifyToken, aclMiddleware.hasPermission('dropDownList', 'permission-section')], exceptionHandler(permissionsController.permissionsDDLList) );
 
   versionRouter.group('/permission', authMiddleware.verifyToken, (permissionRouter) => {
@@ -46,7 +44,6 @@ router.group('/v1.0', (versionRouter) => {
       exceptionHandler(permissionsController.deleteByPk)
     );
   });
-
 
 });
 

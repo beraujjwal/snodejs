@@ -18,7 +18,7 @@ const roleService = new role('Role');
 const { sentOTPMail } = require('../../libraries/email.library');
 const { sentOTPSMS } = require('../../libraries/sms.library');
 
-const { generateOTP, generateAccessToken } = require('../../helpers/utility')
+const { generateOTP, generateAccessToken } = require('../../helpers/utility');
 
 class user extends service {
 
@@ -28,11 +28,11 @@ class user extends service {
    * @param null
    */
   constructor( model ) {
-      super( );
-      this.model = this.db[model];
-      this.role = this.db['Role'];
-      this.permission = this.db['Permission'];
-      this.resource = this.db['Resource'];
+      super( model );
+      this.model = this.getModel(model);
+      this.role = this.getModel('Role');
+      this.permission = this.getModel('Permission');
+      this.resource = this.getModel('Resource');
   }
 
 
@@ -121,7 +121,7 @@ class user extends service {
       const data = {
         loginAttempts: 0,
         tokenSalt: tokenSalt,
-        blockExpires: moment().utc(this.env.APP_TIMEZONE).toDate(),
+        blockExpires: moment().utc(this.getEnv('APP_TIMEZONE')).toDate(),
         deviceId: device_id,
         deviceType: device_type,
         fcmToken: fcm_token
@@ -131,7 +131,7 @@ class user extends service {
         where: filter,
       }, { transaction: transaction });
       const userWithLatestData = { ...user, ...data };
-      redisClient.set(`${user.id}#${data.tokenSalt}`, JSON.stringify(userWithLatestData), this.env.JWT_EXPIRES_IN);
+      redisClient.set(`${user.id}#${data.tokenSalt}`, JSON.stringify(userWithLatestData), this.getEnv('JWT_EXPIRES_IN'));
       delete userWithLatestData.password;
       delete userWithLatestData.tokenSalt;
       const loginRes = {

@@ -11,11 +11,11 @@ class resource extends service {
    */
   constructor(model) {
     super(model);
-    this.model = this.db[model];
-    this.user = this.db['User'];
+    this.model = this.getModel(model);
+    this.user = this.getModel('User');
   }
 
-  async getAll(queries, transaction) {
+  async findAll(queries, transaction) {
     try {
       const {
         id = null,

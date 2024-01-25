@@ -1,4 +1,3 @@
-'use strict';
 const { baseController } = require('../../system/core/controller/baseController');
 const { baseError } = require('../../system/core/error/baseError');
 

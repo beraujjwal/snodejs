@@ -59,13 +59,13 @@ const RoleResourcePermission = sequelize.define("RoleResourcePermission",
         include: [
           {
             model: User,
-            as: 'addedBy',
+            as: 'createdByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
           {
             model: User,
-            as: 'editedBy',
+            as: 'updatedByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
@@ -79,8 +79,8 @@ RoleResourcePermission.associate = function(models) {
   RoleResourcePermission.belongsTo(models.Resource, { foreignKey: 'resourceID' });
   RoleResourcePermission.belongsTo(models.Permission, { foreignKey: 'permissionID' });
 
-  RoleResourcePermission.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
-  RoleResourcePermission.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
+  RoleResourcePermission.belongsTo(models.User, { as: 'createdByUser', foreignKey: 'createdBy'});
+  RoleResourcePermission.belongsTo(models.User, {as: 'updatedByUser', foreignKey: 'updatedBy'});
 };
 
 module.exports = RoleResourcePermission;

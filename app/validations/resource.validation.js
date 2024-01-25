@@ -9,8 +9,8 @@ class resourceValidation extends validation {
    */
   constructor() {
     super();
-    this.RoleResourcePermission = this.db['RoleResourcePermission'];
-    this.UserResourcePermission = this.db['UserResourcePermission'];
+    this.RoleResourcePermission = this.getModel('RoleResourcePermission');
+    this.UserResourcePermission = this.getModel('UserResourcePermission');
   }
 
   async create(req, res, next) {

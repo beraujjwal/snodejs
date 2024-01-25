@@ -12,12 +12,12 @@ class role extends service {
    */
   constructor(model) {
     super(model);
-    this.model = this.db[model];
-    this.user = this.db['User'];
-    this.userRole = this.db['UserRole'];
+    this.model = this.getModel(model);
+    this.user = this.getModel('User');
+    this.userRole = this.getModel('UserRole');
 
-    this.resource = this.db['Resource'];
-    this.resourcePermission = this.db['ResourcePermission'];
+    this.resource = this.getModel('Resource');
+    this.resourcePermission = this.getModel('ResourcePermission');
   }
 
   async list(queries, transaction) {

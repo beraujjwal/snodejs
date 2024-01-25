@@ -20,8 +20,8 @@ class resourcesController extends controller {
    * @param {*} next
    * @author Ujjwal Bera
    */
-  async getAll(req, transaction) {
-    let result = await resourceService.getAll(req.query, transaction);
+  async findAll(req, transaction) {
+    let result = await resourceService.findAll(req.query, transaction);
     if (result) {
       return {
         code: 200,

@@ -53,13 +53,13 @@ const Resource = sequelize.define("Resource",
         include: [
           {
             model: User,
-            as: 'addedBy',
+            as: 'createdByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
           {
             model: User,
-            as: 'editedBy',
+            as: 'updatedByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
@@ -117,8 +117,8 @@ Resource.associate = function(models) {
     constraints: true
   });
 
-  Resource.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
-  Resource.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
+  Resource.belongsTo(models.User, { as: 'createdByUser', foreignKey: 'createdBy'});
+  Resource.belongsTo(models.User, { as: 'updatedByUser', foreignKey: 'updatedBy'});
 };
 
 module.exports = Resource;

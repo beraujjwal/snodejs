@@ -48,16 +48,16 @@ const City = sequelize.define("City",
         include: [
           {
             model: User,
-            as: 'addedBy',
+            as: 'createdByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
           {
             model: User,
-            as: 'editedBy',
+            as: 'updatedByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
-          },
+          }
         ]
       },
       scopes: {
@@ -73,8 +73,8 @@ const City = sequelize.define("City",
 City.associate = function(models) {
   City.belongsTo(models.State, {foreignKey: 'stateID', as: 'state'});
 
-  City.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
-  City.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
+  City.belongsTo(models.User, { as: 'createdByUser', foreignKey: 'createdBy'});
+  City.belongsTo(models.User, { as: 'updatedByUser', foreignKey: 'updatedBy'});
 };
 
 module.exports = City;

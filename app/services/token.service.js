@@ -18,7 +18,7 @@ class token extends service {
    */
   constructor(model) {
     super(model);
-    this.model = this.db[model];
+    this.model = this.getModel(model);
     this.regexEmail = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
   }
 

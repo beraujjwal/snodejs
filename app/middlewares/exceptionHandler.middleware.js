@@ -16,6 +16,7 @@ exports.exceptionHandler = (controllerFunction) => {
       if(transaction) await transaction.commit();
       return res.status(result.code).json(response(resultStructure));
     } catch (error) {
+      console.log(error);
       if(transaction) await transaction.rollback();
       next(error);
     } finally {

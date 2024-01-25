@@ -41,20 +41,20 @@ const Country = sequelize.define("Country",
       modelName: 'Country',
       tableName: 'countries',
       defaultScope: {
-        attributes: { exclude: [ 'deletedAt', 'deletedBy', 'createdBy','updatedBy' ] },
+        attributes: { exclude: [ 'deletedAt', 'deletedBy', 'createdBy', 'updatedBy' ] },
         where: {
           status: true,
         },
         include: [
           {
             model: User,
-            as: 'addedBy',
+            as: 'createdByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
           {
             model: User,
-            as: 'editedBy',
+            as: 'updatedByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
@@ -74,8 +74,8 @@ const Country = sequelize.define("Country",
 Country.associate = function(models) {
   Country.hasMany(models.State, {foreignKey: 'countryID', as: 'states'});
 
-  Country.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
-  Country.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
+  Country.belongsTo(models.User, { as: 'createdByUser', foreignKey: 'createdBy'});
+  Country.belongsTo(models.User, { as: 'updatedByUser', foreignKey: 'updatedBy'});
 };
 
 module.exports = Country;

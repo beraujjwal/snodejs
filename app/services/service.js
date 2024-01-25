@@ -7,8 +7,8 @@ class service extends baseService {
      * @author Ujjwal Bera
      * @param null
      */
-    constructor( ) {
-        super( );
+    constructor( model ) {
+      super( model );
     }
 
 

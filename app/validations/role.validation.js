@@ -9,7 +9,7 @@ class roleValidation extends validation {
    */
   constructor() {
     super();
-    this.UserRole = this.db['UserRole'];
+    this.UserRole = this.getModel('UserRole');
   }
 
   async create(req, res, next) {

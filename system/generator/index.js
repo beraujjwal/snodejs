@@ -133,31 +133,34 @@ async function transformSingularPascalCase(processName) {
     return caseChanger.pascal(singularProcessName);
 }
 
+async function transformSingularConstant(processName) {
+    let singularProcessName = pluralize.singular(processName);
+    return caseChanger.constant(singularProcessName);
+}
+
+async function transformPluralConstant(processName) {
+    let pluralProcessName = pluralize.plural(processName);
+    return caseChanger.constant(pluralProcessName);
+}
+
 async function createController(processName) {
     let origFilePath = `${templatePath}/samples.controller.js`;
-    let camelPluralProcessName = await transformPluralCamelCase(processName);
-    let camelSingularProcessName = await transformSingularCamelCase(
-        processName,
-    );
-    let pascalSingularProcessName = await transformSingularPascalCase(
-        processName,
-    );
+    let camelPluralProcessName = await transformPluralCamelCase( processName );
+    let camelSingularProcessName = await transformSingularCamelCase( processName );
+    let pascalSingularProcessName = await transformSingularPascalCase( processName );
+    let singularProcessNameUpperCase = await transformSingularConstant( processName );
+    let pluralProcessNameUpperCase = await transformPluralConstant( processName );
 
     let file = `${camelPluralProcessName}.controller.js`;
     console.log(chalk.blueBright(`Creating Controller: ${file}`));
     let contents = fs.readFileSync(origFilePath, 'utf8');
-    contents = contents.replace(
-        /CONTROLLER_CAMEL_CASE_PLURAL_FORM/g,
-        camelPluralProcessName,
-    );
-    contents = contents.replace(
-        /CONTROLLER_CAMEL_CASE_SINGULAR/g,
-        camelSingularProcessName,
-    );
-    contents = contents.replace(
-        /MODEL_SINGULAR_FORM/g,
-        pascalSingularProcessName,
-    );
+    contents = contents.replace( /CONTROLLER_CAMEL_CASE_PLURAL_FORM/g, camelPluralProcessName );
+    contents = contents.replace( /CONTROLLER_CAMEL_CASE_SINGULAR/g, camelSingularProcessName );
+    contents = contents.replace( /MODEL_SINGULAR_FORM/g, pascalSingularProcessName );
+    contents = contents.replace( /SINGULAR_PROCESS_NAME_UPPERCASE/g, singularProcessNameUpperCase );
+    //contents = contents.replace( /PLURAL_PROCESS_NAME_UPPERCASE/g, pluralProcessNameUpperCase );
+
+
     let destPath = `${CURR_DIR}/app/controllers`;
     return { file, destPath, contents };
 }

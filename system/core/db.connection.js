@@ -9,7 +9,7 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
   port: config.port,
   dialect: config.dialect,
   operatorsAliases: 'false',
-  logging: process.env.APP_ENV === 'production' ? false : console.log,
+  logging: config.logging ? console.log : false,
   // logging: function (str) {
   //   log('\x1b[32m%s\x1b[0m', str);
   // }
@@ -36,7 +36,7 @@ sequelize.beforeDefine(function(attributes, model) {
         model: 'User',
         key: 'id',
       },
-      defaultValue: 0
+      defaultValue: null
     }
     attributes.updatedBy = {
       type: DataTypes.BIGINT,
@@ -44,7 +44,7 @@ sequelize.beforeDefine(function(attributes, model) {
         model: 'User',
         key: 'id',
       },
-      defaultValue: 0
+      defaultValue: null
     }
     attributes.deletedBy = {
       type: DataTypes.BIGINT,
@@ -52,42 +52,44 @@ sequelize.beforeDefine(function(attributes, model) {
         model: 'User',
         key: 'id',
       },
-      defaultValue: 0
+      defaultValue: null
+    }
+    attributes.version = {
+      type: DataTypes.BIGINT,
+      defaultValue: 1
     }
   }
 
 });
 
 
-sequelize.beforeCreate(function(attributes) {
-  console.log('1 beforeCreate currentLoginUserId', currentLoginUserId);
-  attributes.createdBy = currentLoginUserId || null;
+sequelize.beforeCreate(async (attributes, options) => {
+  console.log('global.currentLoginUserId', global.currentLoginUserId);
+  attributes.createdBy = global.currentLoginUserId || null;
 });
 
-sequelize.beforeSave(function(attributes) {
-  console.log('2 beforeSave currentLoginUserId', currentLoginUserId);
-  attributes.createdBy = currentLoginUserId || null;
+sequelize.beforeSave(async (attributes, options) => {
+  attributes.createdBy = global.currentLoginUserId || null;
 });
 
-sequelize.beforeUpdate(function(attributes) {
-  console.log('3 beforeUpdate currentLoginUserId', currentLoginUserId);
-  attributes.updatedBy = currentLoginUserId || null;
+sequelize.beforeUpdate(async (attributes, options) => {
+  attributes.updatedBy = global.currentLoginUserId || null;
 });
 
-sequelize.beforeUpsert(function(attributes) {
-  console.log('4 beforeUpsert currentLoginUserId', currentLoginUserId);
-  attributes.updatedBy = currentLoginUserId || null;
+sequelize.beforeUpsert(async (attributes, options) => {
+  attributes.updatedBy = global.currentLoginUserId || null;
 });
 
-sequelize.beforeDestroy(function(attributes) {
-  console.log('5 beforeDestroy currentLoginUserId', currentLoginUserId);
-  attributes.deletedBy = currentLoginUserId || null;
+sequelize.beforeDestroy(async (attributes, options) => {
+  attributes.deletedBy = global.currentLoginUserId || null;
 });
 
-sequelize.sync().then(() => {
-  console.log('Sequelize synced successfully!');
-}).catch((ex) => {
-  error(`Unable to create table : ${ex.message}`);
-});
+if(config.sync) {
+  sequelize.sync().then(() => {
+    console.log('DB & Model synced successfully!');
+  }).catch((ex) => {
+    error(`Unable to create table : ${ex.message}`);
+  });
+}
 
 module.exports = { sequelize, DataTypes };

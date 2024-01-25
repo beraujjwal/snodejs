@@ -1,9 +1,7 @@
 'use strict';
-const fs = require('fs');
 const chalk = require('chalk');
 const log = console.log;
-const moduleGenerator = require('./system/core/generator/module-generator');
-const dbManipulation = require('./system/core/database');
+const moduleGenerator = require('./system/generator');
 
 async function main() {
     try {
@@ -18,6 +16,7 @@ async function main() {
             }
 
         } else if(argumentsArr.length === 2 && argumentsArr[ 0 ].indexOf(':') === 3) {
+            const dbManipulation = require('./system/core/database');
             let processAction = argumentsArr[0].slice(4);
             let actionArr = ['migration', 'seeder' ];
             if(actionArr.includes(processAction)) {
@@ -28,9 +27,8 @@ async function main() {
         }else {
             throw new Error('Invalid Command');
         }
-
     } catch (error) {
-        console.log(error.message);
+        log(error.message);
     }
 };
 

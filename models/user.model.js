@@ -105,6 +105,20 @@ const User = sequelize.define("User",
     indexes: [ { unique: true, fields: [ 'name', 'phone', 'email'] } ],
     defaultScope: {
       attributes: { exclude: [ 'password', 'tokenSalt', 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
+      // include: [
+      //   {
+      //     model: self,
+      //     as: 'createdByUser',
+      //     attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+      //     required: false,
+      //   },
+      //   {
+      //     model: this,
+      //     as: 'updatedByUser',
+      //     attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+      //     required: false,
+      //   },
+      // ]
     },
     scopes: {
       // withRoles: {
@@ -116,12 +130,10 @@ const User = sequelize.define("User",
     },
     instanceMethods: {
       async generateHash(password) {
-        console.log('saltRounds1', saltRounds);
         const salt = await bcrypt.genSalt(saltRounds);
         return bcrypt.hashSync(password, salt);
       },
       async validPassword(password) {
-        console.log('saltRounds2', saltRounds);
           return bcrypt.compareSync(password, this.password);
       },
       async update(values, options) {
@@ -130,14 +142,12 @@ const User = sequelize.define("User",
     },
     hooks: {
       beforeCreate: async (user) => {
-        console.log('saltRounds3', saltRounds);
         if (user.password) {
           const salt = await bcrypt.genSalt(saltRounds);
           user.password = bcrypt.hashSync(user.password, salt);
         }
        },
        beforeUpdate:async (user) => {
-        console.log('saltRounds4', saltRounds);
         if (user.password) {
           const salt = await bcrypt.genSalt(saltRounds);
           user.password = bcrypt.hashSync(user.password, salt);
@@ -173,7 +183,7 @@ User.associate = function(models) {
   User.belongsTo(User, { as: 'addedBy', foreignKey: 'createdBy', sourceKey: 'id'});
 
   // User.hasMany(User, {as: 'children', foreignKey: 'updatedBy', sourceKey: 'id'});
-  User.belongsTo(User, {as: 'editedBy', foreignKey: 'updatedBy', sourceKey: 'id'});
+  User.belongsTo(User, {as: 'updatedByUser', foreignKey: 'updatedBy', sourceKey: 'id'});
 
 };
 

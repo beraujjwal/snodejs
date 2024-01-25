@@ -1,7 +1,7 @@
 {
   "name": "snodejs",
-  "version": "2.0.1",
-  "description": "SNode is a basic skeleton written in JavaScript with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. SNode takes the pain out of development by easing common tasks used in many applications. SNode is accessible, powerful, and provides tools required for large, robust applications.",
+  "version": "2.0.2",
+  "description": "SNodeJs is a Node.js application designed to demonstrate secure coding practices in web development. This project serves as a foundation for building secure, scalable web applications using Node.js.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -19,6 +19,8 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.474.0",
     "@aws-sdk/lib-storage": "^3.474.0",
+    "@sentry/node": "^7.93.0",
+    "auto-bind": "^4.0.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
@@ -47,6 +49,7 @@
     "puppeteer": "^21.6.1",
     "redis": "^4.6.10",
     "sequelize": "^6.6.2",
+    "socket.io": "^4.7.4",
     "validatorjs": "^3.22.1",
     "winston": "^3.3.3"
   },

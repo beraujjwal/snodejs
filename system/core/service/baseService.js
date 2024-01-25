@@ -11,9 +11,21 @@ class baseService extends base {
    */
   constructor(model) {
     super();
-    this.model = this.db[model];
-    this.dataPerPage = this.env.DATA_PER_PAGE | 15;
+    this.model = this.getModel(model);
+    this.modelColumns = [];
+    const rawAttributes = this.model.rawAttributes;
+    for( let key of Object.keys(rawAttributes)) {
+      this.modelColumns.push(key);
+    }
     this.name = model;
+
+    // const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
+    // methods
+    //   .filter(method => (method !== 'constructor'))
+    //   .forEach((method) => { this[method] = this[method].bind(this); });
+
+
+    // console.log('baseService->', this);
   }
 
   /**
@@ -23,18 +35,18 @@ class baseService extends base {
    * @param {*} param1
    * @returns { rows, count } response
    */
-  async list(
+  async findAll(
     {
       orderby = 'name',
       ordering = 'ASC',
-      limit = this.dataPerPage || 10,
+      limit = this.getEnv('DATA_PER_PAGE') || 15,
       page = 1,
       ...search
     },
     {
       filter = null,
-      include,
-      attributes,
+      include = [],
+      attributes = this.modelColumns,
       transaction
     }
   ) {
@@ -47,6 +59,27 @@ class baseService extends base {
 
       if (filter === null) {
         filter = await this.generateQueryFilterFromQueryParams(search);
+      }
+
+      if(attributes.includes('createdBy')) {
+        const User = this.getModel('User');
+        include.push({
+          model: User,
+          as: 'createdByUser',
+          attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+          required: false,
+        });
+        delete attributes.createdBy;
+      }
+      if(attributes.includes('updatedBy')) {
+        const User = this.getModel('User');
+        include.push({
+          model: User,
+          as: 'updatedByUser',
+          attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
+          required: false,
+        });
+        delete attributes.updatedBy;
       }
 
       const result = await this.model.findAll({
@@ -83,15 +116,20 @@ class baseService extends base {
    * @param {*} param1
    * @returns { rows, count } response
    */
-  async read(search, {
+  async findOne(search, {
     filter = null,
     include,
-    attributes,
+    attributes = this.modelColumns,
     transaction
   }) {
     try {
       if (filter === null) filter = await this.generateQueryFilterFromQueryParams(search);
-      const item = await this.model.findOne(filter).transaction(transaction);
+      const item = await this.model.findOne({
+        attributes: attributes,
+        where: filter,
+        include: include,
+        transaction: transaction
+      });
       if (!item)  throw new baseError(`Some error occurred while fetching ${this.name} details.`, 410);
 
       return item;
@@ -100,13 +138,13 @@ class baseService extends base {
     }
   }
 
-  async readById(id, { transaction, include, attributes}) {
+  async findByPk(id, { transaction, include, attributes = this.modelColumns}) {
 
     try {
       let item = await this.model.findByPk(id, {
         include: include,
         attributes: attributes,
-        transaction
+        transaction: transaction
       });
       if (!item) throw new baseError(`Some error occurred while fetching ${this.name} details.`, 400);
       return item;
@@ -115,12 +153,12 @@ class baseService extends base {
     }
   }
 
-  async add(data, { transaction } ) {
+  async create(data, { transaction } ) {
     try {
       Object.keys(data).forEach(
         (key) => data[key] === undefined && delete data[key],
       );
-      let item = await this.model.create(data, transaction);
+      let item = await this.model.create(data, { transaction });
       if (!item) throw new baseError(`Some error occurred while adding this new ${this.name}.`);
       return item;
 
@@ -129,7 +167,7 @@ class baseService extends base {
     }
   }
 
-  async addMany(data, { transaction }) {
+  async bulkCreate(data, { transaction }) {
     try {
       const items = await this.model.bulkCreate(data, { transaction })
 
@@ -141,7 +179,7 @@ class baseService extends base {
     }
   }
 
-  async edit(search, data, transaction) {
+  async update(search, data, transaction) {
     try {
       const filter = await this.generateQueryFilterFromQueryParams(search);
       const dbItem = await this.get(filter, transaction);
@@ -152,7 +190,10 @@ class baseService extends base {
         (key) => data[key] === undefined && delete data[key],
       );
 
-      const item = await this.model.update(filter, data, transaction);
+      const item = await this.model.update(data, {
+        where: filter,
+        transaction: transaction
+      });
       if (!item) throw new baseError(`Some error occurred while updating the ${this.name}.`, 500);
 
       const oldDBItem = dbItem.toJSON();
@@ -164,16 +205,16 @@ class baseService extends base {
     }
   }
 
-  async editById(id, data, transaction) {
+  async updateByPk(id, data, transaction) {
     try {
-      const search = { _id: id,  deleted: false };
+      const search = { id: id,  deleted: false };
       return await this.update(search, data, transaction);
     } catch (ex) {
       throw new baseError(ex.message || `Some error occurred while updating the ${this.name}.`, 400);
     }
   }
 
-  async editMany(search, data, transaction) {
+  async bulkUpdate(search, data, transaction) {
     try {
       const filter = await this.generateQueryFilterFromQueryParams(search);
       Object.keys(data).forEach(
@@ -190,10 +231,10 @@ class baseService extends base {
     }
   }
 
-  async delete(search, transaction) {
+  async destroy(search, transaction) {
     try {
       const filter = await this.generateQueryFilterFromQueryParams(search);
-      const item = await this.model.deleteOne(filter).transaction(transaction);
+      const item = await this.model.destroy({ where: { filter }, transaction: transaction});
       if (!item) throw new baseError(`Some error occurred while deleting the ${this.name}.`, 500);
       return item;
     } catch (ex) {
@@ -201,24 +242,12 @@ class baseService extends base {
     }
   }
 
-  async deleteById(id, transaction) {
+  async destroyByPk(id, transaction) {
     try {
       let filter = { _id: id,  deleted: false };
-      return await this.delete(filter, transaction);
-    } catch (ex) {
-      throw new baseError(ex.message || `Some error occurred while deleting the ${this.name}.`, ex.statusCode || 400);
-    }
-  }
-
-  async deleteMany(search, transaction) {
-    try {
-      const filter = await this.generateQueryFilterFromQueryParams(search);
-      const count = await this.model.deleteMany(filter).transaction(transaction);
-      if (count) {
-        return count;
-        //returns {deletedCount: x}
-      }
-      throw new baseError(`Some error occurred while deleting the ${this.name}.`, 500);
+      const item = await this.model.destroy({ where: { filter }, transaction: transaction});
+      if (!item) throw new baseError(`Some error occurred while deleting the ${this.name}.`, 500);
+      return item;
     } catch (ex) {
       throw new baseError(ex.message || `Some error occurred while deleting the ${this.name}.`, ex.statusCode || 400);
     }
@@ -233,9 +262,8 @@ class baseService extends base {
             id : search[field].split(',')
           });
         } else if(Number(search[field])) {
-          console.log('HERE');
           filter.push({
-            [field] : search[field]
+            [field] : Number(search[field])
           });
         } else if(search[field].toLowerCase() === "true" || search[field].toLowerCase() === "false") {
           if(search[field].toLowerCase() === "true"){

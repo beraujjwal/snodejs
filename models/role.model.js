@@ -70,13 +70,13 @@ const Role = sequelize.define("Role",
         include: [
           {
             model: User,
-            as: 'addedBy',
+            as: 'createdByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
           {
             model: User,
-            as: 'editedBy',
+            as: 'updatedByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
@@ -140,8 +140,8 @@ Role.associate = function(models) {
     constraints: false
   });
 
-  Role.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
-  Role.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
+  Role.belongsTo(models.User, { as: 'createdByUser', foreignKey: 'createdBy'});
+  Role.belongsTo(models.User, {as: 'updatedByUser', foreignKey: 'updatedBy'});
 };
 
 module.exports = Role;

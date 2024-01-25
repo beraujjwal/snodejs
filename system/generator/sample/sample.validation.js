@@ -1,5 +1,4 @@
 'use strict';
-const autoBind = require('auto-bind');
 const { validation } = require('./validation');
 
 class VALIDATION_CAMEL_CASE_SINGULAR_FROMValidation extends validation {
@@ -10,7 +9,6 @@ class VALIDATION_CAMEL_CASE_SINGULAR_FROMValidation extends validation {
    */
   constructor() {
     super();
-    autoBind(this);
   }
 
   async create(req, res, next) {

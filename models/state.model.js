@@ -46,13 +46,13 @@ const State = sequelize.define("State",
         include: [
           {
             model: User,
-            as: 'addedBy',
+            as: 'createdByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
           {
             model: User,
-            as: 'editedBy',
+            as: 'updatedByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
@@ -73,8 +73,8 @@ State.associate = function(models) {
   State.belongsTo(models.Country, {foreignKey: 'countryID', as: 'country'});
   State.hasMany(models.City, {foreignKey: 'stateID', as: 'cities'});
 
-  State.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
-  State.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
+  State.belongsTo(models.User, { as: 'createdByUser', foreignKey: 'createdBy'});
+  State.belongsTo(models.User, {as: 'updatedByUser', foreignKey: 'updatedBy'});
 };
 
 module.exports = State;

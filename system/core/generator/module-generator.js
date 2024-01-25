@@ -19,22 +19,29 @@ module.exports = async function(moduleArg) {
             let pluralCase = '';
             let singularCase = '';
             let kebabCase = caseChanger.kebab(processAction);
+            const camelCaseProcessName = caseChanger.camel(processName);
+            const pluralizeProcessName = pluralize.plural(processName);
+            const pluralizeCamelCaseProcessName = pluralize.plural(camelCaseProcessName);
+            console.log('camelCaseProcessName', camelCaseProcessName);
+            console.log('pluralizeProcessName', pluralizeProcessName);
+            console.log('pluralizeCamelCaseProcessName', pluralizeCamelCaseProcessName);
+
             switch (processAction) {
-                case 'controller':                    
+                case 'controller':
                     origFilePath = `${templatePath}/SampleController.js`;
-                    kebabCase = caseChanger.pascal(processName);
-                    pluralCase = pluralize.plural(kebabCase);
-                    file = `${pluralCase}Controller.js`;
-                    console.log(chalk.blueBright(`Creating Controller: ${file}`));                    
+                    pluralCase = pluralize.plural(camelCaseProcessName);
+
+                    file = `${pluralizeCamelCaseProcessName}.controller.js`;
+                    console.log(chalk.blueBright(`Creating Controller: ${file}`));
                     contents = fs.readFileSync(origFilePath, 'utf8');
-                    contents = contents.replace(/CONTROLLER_PLURAL_FORM/g, pluralCase);
+                    contents = contents.replace(/CONTROLLER_PLURAL_FORM/g, pluralizeCamelCaseProcessName);
                     destPath = `${CURR_DIR}/app/controllers`;
                     break;
                 case 'model':
                     origFilePath = `${templatePath}/sample.js`;
-                    lowerCase = caseChanger.lower(processName, '_');
+                    const lowerCase = caseChanger.lower(processName, '_');
                     kebabCase = pluralize.singular(lowerCase);
-                    file = `${kebabCase}.js`;
+                    file = `${kebabCase}.model.js`;
                     singularCase = caseChanger.pascal(kebabCase);
                     pluralCase = pluralize.plural(kebabCase);
                     pluralCase = caseChanger.lower(pluralCase, '_');
@@ -51,7 +58,7 @@ module.exports = async function(moduleArg) {
 
                     kebabCase = pluralize.plural(kebabCase);
 
-                    file = `${kebabCase}.js`;
+                    file = `${kebabCase}.service.js`;
                     console.log(chalk.blueBright(`Creating Service: ${file}`));
                     contents = fs.readFileSync(origFilePath, 'utf8');
                     contents = contents.replace(/SERVICE_PLURAL/g, kebabCase);
@@ -62,13 +69,13 @@ module.exports = async function(moduleArg) {
                     let singularName = pluralize.singular(processName);
                     console.log(`singularName ${singularName}`);
                     kebabCase = caseChanger.lower(singularName, '');
-                    file = `${kebabCase}Validation.js`;
+                    file = `${kebabCase}.validation.js`;
                     console.log(chalk.blueBright(`Creating Validation: ${file}`));
                     contents = fs.readFileSync(origFilePath, 'utf8');
                     contents = contents.replace(/VALIDATION_SINGULAR_VALIDATION/g, `${kebabCase}Validation`);
                     destPath = `${CURR_DIR}/app/validations`;
                     break;
-                case 'module':                
+                case 'module':
                     await createDirectoryContents(moduleArg);
                     break;
                 default:
@@ -84,9 +91,9 @@ module.exports = async function(moduleArg) {
             } else {
                 console.error(chalk.redBright(`${file} already exists.`));
             }
-            
+
         }
-        
+
     } catch (error) {
         if(error.code === 'EEXIST') {
             console.error(chalk.redBright('Module already exists.'));

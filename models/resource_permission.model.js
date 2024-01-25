@@ -50,13 +50,13 @@ const ResourcePermission = sequelize.define("ResourcePermission",
         include: [
           {
             model: User,
-            as: 'addedBy',
+            as: 'createdByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
           {
             model: User,
-            as: 'editedBy',
+            as: 'updatedByUser',
             attributes: [ 'id', 'name', 'phone', 'email', 'status' ],
             required: false,
           },
@@ -69,8 +69,8 @@ ResourcePermission.associate = function(models) {
   ResourcePermission.belongsTo(models.Resource, { foreignKey: 'resourceID' });
   ResourcePermission.belongsTo(models.Permission, { foreignKey: 'permissionID' });
 
-  ResourcePermission.belongsTo(models.User, { as: 'addedBy', foreignKey: 'createdBy'});
-  ResourcePermission.belongsTo(models.User, {as: 'editedBy', foreignKey: 'updatedBy'});
+  ResourcePermission.belongsTo(models.User, { as: 'createdByUser', foreignKey: 'createdBy'});
+  ResourcePermission.belongsTo(models.User, { as: 'updatedByUser', foreignKey: 'updatedBy'});
 };
 
 module.exports = ResourcePermission;
