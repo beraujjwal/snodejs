@@ -1,7 +1,7 @@
-const { service } = require( './service' );
-const { baseError } = require('../../system/core/error/baseError');
+const { service } = require("./service");
+const { baseError } = require("../../system/core/error/baseError");
 
-const resourceGraph = require('../../neo4j/services/resource');
+const resourceGraph = require("../../neo4j/services/resource");
 
 class resource extends service {
   /**
@@ -12,7 +12,9 @@ class resource extends service {
   constructor(model) {
     super(model);
     this.model = this.getModel(model);
-    this.user = this.getModel('User');
+    this.user = this.getModel("User");
+    this.permission = this.getModel("Permission");
+    this.name = model;
   }
 
   async findAll(queries, transaction) {
@@ -22,8 +24,8 @@ class resource extends service {
         ids = null,
         name = null,
         parent = null,
-        orderby = 'name',
-        ordering = 'ASC',
+        orderby = "name",
+        ordering = "ASC",
         limit = this.dataPerPage || 10,
         page = 1,
         return_type = null,
@@ -34,59 +36,64 @@ class resource extends service {
 
       const query = [{ parentId: parent }];
 
-      if(name) {
+      if (name) {
         query.push({
           name: {
-            [Op.like]: `%${name}%`
-          }
+            [Op.like]: `%${name}%`,
+          },
         });
       }
-      if(id) {
+      if (id) {
         query.push({
-          id: id
+          id: id,
         });
       }
-      if(ids) {
-        const idsArr = ids.split(',');
+      if (ids) {
+        const idsArr = ids.split(",");
         query.push({
           id: {
-            [Op.in]: idsArr
-          }
+            [Op.in]: idsArr,
+          },
         });
       }
 
-      const result = await this.model.unscoped().findAll({
+      const includes = await this.getAutoIncludes(this.model, this.name);
+
+      //console.log("includes", includes);
+
+      const result = await this.model.findAll({
         attributes: {
-          exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
+          exclude: ["createdAt", "updatedAt", "deletedAt"],
         },
         where: query,
-        include: [
-          {
-            model: this.user.unscoped() ,
-            as: 'users',
-            attributes: ['id'],
-            through:{
-              where: {
-                status: true,
-              },
-              attributes: []
-            },
-            where: {
-              status: true,
-            },
-          }
-        ],
-        order: [
-          [orderby, order],
-        ],
+        include: includes,
+        // include: [
+        //   // {
+        //   //   model: this.permission,
+        //   //   as: "userResourcePermissions",
+        //   //   through: {
+        //   //     attributes: [],
+        //   //   },
+        //   // },
+        //   // {
+        //   //   model: this.permission,
+        //   //   as: "userResourcePermissions",
+        //   //   where: { status: true },
+        //   //   through: {
+        //   //     attributes: [],
+        //   //   },
+        //   //   require: false,
+        //   // },
+        // ],
+        order: [[orderby, order]],
         limit: limit,
         offset: skip,
-        transaction
+        transaction,
       });
 
       return result;
     } catch (ex) {
-      console.log(ex)
+      console.log(ex);
       throw new baseError(ex);
     }
   }
@@ -97,18 +104,22 @@ class resource extends service {
    * @returns object
    * @author Ujjwal Bera
    */
-  async create( { name, parent, rightsAvailable,  status = true }, transaction ) {
+  async create({ name, parent, status = true }, transaction) {
     try {
-
-      const resource = await super.create([{
-        name,
-        parent,
-        status,
-      }], transaction);
+      const resource = await super.create(
+        [
+          {
+            name,
+            parent,
+            status,
+          },
+        ],
+        transaction
+      );
       return resource;
     } catch (ex) {
       throw new baseError(
-        ex.message || 'An error occurred while storing a new resource.',
+        ex.message || "An error occurred while storing a new resource.",
         ex.status
       );
     }
@@ -126,11 +137,12 @@ class resource extends service {
         _id: resourceId,
         deleted: false,
       });
-      if (!resource) throw new baseError('You have selected an invalid resource.');
+      if (!resource)
+        throw new baseError("You have selected an invalid resource.");
       return resource;
     } catch (ex) {
       throw new baseError(
-        ex.message || 'An error occurred while fetching a resource details.',
+        ex.message || "An error occurred while fetching a resource details.",
         ex.status
       );
     }
@@ -150,7 +162,8 @@ class resource extends service {
         _id: resourceId,
         deleted: false,
       });
-      if (!resource) throw new baseError('You have selected an invalid resource.');
+      if (!resource)
+        throw new baseError("You have selected an invalid resource.");
 
       let data = {};
 
@@ -168,7 +181,7 @@ class resource extends service {
       return await this.resourceDetails(resourceId);
     } catch (ex) {
       throw new baseError(
-        ex.message || 'An error occurred while updating a resource details.',
+        ex.message || "An error occurred while updating a resource details.",
         ex.status
       );
     }
@@ -187,30 +200,36 @@ class resource extends service {
         _id: resourceId,
         deleted: false,
       });
-      if (!resource) throw new baseError('You have selected an invalid resource.');
+      if (!resource)
+        throw new baseError("You have selected an invalid resource.");
 
-      if(status) {
+      if (status) {
         const parentResource = await this.model.findOne({
           _id: resource.parent,
           deleted: false,
         });
-        if(parentResource && !parentResource.status) throw new baseError('Please active parent resource before this.');
+        if (parentResource && !parentResource.status)
+          throw new baseError("Please active parent resource before this.");
       } else {
         const childResource = await this.model.findOne({
           parent: resourceId,
           deleted: false,
         });
-        if(childResource && childResource.status) throw new baseError('Please in-active child resource before this.');
+        if (childResource && childResource.status)
+          throw new baseError("Please in-active child resource before this.");
       }
 
-      await this.model.updateOne({ _id: resourceId }, { $set: { status: status } });
+      await this.model.updateOne(
+        { _id: resourceId },
+        { $set: { status: status } }
+      );
 
       //await this.updateNestedStatus(resourceId, status);
 
       return await this.resourceDetails(resourceId);
     } catch (ex) {
       throw new baseError(
-        ex.message || 'An error occurred while changing a resource status.',
+        ex.message || "An error occurred while changing a resource status.",
         ex.status
       );
     }
@@ -228,20 +247,21 @@ class resource extends service {
         _id: resourceId,
         deleted: false,
       });
-      if (!resource) throw new baseError('You have selected an invalid resource.');
+      if (!resource)
+        throw new baseError("You have selected an invalid resource.");
 
       const childResource = await this.model.findOne({
         parent: resourceId,
         deleted: false,
       });
 
-      if (childResource) throw new baseError('You have child resource inside it.');
+      if (childResource)
+        throw new baseError("You have child resource inside it.");
 
-      return true
-
+      return true;
     } catch (ex) {
       throw new baseError(
-        ex.message || 'An error occurred while deleting a resource details.',
+        ex.message || "An error occurred while deleting a resource details.",
         ex.status
       );
     }
@@ -259,7 +279,8 @@ class resource extends service {
         _id: resourceId,
         deleted: false,
       });
-      if (!resource) throw new baseError('You have selected an invalid resource.');
+      if (!resource)
+        throw new baseError("You have selected an invalid resource.");
 
       await resource.delete();
 
@@ -269,7 +290,7 @@ class resource extends service {
       });
     } catch (ex) {
       throw new baseError(
-        ex.message || 'An error occurred while deleting a resource details.',
+        ex.message || "An error occurred while deleting a resource details.",
         ex.status
       );
     }

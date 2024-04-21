@@ -1,57 +1,58 @@
-'use strict';
-require('dotenv').config();
-const moment = require('moment');
+"use strict";
+require("dotenv").config();
+const moment = require("moment");
 const bcrypt = require("bcryptjs");
 
-const { sequelize, DataTypes } = require('../system/core/db.connection');
+const { sequelize, DataTypes } = require("../system/core/db.connection");
 const saltRounds = parseInt(process.env.SALT_FACTOR);
 
-const User = sequelize.define("User",
+const User = sequelize.define(
+  "User",
   {
     id: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.BIGINT.UNSIGNED,
       primaryKey: true,
       autoIncrement: true,
       unique: true,
-      allowNull: false
+      allowNull: false,
     },
     name: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.STRING(100),
+      allowNull: false,
     },
     phone: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.STRING(15),
+      allowNull: false,
     },
     isPhoneVerified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: false,
     },
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(75),
       allowNull: true,
       validate: {
         notEmpty: true,
         isEmail: true,
-        isLowercase: true
-      }
+        isLowercase: true,
+      },
     },
     isEmailVerified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: false,
     },
     password: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(75),
       allowNull: false,
       validate: {
-        is: /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/i
-      }
+        is: /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/i,
+      },
     },
     tokenSalt: {
-      type: DataTypes.STRING,
-      allowNull: true
+      type: DataTypes.STRING(10),
+      allowNull: true,
     },
     loginAttempts: {
       type: DataTypes.INTEGER,
@@ -61,10 +62,10 @@ const User = sequelize.define("User",
         max: 5,
         isBelowZero(value) {
           if (value < 0) {
-            throw new Error('Can not be below zero!');
+            throw new Error("Can not be below zero!");
           }
-        }
-      }
+        },
+      },
     },
     blockExpires: {
       type: DataTypes.DATE,
@@ -72,39 +73,63 @@ const User = sequelize.define("User",
       defaultValue: null,
     },
     deviceId: {
-      type: DataTypes.STRING,
-      allowNull: true
+      type: DataTypes.STRING(50),
+      allowNull: true,
     },
     deviceType: {
-      type: DataTypes.STRING,
-      allowNull: true
+      type: DataTypes.STRING(50),
+      allowNull: true,
     },
     fcmToken: {
-      type: DataTypes.STRING,
-      allowNull: true
+      type: DataTypes.STRING(50),
+      allowNull: true,
     },
     verified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-      comment: 'This column is for checking if the user verify himself or not.'
+      comment: "This column is for checking if the user verify himself or not.",
     },
     status: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      comment: 'This column is for checking if the user is active or not.'
+      comment: "This column is for checking if the user is active or not.",
     },
   },
   {
     timestamps: true,
     paranoid: true,
     sequelize,
-    modelName: 'User',
-    tableName: 'users',
-    indexes: [ { unique: true, fields: [ 'name', 'phone', 'email'] } ],
+    modelName: "User",
+    tableName: "users",
+    indexes: [
+      //{ unique: true, fields: ["name", "phone", "email"] },
+      { type: "FULLTEXT", name: "user_name_idx", fields: ["name"] },
+      {
+        name: "user_email_idx",
+        unique: true,
+        fields: ["email", "deletedAt"],
+      },
+      {
+        name: "user_phone_idx",
+        unique: true,
+        fields: ["phone", "deletedAt"],
+      },
+    ],
     defaultScope: {
-      attributes: { exclude: [ 'password', 'tokenSalt', 'createdAt','createdBy', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy' ] },
+      attributes: {
+        exclude: [
+          "password",
+          "tokenSalt",
+          "createdAt",
+          "createdBy",
+          "updatedAt",
+          "updatedBy",
+          "deletedAt",
+          "deletedBy",
+        ],
+      },
       // include: [
       //   {
       //     model: self,
@@ -134,11 +159,11 @@ const User = sequelize.define("User",
         return bcrypt.hashSync(password, salt);
       },
       async validPassword(password) {
-          return bcrypt.compareSync(password, this.password);
+        return bcrypt.compareSync(password, this.password);
       },
       async update(values, options) {
         return super.update(values, { ...options, individualHooks: true });
-      }
+      },
     },
     hooks: {
       beforeCreate: async (user) => {
@@ -146,14 +171,14 @@ const User = sequelize.define("User",
           const salt = await bcrypt.genSalt(saltRounds);
           user.password = bcrypt.hashSync(user.password, salt);
         }
-       },
-       beforeUpdate:async (user) => {
+      },
+      beforeUpdate: async (user) => {
         if (user.password) {
           const salt = await bcrypt.genSalt(saltRounds);
           user.password = bcrypt.hashSync(user.password, salt);
         }
-       }
-    }
+      },
+    },
   }
 );
 
@@ -161,32 +186,47 @@ const User = sequelize.define("User",
 //   return await bcrypt.compareSync(password, hash);
 // }
 
-User.associate = function(models) {
+User.associate = function (models) {
   //User.belongsToMany(models.Role, { through: "UserRole", scope: { status: true }, foreignKey: "userID", as: "activeRoles" });
-  User.belongsToMany(models.Role,
-    {
-      through: {
+  User.belongsToMany(models.Role, {
+    through: {
       model: models.UserRole,
       unique: true,
       scope: {
-        status: true
-      }
+        status: true,
+      },
     },
     foreignKey: "userID",
     as: "roles",
-    constraints: true
+    constraints: true,
   });
-  User.belongsToMany(models.Resource, { through: 'UserResourcePermission', foreignKey: 'userID', as: 'resources' });
-  User.hasMany(models.Token, { as: 'tokens', foreignKey: 'userID', foreignKeyConstraint: true, sourceKey: 'id' });
-
-  User.hasMany(User, { as: 'children', foreignKey: 'createdBy', sourceKey: 'id'});
-  User.belongsTo(User, { as: 'addedBy', foreignKey: 'createdBy', sourceKey: 'id'});
-
+  User.belongsToMany(models.Resource, {
+    through: "UserResourcePermission",
+    foreignKey: "userID",
+    as: "resources",
+  });
+  User.hasMany(models.Token, {
+    as: "tokens",
+    foreignKey: "userID",
+    foreignKeyConstraint: true,
+    sourceKey: "id",
+  });
+  User.hasMany(User, {
+    as: "children",
+    foreignKey: "createdBy",
+    sourceKey: "id",
+  });
+  User.belongsTo(User, {
+    as: "createdByUser",
+    foreignKey: "createdBy",
+    sourceKey: "id",
+  });
   // User.hasMany(User, {as: 'children', foreignKey: 'updatedBy', sourceKey: 'id'});
-  User.belongsTo(User, {as: 'updatedByUser', foreignKey: 'updatedBy', sourceKey: 'id'});
-
+  User.belongsTo(User, {
+    as: "updatedByUser",
+    foreignKey: "updatedBy",
+    sourceKey: "id",
+  });
 };
-
-
 
 module.exports = User;

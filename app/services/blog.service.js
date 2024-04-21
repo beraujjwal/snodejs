@@ -1,4 +1,4 @@
-const { service } = require( './service' );
+const { service } = require("./service");
 
 class blog extends service {
   /**
@@ -8,7 +8,7 @@ class blog extends service {
    */
   constructor(model) {
     super(model);
-    this.model = this.db[model];
+    this.model = this.getModel(model);
   }
 
   //   async blogList(queries) {

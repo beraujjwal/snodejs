@@ -1,117 +1,117 @@
-'use strict';
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('user_resource_permissions', {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable("user_resource_permissions", {
       id: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.BIGINT.UNSIGNED,
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
       },
       userID: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.BIGINT.UNSIGNED,
         references: {
           model: {
-            tableName: 'users',
-            modelName: 'User'
+            tableName: "users",
+            modelName: "User",
           },
-          key: 'id'
+          key: "id",
         },
         allowNull: false,
-        onUpdate: 'cascade',
-        onDelete: 'cascade'
+        onUpdate: "cascade",
+        onDelete: "cascade",
       },
       resourceID: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.BIGINT.UNSIGNED,
         references: {
           model: {
-            tableName: 'resources',
-            modelName: 'Resource'
+            tableName: "resources",
+            modelName: "Resource",
           },
-          key: 'id'
+          key: "id",
         },
         allowNull: false,
-        onUpdate: 'cascade',
-        onDelete: 'cascade'
+        onUpdate: "cascade",
+        onDelete: "cascade",
       },
       permissionID: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.BIGINT.UNSIGNED,
         references: {
           model: {
-            tableName: 'permissions',
-            modelName: 'Permission'
+            tableName: "permissions",
+            modelName: "Permission",
           },
-          key: 'id'
+          key: "id",
         },
         allowNull: false,
-        onUpdate: 'cascade',
-        onDelete: 'cascade'
+        onUpdate: "cascade",
+        onDelete: "cascade",
       },
       status: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: true,
       },
       deletedAt: {
         type: Sequelize.DATE,
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
       },
       deletedBy: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.BIGINT.UNSIGNED,
         allowNull: true,
         references: {
           model: {
-            tableName: 'users',
-            modelName: 'User'
+            tableName: "users",
+            modelName: "User",
           },
-          key: 'id'
+          key: "id",
         },
-        onUpdate: 'cascade',
-        onDelete: 'cascade'
+        onUpdate: "cascade",
+        onDelete: "cascade",
       },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW
+        defaultValue: Sequelize.NOW,
       },
       createdBy: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.BIGINT.UNSIGNED,
         allowNull: true,
         references: {
           model: {
-            tableName: 'users',
-            modelName: 'User'
+            tableName: "users",
+            modelName: "User",
           },
-          key: 'id'
+          key: "id",
         },
-        onUpdate: 'cascade',
-        onDelete: 'cascade'
+        onUpdate: "cascade",
+        onDelete: "cascade",
       },
       updatedAt: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW
+        defaultValue: Sequelize.NOW,
       },
       updatedBy: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.BIGINT.UNSIGNED,
         allowNull: true,
         references: {
           model: {
-            tableName: 'users',
-            modelName: 'User'
+            tableName: "users",
+            modelName: "User",
           },
-          key: 'id'
+          key: "id",
         },
-        onUpdate: 'cascade',
-        onDelete: 'cascade'
+        onUpdate: "cascade",
+        onDelete: "cascade",
       },
     });
   },
 
-  async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('user_resource_permissions');
-  }
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable("user_resource_permissions");
+  },
 };

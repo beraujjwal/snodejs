@@ -1,6 +1,6 @@
-const autoBind = require('auto-bind');
-const { service } = require('@service/service');
-const { baseError } = require('@error/baseError');
+const autoBind = require("auto-bind");
+const { service } = require("@service/service");
+const { baseError } = require("@error/baseError");
 
 class SERVICE_CAMEL_CASE_SINGULAR_FROM extends service {
   /**
@@ -10,7 +10,7 @@ class SERVICE_CAMEL_CASE_SINGULAR_FROM extends service {
    */
   constructor(model) {
     super(model);
-    this.model = this.db[model];
+    this.model = this.getModel(model);
     /**
      * Your code goes here
      */
@@ -31,16 +31,15 @@ class SERVICE_CAMEL_CASE_SINGULAR_FROM extends service {
 
 module.exports = { SERVICE_CAMEL_CASE_SINGULAR_FROM };
 
-const  { Sequelize, Op } = require('sequelize');
+const { Sequelize, Op } = require("sequelize");
 
-const { service } = require( './service' );
-const { baseError } = require('../../system/core/error/baseError');
+const { service } = require("./service");
+const { baseError } = require("../../system/core/error/baseError");
 
-const permissionGraph = require('../../neo4j/services/permission');
+const permissionGraph = require("../../neo4j/services/permission");
 
-const chalk = require('chalk');
+const chalk = require("chalk");
 const log = console.log;
-
 
 class permission extends service {
   /**
@@ -50,8 +49,7 @@ class permission extends service {
    */
   constructor(model) {
     super(model);
-    this.model = this.db[model];
-
+    this.model = this.getModel(model);
   }
 
   async getAll(queries, { transaction }) {
@@ -60,8 +58,8 @@ class permission extends service {
         id = null,
         ids = null,
         name = null,
-        orderby = 'name',
-        ordering = 'ASC',
+        orderby = "name",
+        ordering = "ASC",
         limit = this.dataPerPage || 10,
         page = 1,
         return_type = null,
@@ -72,59 +70,53 @@ class permission extends service {
 
       const query = [];
 
-      if(name) {
+      if (name) {
         query.push({
           name: {
-            [Op.like]: `%${name}%`
-          }
+            [Op.like]: `%${name}%`,
+          },
         });
       }
-      if(id) {
+      if (id) {
         query.push({
-          id: id
+          id: id,
         });
       }
-      if(ids) {
-        const idsArr = ids.split(',');
+      if (ids) {
+        const idsArr = ids.split(",");
         query.push({
-          id: idsArr
+          id: idsArr,
         });
       }
 
       const result = await this.model.findAll({
         attributes: {
-          exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
+          exclude: ["createdAt", "updatedAt", "deletedAt"],
         },
         where: query,
-        order: [
-          [orderby, order],
-        ],
+        order: [[orderby, order]],
         limit: parseInt(limit),
         offset: skip,
-        transaction
+        transaction,
       });
 
       const count = await this.model.count({
         attributes: {
-          exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
+          exclude: ["createdAt", "updatedAt", "deletedAt"],
         },
         where: query,
-        order: [
-          [orderby, order],
-        ],
+        order: [[orderby, order]],
         limit: parseInt(limit),
         offset: skip,
-        transaction
+        transaction,
       });
-
-
 
       return {
         rows: result,
         count,
       };
     } catch (ex) {
-      console.log(ex)
+      console.log(ex);
       throw new baseError(ex);
     }
   }
@@ -136,12 +128,15 @@ class permission extends service {
    * @param {*} others
    * @returns
    */
-  async create( { name, status = true }, { transaction }) {
+  async create({ name, status = true }, { transaction }) {
     try {
-      const permission = await super.create({
-        name,
-        status,
-      }, transaction);
+      const permission = await super.create(
+        {
+          name,
+          status,
+        },
+        transaction
+      );
       return permission;
     } catch (ex) {
       console.log(ex);
@@ -153,7 +148,7 @@ class permission extends service {
     try {
       let permission = await this.model.findByPk(id, { transaction });
       if (!permission) {
-        throw new baseError('Permission not found with this given details.');
+        throw new baseError("Permission not found with this given details.");
       }
       return permission;
     } catch (ex) {
@@ -165,7 +160,7 @@ class permission extends service {
     try {
       await this.model.update(data, {
         where: {
-          id: id
+          id: id,
         },
         returning: true,
         //individualHooks: true,
@@ -181,7 +176,10 @@ class permission extends service {
 
   async permissionDelete(permissionId, { transaction }) {
     try {
-      return await this.model.destroy({ where: { id: permissionId }, transaction });
+      return await this.model.destroy({
+        where: { id: permissionId },
+        transaction,
+      });
     } catch (ex) {
       throw new baseError(ex);
     }
@@ -189,4 +187,3 @@ class permission extends service {
 }
 
 module.exports = { permission };
-

@@ -1,8 +1,8 @@
-const  { Sequelize, sequelize, Op } = require('sequelize');
-const { service } = require( './service' );
-const { baseError } = require('../../system/core/error/baseError');
-const { validationError } = require('../../system/core/error/validationError');
-const roleGraph = require('../../neo4j/services/role');
+const { Sequelize, sequelize, Op } = require("sequelize");
+const { service } = require("./service");
+const { baseError } = require("../../system/core/error/baseError");
+const { validationError } = require("../../system/core/error/validationError");
+const roleGraph = require("../../neo4j/services/role");
 
 class role extends service {
   /**
@@ -13,11 +13,11 @@ class role extends service {
   constructor(model) {
     super(model);
     this.model = this.getModel(model);
-    this.user = this.getModel('User');
-    this.userRole = this.getModel('UserRole');
+    this.user = this.getModel("User");
+    this.userRole = this.getModel("UserRole");
 
-    this.resource = this.getModel('Resource');
-    this.resourcePermission = this.getModel('ResourcePermission');
+    this.resource = this.getModel("Resource");
+    this.resourcePermission = this.getModel("ResourcePermission");
   }
 
   async list(queries, transaction) {
@@ -27,8 +27,8 @@ class role extends service {
         ids = null,
         name = null,
         parent = null,
-        orderby = 'name',
-        ordering = 'ASC',
+        orderby = "name",
+        ordering = "ASC",
         limit = this.dataPerPage || 10,
         page = 1,
         return_type = null,
@@ -39,73 +39,71 @@ class role extends service {
 
       const query = [{ parentId: parent }];
 
-      if(name) {
+      if (name) {
         query.push({
           name: {
-            [Op.like]: `%${name}%`
-          }
+            [Op.like]: `%${name}%`,
+          },
         });
       }
-      if(id) {
+      if (id) {
         query.push({
-          id: id
+          id: id,
         });
       }
-      if(ids) {
-        const idsArr = ids.split(',');
+      if (ids) {
+        const idsArr = ids.split(",");
         query.push({
           id: {
-            [Op.in]: idsArr
-          }
+            [Op.in]: idsArr,
+          },
         });
       }
 
       const result = await this.model.findAll({
         attributes: {
-          exclude: [ 'createdAt', 'updatedAt', 'deletedAt' ]
+          exclude: ["createdAt", "updatedAt", "deletedAt"],
         },
         where: query,
         include: [
           {
-            model: this.user.unscoped() ,
-            as: 'users',
-            attributes: ['id'],
-            through:{
+            model: this.user.unscoped(),
+            as: "users",
+            attributes: ["id"],
+            through: {
               where: {
                 status: true,
               },
-              attributes: []
+              attributes: [],
             },
             where: {
               status: true,
             },
           },
           {
-            model: this.user.unscoped() ,
-            as: 'users',
-            attributes: ['id'],
-            through:{
+            model: this.user.unscoped(),
+            as: "users",
+            attributes: ["id"],
+            through: {
               where: {
                 status: true,
               },
-              attributes: []
+              attributes: [],
             },
             where: {
               status: true,
             },
-          }
+          },
         ],
-        order: [
-          [orderby, order],
-        ],
+        order: [[orderby, order]],
         limit: limit,
         offset: skip,
-        transaction
+        transaction,
       });
 
       return result;
     } catch (ex) {
-      console.log(ex)
+      console.log(ex);
       throw new baseError(ex);
     }
   }
@@ -120,42 +118,53 @@ class role extends service {
    */
   async create({ name, parentId, resources, status = true }, transaction) {
     try {
-      let havError = false, resourceName = null, resourceIds = [], resourceRightsAvailable = [];
+      let havError = false,
+        resourceName = null,
+        resourceIds = [],
+        resourceRightsAvailable = [];
       if (resources) {
-
         for await (const resource of resources) {
-          if(resource?.id === 1) throw new baseError('You have selected an invalid resource.');
+          if (resource?.id === 1)
+            throw new baseError("You have selected an invalid resource.");
           resourceIds.push(resource?.id);
         }
 
         const dbResources = await this.resource.find({
           slug: { $in: resourceIds },
-          status: true
+          status: true,
         });
 
         if (dbResources.length != rights.length) {
-          throw new baseError('You have selected an invalid resource.', 412);
+          throw new baseError("You have selected an invalid resource.", 412);
         }
 
         for await (const resource of resources) {
           const dbResourcePermissions = await this.resourcePermission.find({
             resourceId: resource.id,
             permissionId: { $in: resource.rights },
-            status: true
+            status: true,
           });
 
           if (dbResourcePermissions.length != resource.rights.length) {
-            throw new baseError('You have selected an invalid permission for some resource.', 412);
+            throw new baseError(
+              "You have selected an invalid permission for some resource.",
+              412
+            );
           }
         }
       }
 
-      const role = await this.model.create([{
-        parentId,
-        name,
-        description,
-        status,
-      }], { transaction });
+      const role = await this.model.create(
+        [
+          {
+            parentId,
+            name,
+            description,
+            status,
+          },
+        ],
+        { transaction }
+      );
 
       await roleGraph.create(role[0]);
       return role[0];
@@ -172,12 +181,14 @@ class role extends service {
    */
   async roleDetails(roleId) {
     try {
-      let role = await this.model.findOne({
-        _id: roleId,
-        deleted: false,
-      }).populate();
+      let role = await this.model
+        .findOne({
+          _id: roleId,
+          deleted: false,
+        })
+        .populate();
       if (!role) {
-        throw new baseError('Role not found with this given details.');
+        throw new baseError("Role not found with this given details.");
       }
       return role;
     } catch (ex) {
@@ -202,11 +213,11 @@ class role extends service {
         deleted: false,
       });
       if (!role) {
-        throw new baseError('Role not found.', 404);
+        throw new baseError("Role not found.", 404);
       }
 
-      if(role.slug === 'super-admin') {
-        throw new baseError('This role is not editable.', 403);
+      if (role.slug === "super-admin") {
+        throw new baseError("This role is not editable.", 403);
       }
 
       if (rights != null) {
@@ -218,7 +229,7 @@ class role extends service {
           slug: { $in: rightSlugs },
         });
         if (dbResources.length != rights.length) {
-          throw new baseError('You have selected an invalid resource.', 400);
+          throw new baseError("You have selected an invalid resource.", 400);
         }
       }
 
@@ -251,7 +262,7 @@ class role extends service {
         deleted: false,
       });
       if (!role) {
-        throw new baseError('Role not found.');
+        throw new baseError("Role not found.");
       }
 
       await role.delete();
@@ -278,16 +289,24 @@ class role extends service {
         deleted: false,
       });
       if (!role) {
-        throw new baseError('Role not found.');
+        throw new baseError("Role not found.");
       }
 
       //If role have child roles then don't allow delete operation
       const childs = await this.model.find({ parent: roleId, deleted: false });
-      if(childs.length > 0) throw new baseError('Some child role belongs to this role. If you still want to delete the role? Then delete those child role belongs to this role or shift them into a different role or make them parent role.', 401);
+      if (childs.length > 0)
+        throw new baseError(
+          "Some child role belongs to this role. If you still want to delete the role? Then delete those child role belongs to this role or shift them into a different role or make them parent role.",
+          401
+        );
 
       //If role have users then don't allow delete operation
-      const users = await this.db['User'].find({ roles : { $all : [roleId] }});
-      if(users.length > 0) throw new baseError('Some user belongs to this role. If you still want to delete the role? Then delete those user belongs to this role or shift them into a different role.', 401);
+      const users = await this.user.find({ roles: { $all: [roleId] } });
+      if (users.length > 0)
+        throw new baseError(
+          "Some user belongs to this role. If you still want to delete the role? Then delete those user belongs to this role or shift them into a different role.",
+          401
+        );
 
       await role.delete();
       return await this.model.findOne({
@@ -305,145 +324,187 @@ class role extends service {
    * @param {*} roleId
    * @returns
    */
-  async checkUserRoleAvailablity( {roles, parentRole, defaultRole = 'admin'}, transaction ){
-    try{
+  async checkUserRoleAvailablity(
+    { roles, parentRole, defaultRole = "admin" },
+    transaction
+  ) {
+    try {
       if (!roles) {
         roles = [defaultRole]; // if role is not selected, setting default role for new user
       }
 
-      let dbRoles = await this.db['Role'].find({ slug: { $in: roles }}).populate({
-        path: 'role',
-        match: {
-          slug: parentRole
-        }
-      }).transaction(transaction).exec();
+      let dbRoles = await this.model
+        .find({ slug: { $in: roles } })
+        .populate({
+          path: "role",
+          match: {
+            slug: parentRole,
+          },
+        })
+        .transaction(transaction)
+        .exec();
       if (dbRoles.length !== roles.length) {
-        throw new validationError({ roles: ['You have selected an invalid role.']}, 412);
+        throw new validationError(
+          { roles: ["You have selected an invalid role."] },
+          412
+        );
       }
       return dbRoles.map((role) => role._id);
     } catch (ex) {
-      console.log('Role service', ex);
+      console.log("Role service", ex);
       throw new baseError(
-        ex || 'An error occurred while creating your account. Please try again.',
+        ex ||
+          "An error occurred while creating your account. Please try again.",
         ex.code
       );
     }
-
   }
 
-
-
-  async createUserRole({userId, roles}, transaction) {
+  async createUserRole({ userId, roles }, transaction) {
     try {
-      if (!roles) throw new baseError(__('INVALI_ROLES_SELECTED'));
+      if (!roles) throw new baseError(__("INVALI_ROLES_SELECTED"));
 
       const dbRoles = await this.model.findAll({
-        attribuites: ['id'],
+        attribuites: ["id"],
         where: {
-          id: { [Op.or]: roles }
-        }
+          id: { [Op.or]: roles },
+        },
       });
 
-      if (dbRoles.length < 1) throw new baseError(__('INVALI_ROLES_SELECTED'));
+      if (dbRoles.length < 1) throw new baseError(__("INVALI_ROLES_SELECTED"));
       const userRoles = [];
-      dbRoles.forEach( async (role) => {
-        userRoles.push({ userId: userId,  roleId: role.id, status: true, deletedAt: null });
+      dbRoles.forEach(async (role) => {
+        userRoles.push({
+          userId: userId,
+          roleId: role.id,
+          status: true,
+          deletedAt: null,
+        });
       });
-      const dbUserRoles = await this.userRole.findAll({ where: { userId }, paranoid: false }, { transaction });
+      const dbUserRoles = await this.userRole.findAll(
+        { where: { userId }, paranoid: false },
+        { transaction }
+      );
       if (dbUserRoles.length > 0) {
-        if(dbRoles.length === dbUserRoles.length) {
+        if (dbRoles.length === dbUserRoles.length) {
           let count = 0;
-          dbUserRoles.forEach( async (dbUserRole) => {
-            await this.updateUserRole(dbUserRole.id, userRoles[count], transaction );
+          dbUserRoles.forEach(async (dbUserRole) => {
+            await this.updateUserRole(
+              dbUserRole.id,
+              userRoles[count],
+              transaction
+            );
             count++;
           });
-
-        } else if(dbRoles.length > dbUserRoles.length) {
-          dbUserRoles.forEach( async (dbUserRole) => {
+        } else if (dbRoles.length > dbUserRoles.length) {
+          dbUserRoles.forEach(async (dbUserRole) => {
             const userRole = userRoles.shift();
-            await this.updateUserRole(dbUserRole.id, userRole, transaction );
+            await this.updateUserRole(dbUserRole.id, userRole, transaction);
           });
           return await this.userRole.bulkCreate(userRoles, { transaction });
-        } else if(dbRoles.length < dbUserRoles.length) {
+        } else if (dbRoles.length < dbUserRoles.length) {
           let count = 0;
           const haveToDeleteIds = [];
-          dbUserRoles.forEach( async (dbUserRole) => {
-            if(userRoles[count]) {
-              await this.updateUserRole(dbUserRole.id, userRoles[count], transaction );
+          dbUserRoles.forEach(async (dbUserRole) => {
+            if (userRoles[count]) {
+              await this.updateUserRole(
+                dbUserRole.id,
+                userRoles[count],
+                transaction
+              );
             } else {
               haveToDeleteIds.push(dbUserRole.id);
             }
             count++;
           });
-          await this.userRole.destroy({ where: { id: { [Op.in]: haveToDeleteIds } } }, { transaction });
+          await this.userRole.destroy(
+            { where: { id: { [Op.in]: haveToDeleteIds } } },
+            { transaction }
+          );
         }
       } else {
         return await this.userRole.bulkCreate(userRoles, { transaction });
       }
-
     } catch (ex) {
       throw new baseError(ex);
     }
   }
-
 
   async updateUserRole(userRoleId, userRoleData, transaction) {
     try {
       await this.userRole.update(userRoleData, {
         where: { id: userRoleId },
-        transaction
+        transaction,
       });
     } catch (ex) {
       throw new baseError(ex);
     }
-
   }
-
 
   async createUserRole2({ userId, roles }, transaction) {
     try {
-        if (!roles) {
-            throw new baseError('INVALID_ROLES_SELECTED');
+      if (!roles) {
+        throw new baseError("INVALID_ROLES_SELECTED");
+      }
+
+      const dbRoles = await this.model.findAll({
+        attributes: ["id"],
+        where: {
+          slug: { [Op.or]: roles },
+        },
+      });
+
+      if (dbRoles.length < 1) {
+        throw new baseError("INVALID_ROLES_SELECTED");
+      }
+
+      const userRoles = dbRoles.map((role) => ({
+        userId: userId,
+        roleId: role.id,
+        status: true,
+        deletedAt: null,
+      }));
+      const dbUserRoles = await this.userRole.findAll(
+        { where: { userId }, paranoid: false },
+        { transaction }
+      );
+
+      if (dbRoles.length === dbUserRoles.length) {
+        for (let i = 0; i < dbRoles.length; i++) {
+          await this.updateUserRole(
+            dbUserRoles[i].id,
+            userRoles[i],
+            transaction
+          );
+        }
+      } else {
+        const rolesToUpdate = Math.min(dbRoles.length, dbUserRoles.length);
+
+        for (let i = 0; i < rolesToUpdate; i++) {
+          await this.updateUserRole(
+            dbUserRoles[i].id,
+            userRoles[i],
+            transaction
+          );
         }
 
-        const dbRoles = await this.model.findAll({
-            attributes: ['id'],
-            where: {
-                slug: { [Op.or]: roles }
-            }
-        });
-
-        if (dbRoles.length < 1) {
-            throw new baseError('INVALID_ROLES_SELECTED');
-        }
-
-        const userRoles = dbRoles.map((role) => ({ userId: userId, roleId: role.id, status: true, deletedAt: null }));
-        const dbUserRoles = await this.userRole.findAll({ where: { userId }, paranoid: false }, { transaction });
-
-        if (dbRoles.length === dbUserRoles.length) {
-            for (let i = 0; i < dbRoles.length; i++) {
-                await this.updateUserRole(dbUserRoles[i].id, userRoles[i], transaction);
-            }
+        if (dbRoles.length > dbUserRoles.length) {
+          await this.userRole.bulkCreate(userRoles.slice(rolesToUpdate), {
+            transaction,
+          });
         } else {
-            const rolesToUpdate = Math.min(dbRoles.length, dbUserRoles.length);
+          const rolesToDelete = dbUserRoles.slice(rolesToUpdate);
 
-            for (let i = 0; i < rolesToUpdate; i++) {
-                await this.updateUserRole(dbUserRoles[i].id, userRoles[i], transaction);
-            }
-
-            if (dbRoles.length > dbUserRoles.length) {
-                await this.userRole.bulkCreate(userRoles.slice(rolesToUpdate), { transaction });
-            } else {
-                const rolesToDelete = dbUserRoles.slice(rolesToUpdate);
-
-                for (const roleToDelete of rolesToDelete) {
-                    await this.userRole.destroy({ where: { id: roleToDelete.id } }, { transaction });
-                }
-            }
+          for (const roleToDelete of rolesToDelete) {
+            await this.userRole.destroy(
+              { where: { id: roleToDelete.id } },
+              { transaction }
+            );
+          }
         }
-
+      }
     } catch (ex) {
-        throw new baseError(ex.message);
+      throw new baseError(ex.message);
     }
   }
 
@@ -460,16 +521,24 @@ class role extends service {
         deleted: false,
       });
       if (!role) {
-        throw new baseError('Role not found.');
+        throw new baseError("Role not found.");
       }
 
       //If role have child roles then don't allow delete operation
       const childs = await this.model.find({ parent: roleId, deleted: false });
-      if(childs.length > 0) throw new baseError('Some child role belongs to this role. If you still want to delete the role? Then delete those child role belongs to this role or shift them into a different role or make them parent role.', 401);
+      if (childs.length > 0)
+        throw new baseError(
+          "Some child role belongs to this role. If you still want to delete the role? Then delete those child role belongs to this role or shift them into a different role or make them parent role.",
+          401
+        );
 
       //If role have users then don't allow delete operation
-      const users = await this.db['User'].find({ roles : { $all : [roleId] }});
-      if(users.length > 0) throw new baseError('Some user belongs to this role. If you still want to delete the role? Then delete those user belongs to this role or shift them into a different role.', 401);
+      const users = await this.user.find({ roles: { $all: [roleId] } });
+      if (users.length > 0)
+        throw new baseError(
+          "Some user belongs to this role. If you still want to delete the role? Then delete those user belongs to this role or shift them into a different role.",
+          401
+        );
 
       await role.delete();
       return await this.model.findOne({
@@ -480,10 +549,6 @@ class role extends service {
       throw new baseError(ex);
     }
   }
-
-
-
-
 }
 
 module.exports = { role };

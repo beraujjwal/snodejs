@@ -1,8 +1,7 @@
-const { base } = require('../base');
-const { baseError } = require('../error/baseError');
+const { base } = require("../base");
+const { baseError } = require("../error/baseError");
 
 class baseController extends base {
-
   static service = null;
 
   /**
@@ -29,10 +28,9 @@ class baseController extends base {
     return {
       code: 200,
       result: response,
-      message: __("ITEMS_LIST_FETCH_SUCESSFULLY")
-    }
+      message: __("ITEMS_LIST_FETCH_SUCESSFULLY"),
+    };
   }
-
 
   /**
    * @description Read item details
@@ -47,10 +45,9 @@ class baseController extends base {
     return {
       code: 200,
       result: response,
-      message: __("ITEM_DETAIL_FETCH_SUCESSFULLY")
-    }
+      message: __("ITEM_DETAIL_FETCH_SUCESSFULLY"),
+    };
   }
-
 
   /**
    * @description Read item details by item id
@@ -66,10 +63,9 @@ class baseController extends base {
     return {
       code: 200,
       result: response,
-      message: __("ITEM_DETAIL_FETCH_SUCESSFULLY")
-    }
+      message: __("ITEM_DETAIL_FETCH_SUCESSFULLY"),
+    };
   }
-
 
   /**
    * @description Add a new item
@@ -79,15 +75,15 @@ class baseController extends base {
    * @returns {*} object
    */
   async create(req, transaction) {
+    console.log("req.body", req.body);
     const response = await this.service.create(req.body, transaction);
-    if(!response) throw new baseError(__("ITEM_ADDED_ERROR"));
+    if (!response) throw new baseError(__("ITEM_ADDED_ERROR"));
     return {
       code: 200,
       result: response,
-      message: __("ITEM_ADDED_SUCESSFULLY")
-    }
+      message: __("ITEM_ADDED_SUCESSFULLY"),
+    };
   }
-
 
   /**
    * @description Add multiple new items
@@ -98,14 +94,13 @@ class baseController extends base {
    */
   async bulkCreate(req, transaction) {
     const response = await this.service.bulkCreate(req.body, { transaction });
-    if(!response) throw new baseError(__("ITEMS_ADDED_ERROR"));
+    if (!response) throw new baseError(__("ITEMS_ADDED_ERROR"));
     return {
       code: 200,
       result: response,
-      message: __("ITEMS_ADDED_SUCESSFULLY")
-    }
+      message: __("ITEMS_ADDED_SUCESSFULLY"),
+    };
   }
-
 
   /**
    * @description Edit item
@@ -115,15 +110,18 @@ class baseController extends base {
    * @returns {*} object
    */
   async update(req, transaction) {
-    const response = await this.service.update(req.params, req.body, transaction);
-    if(!response) throw new baseError(__("ITEM_UPDATED_ERROR"));
+    const response = await this.service.update(
+      req.params,
+      req.body,
+      transaction
+    );
+    if (!response) throw new baseError(__("ITEM_UPDATED_ERROR"));
     return {
       code: 200,
       result: response,
-      message: __("ITEM_UPDATED_SUCESSFULLY")
-    }
+      message: __("ITEM_UPDATED_SUCESSFULLY"),
+    };
   }
-
 
   /**
    * @description Edit item by item id
@@ -135,14 +133,13 @@ class baseController extends base {
   async updateByPk(req, transaction) {
     const { id } = req.params;
     const response = await this.service.updateByPk(id, req.body, transaction);
-    if(!response) throw new baseError(__("ITEM_UPDATED_ERROR"));
+    if (!response) throw new baseError(__("ITEM_UPDATED_ERROR"));
     return {
       code: 200,
       result: response,
-      message: __("ITEM_UPDATED_SUCESSFULLY")
-    }
+      message: __("ITEM_UPDATED_SUCESSFULLY"),
+    };
   }
-
 
   /**
    * @description Edit multiple items by item id
@@ -152,15 +149,18 @@ class baseController extends base {
    * @returns {*} object
    */
   async bulkUpdate(req, session) {
-    const response = await this.service.bulkUpdate(req.params, req.body, session);
-    if(!response) throw new baseError(__("UNABLE_TO_UPDATED_ITEMS"));
+    const response = await this.service.bulkUpdate(
+      req.params,
+      req.body,
+      session
+    );
+    if (!response) throw new baseError(__("UNABLE_TO_UPDATED_ITEMS"));
     return {
       code: 200,
       result: response,
-      message: __("ITEMS_UPDATED_SUCESSFULLY")
-    }
+      message: __("ITEMS_UPDATED_SUCESSFULLY"),
+    };
   }
-
 
   /**
    * @description Delete item
@@ -171,14 +171,13 @@ class baseController extends base {
    */
   async destroy(req, transaction) {
     const response = await this.service.destroy(req.params, transaction);
-    if(!response) throw new baseError(__("ITEM_DELETED_ERROR"));
+    if (!response) throw new baseError(__("ITEM_DELETED_ERROR"));
     return {
       code: 200,
       result: response,
-      message: __("ITEM_DELETED_SUCESSFULLY")
-    }
+      message: __("ITEM_DELETED_SUCESSFULLY"),
+    };
   }
-
 
   /**
    * @description Delete item by item id
@@ -190,12 +189,12 @@ class baseController extends base {
   async destroyByPk(req, transaction) {
     const { id } = req.params;
     const response = await this.service.destroyByPk(id, transaction);
-    if(!response) throw new baseError(__("UNABLE_TO_DELETE_ITEM"));
+    if (!response) throw new baseError(__("UNABLE_TO_DELETE_ITEM"));
     return {
       code: 200,
       result: response,
-      message: __("ITEM_DELETED_SUCESSFULLY")
-    }
+      message: __("ITEM_DELETED_SUCESSFULLY"),
+    };
   }
 }
 

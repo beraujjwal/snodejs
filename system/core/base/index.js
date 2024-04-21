@@ -1,38 +1,30 @@
-'use strict';
-const autoBind = require('auto-bind');
+"use strict";
+const autoBind = require("auto-bind");
 
-require('dotenv').config();
-const db = require('../model');
-
+require("dotenv").config();
+const db = require("../model");
 
 class index {
-
-  //static db = null;
-  //static env = null;
-
   /**
    * Base Controller Layer
    * @author Ujjwal Bera
    * @param null
    */
   constructor() {
-    //this.db = db;
-    //this.env = process.env;
-      autoBind(this);
+    autoBind(this);
   }
 
-  async sample () {
-    console.log('HERE is a Sample record');
+  async sample() {
+    console.log("HERE is a Sample record");
   }
 
-  getEnv(element){
+  getEnv(element) {
     return process.env[element];
   }
 
-  getModel(model){
+  getModel(model) {
     return db[model];
   }
-
 
   // getAllProperties(object){
   //   const properties = new Set();
@@ -74,8 +66,6 @@ class index {
 
   //   return self;
   // }
-
-
 }
 
 module.exports = { base: index };

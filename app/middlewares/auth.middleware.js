@@ -1,9 +1,8 @@
-'use strict';
-const jwt = require('jsonwebtoken');
-const { middleware } = require('./middleware');
-const { baseError } = require('../../system/core/error/baseError');
-const redisClient = require('../../libraries/redis.library'); //Enable this line if you want to config redis also with line no 56
-const User = require('../../models/user.model');
+"use strict";
+const jwt = require("jsonwebtoken");
+const { middleware } = require("./middleware");
+const { baseError } = require("../../system/core/error/baseError");
+const redisClient = require("../../libraries/redis.library"); //Enable this line if you want to config redis also with line no 56
 
 class authMiddleware extends middleware {
   /**
@@ -13,6 +12,7 @@ class authMiddleware extends middleware {
    */
   constructor() {
     super();
+    this.userModel = this.getModel("User");
   }
 
   /**
@@ -23,19 +23,19 @@ class authMiddleware extends middleware {
    * @returns
    */
   async verifyToken(req, res, next) {
-    let bearerHeader = req.headers['authorization'];
+    let bearerHeader = req.headers["authorization"];
 
-    if( !bearerHeader ){
+    if (!bearerHeader) {
       throw new baseError(`Authorization token not found.`, 401);
     }
 
-    const token = bearerHeader.split(' ')[1];
-    if( !token ){
+    const token = bearerHeader.split(" ")[1];
+    if (!token) {
       throw new baseError(`Unauthorized to access this section.`, 401);
     }
 
     try {
-      const decoded = await jwt.verify(token, this.env.JWT_SECRET);
+      const decoded = await jwt.verify(token, this.getEnv("JWT_SECRET"));
 
       if (!decoded) {
         throw new baseError(`Invalid authorization token.`, 401);
@@ -43,14 +43,23 @@ class authMiddleware extends middleware {
 
       let user = await redisClient.get(`${decoded.id}#${decoded.tokenSalt}`);
 
-      if(!user) {
-        user = await User.unscoped().findByPk(decoded.id, { attributes: { include: [ 'id', 'name', 'tokenSalt', 'status', 'verified' ] }});
+      if (!user) {
+        user = await this.userModel.unscoped().findByPk(decoded.id, {
+          attributes: {
+            include: ["id", "name", "tokenSalt", "status", "verified"],
+          },
+        });
         user = user.toJSON();
       } else {
         user = JSON.parse(user);
       }
 
-      if (user === null || user.tokenSalt !== decoded.tokenSalt || user.status === false || user.verified === false) {
+      if (
+        user === null ||
+        user.tokenSalt !== decoded.tokenSalt ||
+        user.status === false ||
+        user.verified === false
+      ) {
         throw new baseError(`Invalid authorization token.`, 401);
       }
 
@@ -61,7 +70,8 @@ class authMiddleware extends middleware {
 
       return;
     } catch (ex) {
-      if(ex.message == 'jwt expired') ex = new baseError(`Invalid authorization token.`, 401);
+      if (ex.message == "jwt expired")
+        ex = new baseError(`Invalid authorization token.`, 401);
       next(ex);
     }
   }
@@ -74,39 +84,41 @@ class authMiddleware extends middleware {
    * @returns
    */
   async verifyiNCompletedToken(req, res, next) {
-
-    let bearerHeader = req.headers['authorization'];
+    let bearerHeader = req.headers["authorization"];
 
     let userRole = req.params.role;
     req.role = userRole;
-    if( !bearerHeader ){
-      next('Authorization token not found!');
+    if (!bearerHeader) {
+      next("Authorization token not found!");
     }
 
-    const token = bearerHeader.split(' ')[1];
-    if( !token ){
-      next('Authorization token not found!!');
+    const token = bearerHeader.split(" ")[1];
+    if (!token) {
+      next("Authorization token not found!!");
     }
 
     try {
-      let decoded = await jwt.verify(token, this.env.JWT_SECRET);
+      let decoded = await jwt.verify(token, this.getEnv("JWT_SECRET"));
       if (!decoded) {
-        next('Invalid authorization token4.');
+        next("Invalid authorization token4.");
       }
 
-      console.debug('decoded', decoded)
+      console.debug("decoded", decoded);
       req.user_id = decoded.id;
 
-      let salt = (decoded.tokenSalt) ? decoded.tokenSalt : 1;
+      let salt = decoded.tokenSalt ? decoded.tokenSalt : 1;
       //Finding user with set criteria
-      let user = await this.User.findOne({
-        _id: decoded.id,
-        tokenSalt: salt,
-        deleted: false,
-      }).populate('roles', '-__v').exec();
+      let user = await this.userModel
+        .findOne({
+          _id: decoded.id,
+          tokenSalt: salt,
+          deleted: false,
+        })
+        .populate("roles", "-__v")
+        .exec();
 
       if (user === null) {
-        next('Invalid authorization token5.');
+        next("Invalid authorization token5.");
       }
 
       global.currentLoginUserId = req.user_id;
@@ -116,9 +128,9 @@ class authMiddleware extends middleware {
         authorities.push(role?.slug);
       }
 
-      if(userRole) {
-        if(!authorities.includes(userRole)) {
-          next('Invalid authorization token6.');
+      if (userRole) {
+        if (!authorities.includes(userRole)) {
+          next("Invalid authorization token6.");
         }
       }
 

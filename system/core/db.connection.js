@@ -1,70 +1,105 @@
-'use strict';
-require( 'dotenv' ).config();
-const { Sequelize, DataTypes } = require('sequelize');
+"use strict";
+require("dotenv").config();
+const { Sequelize, DataTypes } = require("sequelize");
 
-const { config } = require('../../config/db.config');
+const { config } = require("../../config/db.config");
 
-const sequelize = new Sequelize(config.database, config.username, config.password, {
-  host: config.host,
-  port: config.port,
-  dialect: config.dialect,
-  operatorsAliases: 'false',
-  logging: config.logging ? console.log : false,
-  // logging: function (str) {
-  //   log('\x1b[32m%s\x1b[0m', str);
-  // }
-});
+const acquireAttempts = new WeakMap();
 
+const sequelize = new Sequelize(
+  config.database,
+  config.username,
+  config.password,
+  {
+    host: config.host,
+    port: config.port,
+    dialect: config.dialect,
+    operatorsAliases: "false",
+    logging: config.logging ? console.log : false,
+    // logging: function (str) {
+    //   log('\x1b[32m%s\x1b[0m', str);
+    // }
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000,
+    },
+  }
+);
 
-sequelize.authenticate().then(() => {
-  log('Database Connection has been established successfully');
-}).catch((ex) => {
-  error(`Unable to connect to the database. - ${ex.message}`);
-});
+sequelize
+  .authenticate()
+  .then(() => {
+    log("Database Connection has been established successfully");
+  })
+  .catch((ex) => {
+    error(`Unable to connect to the database. - ${ex.message}`);
+  });
 
-sequelize.beforeDefine(function(attributes, model) {
-
-  if((model?.name?.plural != 'SequelizeMeta') && (model?.name?.plural != 'SequelizeData') && (model?.name?.plural != 'Tokens')) {
+sequelize.beforeDefine(function (attributes, model) {
+  if (
+    model?.name?.plural != "SequelizeMeta" &&
+    model?.name?.plural != "SequelizeData" &&
+    model?.name?.plural != "Tokens" &&
+    model?.name?.plural != "WorkLogs"
+  ) {
     attributes.status = {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true
-    }
+      defaultValue: true,
+    };
     attributes.createdBy = {
-      type: DataTypes.BIGINT,
+      type: DataTypes.BIGINT.UNSIGNED,
       references: {
-        model: 'User',
-        key: 'id',
+        model: {
+          tableName: "users",
+          modelName: "User",
+        },
+        key: "id",
       },
-      defaultValue: null
-    }
+      defaultValue: null,
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    };
     attributes.updatedBy = {
-      type: DataTypes.BIGINT,
+      type: DataTypes.BIGINT.UNSIGNED,
       references: {
-        model: 'User',
-        key: 'id',
+        model: {
+          tableName: "users",
+          modelName: "User",
+        },
+        key: "id",
       },
-      defaultValue: null
-    }
+      defaultValue: null,
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    };
     attributes.deletedBy = {
-      type: DataTypes.BIGINT,
+      type: DataTypes.BIGINT.UNSIGNED,
       references: {
-        model: 'User',
-        key: 'id',
+        model: {
+          tableName: "users",
+          modelName: "User",
+        },
+        key: "id",
       },
-      defaultValue: null
-    }
-    attributes.version = {
-      type: DataTypes.BIGINT,
-      defaultValue: 1
-    }
+      defaultValue: null,
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    };
   }
 
+  attributes.status = {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+    comment: "This column is for checking if the resource is active or not.",
+  };
 });
 
-
 sequelize.beforeCreate(async (attributes, options) => {
-  console.log('global.currentLoginUserId', global.currentLoginUserId);
+  console.log("global.currentLoginUserId", global.currentLoginUserId);
   attributes.createdBy = global.currentLoginUserId || null;
 });
 
@@ -84,12 +119,25 @@ sequelize.beforeDestroy(async (attributes, options) => {
   attributes.deletedBy = global.currentLoginUserId || null;
 });
 
-if(config.sync) {
-  sequelize.sync().then(() => {
-    console.log('DB & Model synced successfully!');
-  }).catch((ex) => {
-    error(`Unable to create table : ${ex.message}`);
-  });
+if (config.sync) {
+  sequelize
+    .sync()
+    .then(() => {
+      console.log("DB & Model synced successfully!");
+      return true;
+    })
+    .catch((ex) => {
+      error(`Unable to create table : ${ex.message}`);
+    });
 }
+
+// sequelize.hooks.addListener("beforePoolAcquire", (options) => {
+//   acquireAttempts.set(options, Date.now());
+// });
+
+// sequelize.hooks.addListener("afterPoolAcquire", _connection, (options) => {
+//   const elapsedTime = Date.now() - acquireAttempts.get(options);
+//   console.log(`Connection acquired in ${elapsedTime}ms`);
+// });
 
 module.exports = { sequelize, DataTypes };

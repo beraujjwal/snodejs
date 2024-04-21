@@ -7,15 +7,54 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cross-env TZ=Asia/Kolkata APP_ENV=production pm2 start index.js",
     "dev": "cross-env TZ=Asia/Kolkata APP_ENV=development nodemon index.js",
-    "fresh": "node ./system/core/seeding/clean.js && node ./system/core/seeding/seeder.js",
-    "clean": "node ./system/core/seeding/clean.js",
-    "seed": "node ./system/core/seeding/seeder.js"
+    "migrate": "npx sequelize-cli db:migrate",
+    "migrate:undo:all": "npx sequelize-cli db:migrate:undo:all",
+    "seed": "npx sequelize-cli db:seed:all",
+    "seed:undo:all": "npx sequelize-cli db:seed:undo:all",
+    "fresh": "node system/warnings/fresh-warning.js && npm run fresh:migrate",
+    "fresh:migrate": "npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beraujjwal/snode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/beraujjwal/snode/issues"
   },
   "keywords": [
-    "SNode"
+    "api",
+    "AWS",
+    "boilerplate",
+    "cors",
+    "es6",
+    "express",
+    "helmet",
+    "i18n",
+    "javascript",
+    "kafkajs",
+    "mysql",
+    "neo4j",
+    "node",
+    "nodemailer",
+    "nodemon",
+    "pm2",
+    "postgres",
+    "puppeteer",
+    "router-group",
+    "rate-limit",
+    "redis",
+    "rest",
+    "sequelize",
+    "sentry",
+    "SNode",
+    "SNodeJs",
+    "socket",
+    "validatorjs",
+    "winston"
   ],
   "author": "Ujjwal_Bera",
   "license": "ISC",
+  "homepage": "https://github.com/beraujjwal/snode/blob/main/README.md",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.474.0",
     "@aws-sdk/lib-storage": "^3.474.0",
