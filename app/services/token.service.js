@@ -1,5 +1,5 @@
 const moment = require("moment");
-const { service } = require("./service");
+const service = require("./service");
 const { baseError } = require("../../system/core/error/baseError");
 const {
   generatePassword,
@@ -10,7 +10,7 @@ const {
 const { sentOTPMail } = require("../../libraries/email.library");
 const { sentOTPSMS } = require("../../libraries/sms.library");
 
-class token extends service {
+module.exports = class token extends service {
   /**
    * services constructor
    * @author Ujjwal Bera
@@ -20,6 +20,13 @@ class token extends service {
     super(model);
     this.model = this.getModel(model);
     this.regexEmail = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+  }
+
+  static getInstance(model) {
+    if (!this.instance) {
+      this.instance = new token(model);
+    }
+    return this.instance;
   }
 
   async findOtp(userId, otp, type, sentOn) {
@@ -163,6 +170,4 @@ class token extends service {
       throw new baseError(ex);
     }
   }
-}
-
-module.exports = { token };
+};

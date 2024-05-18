@@ -1,9 +1,9 @@
-const { service } = require("./service");
+const service = require("./service");
 const { baseError } = require("../../system/core/error/baseError");
 
 const resourceGraph = require("../../neo4j/services/resource");
 
-class resource extends service {
+module.exports = class resource extends service {
   /**
    * @description resource service constructor
    * @param null
@@ -15,6 +15,13 @@ class resource extends service {
     this.user = this.getModel("User");
     this.permission = this.getModel("Permission");
     this.name = model;
+  }
+
+  static getInstance(model) {
+    if (!this.instance) {
+      this.instance = new resource(model);
+    }
+    return this.instance;
   }
 
   async findAll(queries, transaction) {
@@ -35,6 +42,8 @@ class resource extends service {
       const skip = parseInt(page) * parseInt(limit) - parseInt(limit);
 
       const query = [{ parentId: parent }];
+
+      console.log("query", query);
 
       if (name) {
         query.push({
@@ -295,6 +304,4 @@ class resource extends service {
       );
     }
   }
-}
-
-module.exports = { resource };
+};

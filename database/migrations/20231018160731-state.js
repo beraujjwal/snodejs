@@ -18,6 +18,10 @@ module.exports = {
             type: Sequelize.STRING(100),
             allowNull: false,
           },
+          stateCode: {
+            type: Sequelize.STRING(100),
+            allowNull: false,
+          },
           countryID: {
             type: Sequelize.BIGINT.UNSIGNED,
             references: {
@@ -30,6 +34,19 @@ module.exports = {
             allowNull: false,
             onUpdate: "cascade",
             onDelete: "cascade",
+          },
+          type: {
+            type: Sequelize.STRING(100),
+            allowNull: true,
+            defaultValue: null,
+          },
+          latitude: {
+            type: Sequelize.STRING(20),
+            required: true,
+          },
+          longitude: {
+            type: Sequelize.STRING(20),
+            required: true,
           },
           status: {
             type: Sequelize.BOOLEAN,
@@ -94,7 +111,7 @@ module.exports = {
         { transaction }
       );
 
-      await queryInterface.addIndex("states", ["name", "countryID"], {
+      await queryInterface.addIndex("states", ["name", "stateCode"], {
         transaction,
       });
       await transaction.commit();

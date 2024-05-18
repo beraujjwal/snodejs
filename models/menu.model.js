@@ -77,20 +77,20 @@ const Menu = sequelize.define(
       attributes: {
         exclude: ["deletedAt", "deletedBy", "createdBy", "updatedBy"],
       },
-      include: [
-        {
-          model: User,
-          as: "createdByUser",
-          attributes: ["id", "name", "phone", "email", "status"],
-          required: false,
-        },
-        {
-          model: User,
-          as: "updatedByUser",
-          attributes: ["id", "name", "phone", "email", "status"],
-          required: false,
-        },
-      ],
+      // include: [
+      //   {
+      //     model: User,
+      //     as: "createdByUser",
+      //     attributes: ["id", "name", "phone", "email", "status"],
+      //     required: false,
+      //   },
+      //   {
+      //     model: User,
+      //     as: "updatedByUser",
+      //     attributes: ["id", "name", "phone", "email", "status"],
+      //     required: false,
+      //   },
+      // ],
     },
     scopes: {
       withPermissions: {
@@ -133,7 +133,6 @@ Menu.associate = function (models) {
         status: true,
       },
     },
-    targetKey: "resourceID",
     foreignKey: "menuID",
     as: "menuResources",
     constraints: true,

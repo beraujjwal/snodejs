@@ -38,17 +38,7 @@ sequelize
   });
 
 sequelize.beforeDefine(function (attributes, model) {
-  if (
-    model?.name?.plural != "SequelizeMeta" &&
-    model?.name?.plural != "SequelizeData" &&
-    model?.name?.plural != "Tokens" &&
-    model?.name?.plural != "WorkLogs"
-  ) {
-    attributes.status = {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-    };
+  if (model?.footprints) {
     attributes.createdBy = {
       type: DataTypes.BIGINT.UNSIGNED,
       references: {
@@ -75,27 +65,22 @@ sequelize.beforeDefine(function (attributes, model) {
       onUpdate: "CASCADE",
       onDelete: "CASCADE",
     };
-    attributes.deletedBy = {
-      type: DataTypes.BIGINT.UNSIGNED,
-      references: {
-        model: {
-          tableName: "users",
-          modelName: "User",
+    if (model?.paranoid) {
+      attributes.deletedBy = {
+        type: DataTypes.BIGINT.UNSIGNED,
+        references: {
+          model: {
+            tableName: "users",
+            modelName: "User",
+          },
+          key: "id",
         },
-        key: "id",
-      },
-      defaultValue: null,
-      onUpdate: "CASCADE",
-      onDelete: "CASCADE",
-    };
+        defaultValue: null,
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      };
+    }
   }
-
-  attributes.status = {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: true,
-    comment: "This column is for checking if the resource is active or not.",
-  };
 });
 
 sequelize.beforeCreate(async (attributes, options) => {

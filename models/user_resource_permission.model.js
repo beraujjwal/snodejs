@@ -23,7 +23,7 @@ const UserResourcePermission = sequelize.define(
         key: "id",
       },
       onUpdate: "CASCADE",
-      onDelete: "CASCADE",
+      onDelete: "RESTRICT",
     },
     resourceID: {
       type: DataTypes.BIGINT.UNSIGNED,
@@ -37,7 +37,7 @@ const UserResourcePermission = sequelize.define(
         key: "id",
       },
       onUpdate: "CASCADE",
-      onDelete: "CASCADE",
+      onDelete: "RESTRICT",
     },
     permissionID: {
       type: DataTypes.BIGINT.UNSIGNED,
@@ -51,7 +51,7 @@ const UserResourcePermission = sequelize.define(
         key: "id",
       },
       onUpdate: "CASCADE",
-      onDelete: "CASCADE",
+      onDelete: "RESTRICT",
     },
     status: {
       type: DataTypes.BOOLEAN,
@@ -67,9 +67,9 @@ const UserResourcePermission = sequelize.define(
     sequelize,
     modelName: "UserResourcePermission",
     tableName: "user_resource_permissions",
-    indexes: [
-      { unique: true, fields: ["userID", "resourceID", "permissionID"] },
-    ],
+    // indexes: [
+    //   { unique: true, fields: ["userID", "resourceID", "permissionID"] },
+    // ],
     defaultScope: {
       attributes: {
         exclude: ["deletedAt", "deletedBy", "createdBy", "updatedBy"],
@@ -96,7 +96,7 @@ const UserResourcePermission = sequelize.define(
 );
 
 UserResourcePermission.associate = function (models) {
-  // UserResourcePermission.belongsTo(models.User, { foreignKey: "userID" });
+  UserResourcePermission.belongsTo(models.User, { foreignKey: "userID" });
   UserResourcePermission.belongsTo(models.Resource, {
     foreignKey: "resourceID",
   });

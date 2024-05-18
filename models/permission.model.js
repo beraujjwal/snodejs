@@ -62,20 +62,20 @@ const Permission = sequelize.define(
       where: {
         status: true,
       },
-      include: [
-        {
-          model: User,
-          as: "createdByUser",
-          attributes: ["id", "name", "phone", "email", "status"],
-          required: false,
-        },
-        {
-          model: User,
-          as: "updatedByUser",
-          attributes: ["id", "name", "phone", "email", "status"],
-          required: false,
-        },
-      ],
+      // include: [
+      //   {
+      //     model: User,
+      //     as: "createdByUser",
+      //     attributes: ["id", "name", "phone", "email", "status"],
+      //     required: false,
+      //   },
+      //   {
+      //     model: User,
+      //     as: "updatedByUser",
+      //     attributes: ["id", "name", "phone", "email", "status"],
+      //     required: false,
+      //   },
+      // ],
     },
     scopes: {
       // withRoles: {
@@ -142,66 +142,94 @@ const Permission = sequelize.define(
 );
 
 Permission.associate = function (models) {
-  // Permission.belongsToMany(models.Resource, {
-  //   through: {
-  //     model: models.RoleResourcePermission,
-  //     //unique: false,
-  //     scope: {
-  //       status: true,
-  //     },
-  //   },
-  //   //otherKey: 'permissionID',
-  //   foreignKey: "permissionID",
-  //   as: "roleResourcePermissions",
-  //   constraints: true,
-  // });
-  // Permission.belongsToMany(models.Resource, {
-  //   through: {
-  //     model: models.UserResourcePermission,
-  //     //unique: false,
-  //     scope: {
-  //       status: true,
-  //     },
-  //   },
-  //   //otherKey: 'permissionID',
-  //   foreignKey: "permissionID",
-  //   as: "userResourcePermissions",
-  //   constraints: true,
-  // });
-  // Permission.belongsToMany(models.Permission, {
-  //   through: {
-  //     model: models.UserResourcePermission,
-  //     unique: false,
-  //     scope: {
-  //       status: true,
-  //     },
-  //   },
-  //   //targetKey: 'id',
-  //   foreignKey: "permissionID",
-  //   as: "userPermissions",
-  //   //constraints: false
-  // });
-  // Permission.belongsToMany(models.Permission, {
-  //   through: {
-  //     model: models.RoleResourcePermission,
-  //     unique: false,
-  //     scope: {
-  //       status: true,
-  //     },
-  //   },
-  //   //targetKey: 'id',
-  //   foreignKey: "permissionID",
-  //   as: "rolePermissions",
-  //   constraints: true,
-  // });
-  // Permission.belongsTo(models.User, {
-  //   as: "createdByUser",
-  //   foreignKey: "createdBy",
-  // });
-  // Permission.belongsTo(models.User, {
-  //   as: "updatedByUser",
-  //   foreignKey: "updatedBy",
-  // });
+  //Permission have resources
+  Permission.belongsToMany(models.Resource, {
+    through: {
+      model: models.ResourcePermission,
+      //unique: false,
+      sourceKey: "resourceID",
+      scope: {
+        status: true,
+      },
+    },
+    foreignKey: "permissionID",
+    otherKey: "resourceID",
+    as: "permissionResources",
+    constraints: true,
+  });
+
+  //Permission have resources
+  Permission.belongsToMany(models.Resource, {
+    through: {
+      model: models.RoleResourcePermission,
+      //unique: false,
+      sourceKey: "resourceID",
+      scope: {
+        status: true,
+      },
+    },
+    foreignKey: "permissionID",
+    otherKey: "resourceID",
+    as: "permissionRoleResources",
+    constraints: true,
+  });
+
+  //Permission have resources
+  Permission.belongsToMany(models.Role, {
+    through: {
+      model: models.RoleResourcePermission,
+      //unique: false,
+      sourceKey: "roleID",
+      scope: {
+        status: true,
+      },
+    },
+    foreignKey: "permissionID",
+    otherKey: "roleID",
+    as: "permissionResourceRoles",
+    constraints: true,
+  });
+
+  // Permission all users
+  Permission.belongsToMany(models.User, {
+    through: {
+      model: models.UserResourcePermission,
+      //unique: false,
+      sourceKey: "userID",
+      scope: {
+        status: true,
+      },
+    },
+    foreignKey: "permissionID",
+    otherKey: "userID",
+    as: "permissionResourceUsers",
+    constraints: true,
+  });
+
+  // Permission all resources
+  Permission.belongsToMany(models.Resource, {
+    through: {
+      model: models.UserResourcePermission,
+      //unique: false,
+      sourceKey: "resourceID",
+      scope: {
+        status: true,
+      },
+    },
+    foreignKey: "permissionID",
+    otherKey: "resourceID",
+    as: "permissionUserResources",
+    constraints: true,
+  });
+
+  Permission.belongsTo(models.User, {
+    as: "createdByUser",
+    foreignKey: "createdBy",
+  });
+  Permission.belongsTo(models.User, {
+    as: "updatedByUser",
+    foreignKey: "updatedBy",
+  });
 };
 
 module.exports = Permission;

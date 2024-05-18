@@ -27,12 +27,34 @@ const City = sequelize.define(
           tableName: "states",
           modelName: "State",
         },
-        //model: "states",
         key: "id",
       },
       onUpdate: "CASCADE",
       onDelete: "CASCADE",
       comment: "This column is for making relation between city and state.",
+    },
+    countryID: {
+      type: DataTypes.BIGINT.UNSIGNED,
+      required: true,
+      index: true,
+      references: {
+        model: {
+          tableName: "countries",
+          modelName: "Country",
+        },
+        key: "id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+      comment: "This column is for making relation between city and state.",
+    },
+    latitude: {
+      type: DataTypes.STRING(15),
+      allowNull: true,
+    },
+    longitude: {
+      type: DataTypes.STRING(15),
+      allowNull: true,
     },
     status: {
       type: DataTypes.BOOLEAN,
@@ -44,6 +66,7 @@ const City = sequelize.define(
   {
     timestamps: true,
     paranoid: true,
+    footprints: true,
     sequelize,
     modelName: "City",
     tableName: "cities",

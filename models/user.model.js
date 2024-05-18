@@ -50,10 +50,6 @@ const User = sequelize.define(
         is: /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/i,
       },
     },
-    tokenSalt: {
-      type: DataTypes.STRING(10),
-      allowNull: true,
-    },
     loginAttempts: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
@@ -72,18 +68,6 @@ const User = sequelize.define(
       allowNull: true,
       defaultValue: null,
     },
-    deviceId: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-    },
-    deviceType: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-    },
-    fcmToken: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-    },
     verified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -100,6 +84,7 @@ const User = sequelize.define(
   {
     timestamps: true,
     paranoid: true,
+    footprints: true,
     sequelize,
     modelName: "User",
     tableName: "users",
@@ -188,29 +173,41 @@ const User = sequelize.define(
 
 User.associate = function (models) {
   //User.belongsToMany(models.Role, { through: "UserRole", scope: { status: true }, foreignKey: "userID", as: "activeRoles" });
+  // User.belongsToMany(models.Role, {
+  //   through: {
+  //     model: models.UserRole,
+  //     unique: true,
+  //     scope: {
+  //       status: true,
+  //     },
+  //   },
+  //   foreignKey: "userID",
+  //   otherKey: "roleID",
+  //   as: "roles",
+  //   constraints: true,
+  // });
+
   User.belongsToMany(models.Role, {
-    through: {
-      model: models.UserRole,
-      unique: true,
-      scope: {
-        status: true,
-      },
-    },
-    foreignKey: "userID",
+    through: { model: "UserRole", scope: { status: true } },
     as: "roles",
-    constraints: true,
-  });
-  User.belongsToMany(models.Resource, {
-    through: "UserResourcePermission",
     foreignKey: "userID",
+    otherKey: "roleID",
+  });
+
+  User.belongsToMany(models.Resource, {
+    through: { model: "UserResourcePermission", scope: { status: true } },
+    foreignKey: "userID",
+    otherKey: "resourceID",
     as: "resources",
   });
+
   User.hasMany(models.Token, {
     as: "tokens",
     foreignKey: "userID",
     foreignKeyConstraint: true,
     sourceKey: "id",
   });
+
   User.hasMany(User, {
     as: "children",
     foreignKey: "createdBy",
@@ -225,6 +222,45 @@ User.associate = function (models) {
   User.belongsTo(User, {
     as: "updatedByUser",
     foreignKey: "updatedBy",
+    sourceKey: "id",
+  });
+
+  // User all permissions
+  User.belongsToMany(models.Permission, {
+    through: {
+      model: models.UserResourcePermission,
+      //unique: false,
+      sourceKey: "permissionID",
+      scope: {
+        status: true,
+      },
+    },
+    foreignKey: "userID",
+    otherKey: "permissionID",
+    as: "userResourcePermissions",
+    constraints: true,
+  });
+
+  // User all resources
+  User.belongsToMany(models.Resource, {
+    through: {
+      model: models.UserResourcePermission,
+      //unique: false,
+      sourceKey: "resourceID",
+      scope: {
+        status: true,
+      },
+    },
+    foreignKey: "userID",
+    otherKey: "resourceID",
+    as: "userPermissionResources",
+    constraints: true,
+  });
+
+  User.hasMany(models.UserDevice, {
+    as: "userDevices",
+    foreignKey: "userID",
+    foreignKeyConstraint: true,
     sourceKey: "id",
   });
 };

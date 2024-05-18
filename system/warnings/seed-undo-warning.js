@@ -6,7 +6,7 @@ const rl = readline.createInterface({
 });
 
 rl.question(
-  "\n*** WARNING ***\nFresh migration means, it will delete all you all tables with data & run migration & seeding again. \nAre you sure you want to continue? (yes/no) ",
+  "\n*** WARNING ***\nUndo seed means, it will delete your all data from all tables. \nAre you sure you want to continue? (yes/no) ",
   (answer) => {
     if (
       answer.toLowerCase() === "yes" ||
@@ -16,7 +16,7 @@ rl.question(
     ) {
       rl.close(); // If yes, continue
     } else {
-      console.log("Migration aborted.");
+      console.log("Seeding aborted.");
       rl.close();
       process.exit(1); // If no, exit with non-zero status to stop build
     }

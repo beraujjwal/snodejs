@@ -1,6 +1,6 @@
-const { service } = require( './service' );
+const service = require("./service");
 
-class permission extends service {
+module.exports = class permission extends service {
   /**
    * @description permission service constructor
    * @author Ujjwal Bera
@@ -10,6 +10,10 @@ class permission extends service {
     super(model);
   }
 
-}
-
-module.exports = { permission };
+  static getInstance(model) {
+    if (!this.instance) {
+      this.instance = new permission(model);
+    }
+    return this.instance;
+  }
+};

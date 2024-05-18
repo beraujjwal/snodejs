@@ -23,7 +23,7 @@ const ResourcePermission = sequelize.define(
         key: "id",
       },
       onUpdate: "CASCADE",
-      onDelete: "CASCADE",
+      onDelete: "RESTRICT",
     },
     permissionID: {
       type: DataTypes.BIGINT.UNSIGNED,
@@ -37,7 +37,7 @@ const ResourcePermission = sequelize.define(
         key: "id",
       },
       onUpdate: "CASCADE",
-      onDelete: "CASCADE",
+      onDelete: "RESTRICT",
     },
     status: {
       type: DataTypes.BOOLEAN,

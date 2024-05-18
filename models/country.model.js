@@ -1,6 +1,5 @@
 "use strict";
 const { sequelize, DataTypes } = require("../system/core/db.connection");
-const User = require("./user.model");
 
 const Country = sequelize.define(
   "Country",
@@ -17,16 +16,106 @@ const Country = sequelize.define(
       index: true,
       allowNull: false,
     },
-    code: {
+    iso3: {
+      type: DataTypes.STRING(3),
+      required: true,
+      index: true,
+      unique: true,
+    },
+    iso2: {
       type: DataTypes.STRING(2),
       required: true,
       index: true,
       unique: true,
     },
-    phoneCode: {
-      type: DataTypes.INTEGER,
+    numericCode: {
+      type: DataTypes.STRING(5),
       required: true,
       index: true,
+    },
+    phoneCode: {
+      type: DataTypes.STRING(20),
+      required: true,
+      index: true,
+    },
+    capital: {
+      type: DataTypes.STRING,
+      required: true,
+    },
+    currency: {
+      type: DataTypes.STRING(3),
+      required: true,
+    },
+    currencyName: {
+      type: DataTypes.STRING(50),
+      required: true,
+    },
+    currencySymbol: {
+      type: DataTypes.STRING(10),
+      required: true,
+    },
+    tld: {
+      type: DataTypes.STRING(10),
+      required: true,
+    },
+    native: {
+      type: DataTypes.STRING,
+      required: true,
+    },
+    regionID: {
+      type: DataTypes.BIGINT.UNSIGNED,
+      required: true,
+      index: true,
+      references: {
+        model: {
+          tableName: "regions",
+          modelName: "Region",
+        },
+        key: "id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    },
+    subRegionID: {
+      type: DataTypes.BIGINT.UNSIGNED,
+      required: true,
+      index: true,
+      references: {
+        model: {
+          tableName: "sub_regions",
+          modelName: "SubRegion",
+        },
+        key: "id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    },
+    nationality: {
+      type: DataTypes.STRING(50),
+      required: true,
+    },
+    timezones: {
+      type: DataTypes.TEXT,
+      get: function () {
+        return JSON.parse(this.getDataValue("timezones"));
+      },
+      set: function (value) {
+        return this.setDataValue("timezones", JSON.stringify(value));
+      },
+      defaultValue: null,
+      required: false,
+    },
+    latitude: {
+      type: DataTypes.STRING(20),
+      required: true,
+    },
+    longitude: {
+      type: DataTypes.STRING(20),
+      required: true,
+    },
+    emoji: {
+      type: DataTypes.STRING(10),
+      required: true,
     },
     status: {
       type: DataTypes.BOOLEAN,
@@ -38,6 +127,7 @@ const Country = sequelize.define(
   {
     timestamps: true,
     paranoid: true,
+    footprints: true,
     sequelize,
     modelName: "Country",
     tableName: "countries",
@@ -48,20 +138,6 @@ const Country = sequelize.define(
       where: {
         status: true,
       },
-      include: [
-        {
-          model: User,
-          as: "createdByUser",
-          attributes: ["id", "name", "phone", "email", "status"],
-          required: false,
-        },
-        {
-          model: User,
-          as: "updatedByUser",
-          attributes: ["id", "name", "phone", "email", "status"],
-          required: false,
-        },
-      ],
     },
     scopes: {
       activeCountries: {

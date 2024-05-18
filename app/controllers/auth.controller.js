@@ -1,11 +1,11 @@
 "use strict";
 const { baseError } = require("../../system/core/error/baseError");
-const { controller } = require("./controller");
-const { user } = require("../services/user.service");
+const controller = require("./controller");
+const user = require("../services/user.service");
 
-const userService = new user("User");
+const userService = user.getInstance("User"); //new user("User");
 
-class authController extends controller {
+class AuthController extends controller {
   /**
    * Controller constructor
    * @author Ujjwal Bera
@@ -13,6 +13,13 @@ class authController extends controller {
    */
   constructor(service) {
     super(service);
+  }
+
+  static getInstance(service) {
+    if (!this.instance) {
+      this.instance = new AuthController(service);
+    }
+    return this.instance;
   }
 
   /**
@@ -233,4 +240,4 @@ class authController extends controller {
     );
   }
 }
-module.exports = new authController(userService);
+module.exports = AuthController.getInstance(userService);

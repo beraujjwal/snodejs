@@ -17,6 +17,7 @@ module.exports = {
             status: true,
             expireAt: new Date(),
             createdAt: new Date(),
+            createdBy: 1,
           },
           {
             id: 2,
@@ -28,6 +29,7 @@ module.exports = {
             status: true,
             expireAt: new Date(),
             createdAt: new Date(),
+            createdBy: 2,
           },
           {
             id: 3,
@@ -39,6 +41,7 @@ module.exports = {
             status: true,
             expireAt: new Date(),
             createdAt: new Date(),
+            createdBy: 3,
           },
         ],
         {}

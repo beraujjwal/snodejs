@@ -42,10 +42,6 @@ module.exports = {
             type: Sequelize.STRING(100),
             allowNull: true,
           },
-          tokenSalt: {
-            type: Sequelize.STRING(10),
-            allowNull: false,
-          },
           loginAttempts: {
             type: Sequelize.INTEGER,
             allowNull: false,
@@ -53,18 +49,6 @@ module.exports = {
           },
           blockExpires: {
             type: Sequelize.DATE,
-            allowNull: true,
-          },
-          deviceId: {
-            type: Sequelize.STRING(50),
-            allowNull: true,
-          },
-          deviceType: {
-            type: Sequelize.STRING(50),
-            allowNull: true,
-          },
-          fcmToken: {
-            type: Sequelize.STRING(100),
             allowNull: true,
           },
           verified: {
@@ -83,8 +67,17 @@ module.exports = {
             defaultValue: null,
           },
           deletedBy: {
-            type: Sequelize.BIGINT,
+            type: Sequelize.BIGINT.UNSIGNED,
             allowNull: true,
+            references: {
+              model: {
+                tableName: "users",
+                modelName: "User",
+              },
+              key: "id",
+            },
+            onUpdate: "cascade",
+            onDelete: "cascade",
           },
           createdAt: {
             type: Sequelize.DATE,
@@ -92,8 +85,17 @@ module.exports = {
             defaultValue: Sequelize.NOW,
           },
           createdBy: {
-            type: Sequelize.BIGINT,
+            type: Sequelize.BIGINT.UNSIGNED,
             allowNull: true,
+            references: {
+              model: {
+                tableName: "users",
+                modelName: "User",
+              },
+              key: "id",
+            },
+            onUpdate: "cascade",
+            onDelete: "cascade",
           },
           updatedAt: {
             type: Sequelize.DATE,
@@ -101,8 +103,17 @@ module.exports = {
             defaultValue: Sequelize.NOW,
           },
           updatedBy: {
-            type: Sequelize.BIGINT,
+            type: Sequelize.BIGINT.UNSIGNED,
             allowNull: true,
+            references: {
+              model: {
+                tableName: "users",
+                modelName: "User",
+              },
+              key: "id",
+            },
+            onUpdate: "cascade",
+            onDelete: "cascade",
           },
         },
         { transaction }

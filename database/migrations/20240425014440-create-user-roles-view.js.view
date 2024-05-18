@@ -1,0 +1,35 @@
+"use strict";
+require("dotenv").config();
+
+/** @type {import('sequelize-cli').Migration} */
+const viewName = "user_roles_view";
+const query = `SELECT
+                U.id AS userID,
+                U.name AS userName,
+                U.phone AS userPhone,
+                U.email AS userEmail,
+                U.tokenSalt AS userTokenSalt,
+                U.loginAttempts AS userLoginAttempts,
+                U.blockExpires AS userBlockExpires,
+                U.deviceId AS userDeviceId,
+                U.deviceType AS userDeviceType,
+                U.fcmToken AS userFcmToken,
+                U.verified AS userVerified,
+                U.status AS userStatus,
+                R.id AS roleID,
+                R.name AS roleName,
+                R.parentID AS roleParentID,
+                R.description AS roleDescription,
+                R.status AS roleStatus
+              FROM users AS U
+                LEFT JOIN user_roles AS UR ON U.id = UR.userID
+                LEFT JOIN roles AS R ON R.id = UR.roleID;`;
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    console.log(`CREATE VIEW ${viewName} AS ${query}`);
+    return database.query(`CREATE VIEW ${viewName} AS ${query}`);
+  },
+  async down(queryInterface, Sequelize) {
+    return database.query(`DROP VIEW ${viewName}`);
+  },
+};

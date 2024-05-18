@@ -15,6 +15,13 @@ class authMiddleware extends middleware {
     this.userModel = this.getModel("User");
   }
 
+  static getInstance() {
+    if (!this.instance) {
+      this.instance = new authMiddleware();
+    }
+    return this.instance;
+  }
+
   /**
    *
    * @param {*} req
@@ -54,14 +61,14 @@ class authMiddleware extends middleware {
         user = JSON.parse(user);
       }
 
-      if (
-        user === null ||
-        user.tokenSalt !== decoded.tokenSalt ||
-        user.status === false ||
-        user.verified === false
-      ) {
+      if (user === null || user.status === false || user.verified === false) {
         throw new baseError(`Invalid authorization token.`, 401);
       }
+
+      const isMultiLoginAllow = Boolean(this.getEnv("MULTI_LOGIN"));
+
+      if (!isMultiLoginAllow && user.tokenSalt !== decoded.tokenSalt)
+        throw new baseError(`Invalid authorization token.`, 401);
 
       global.currentLoginUserId = decoded.id;
 
@@ -144,4 +151,4 @@ class authMiddleware extends middleware {
   }
 }
 
-module.exports = new authMiddleware();
+module.exports = authMiddleware.getInstance();

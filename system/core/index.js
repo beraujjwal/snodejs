@@ -40,6 +40,8 @@ const { errorResponse } = require("./helpers/apiResponse");
 const { consumerKafkaMessage } = require("../../libraries/consumer.library"); //Enable this line if you want to config kafkajs also with line no 94
 const limiter = require("../../config/rateLimit.config");
 
+const { deviceInfo } = require("../../app/middlewares/clientInfo.middleware");
+
 const app = express();
 let apiHitCount = 0;
 let errorCount = 0;
@@ -62,6 +64,8 @@ if (process.env.SENTRY_DNS) {
 
 process.env["NODE_ENV"] = process.env["APP_ENV"];
 process.env["TZ"] = process.env["APP_TIMEZONE"];
+
+const trackDeviceInfo = process.env["TRACK_DEVICE_INFO"];
 
 const hbs = engine({
   partialsDir: "resources/views/layouts/partials",
@@ -102,6 +106,9 @@ app.use(limiter);
 //Helmet helps you secure your Express apps by setting various HTTP headers.
 app.use(helmet());
 
+//Track Device info
+if (trackDeviceInfo) app.use(deviceInfo);
+
 const PORT = parseInt(process.env.APP_PORT) || 5445;
 const MODE = process.env.APP_ENV || "development";
 
@@ -121,6 +128,11 @@ if (process.env.SENTRY_DNS) app.use(Sentry.Handlers.tracingHandler());
 const routers = require("../route");
 //Route Prefixes
 app.use("/", routers);
+
+app.use("/*", (req, res, next) => {
+  //res.json({ message: "Page Not Found!" });
+  res.json({ message: "Page Not Found!!" });
+});
 
 consumerKafkaMessage();
 

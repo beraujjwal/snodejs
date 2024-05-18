@@ -31,6 +31,27 @@ module.exports = {
             onUpdate: "cascade",
             onDelete: "cascade",
           },
+          countryID: {
+            type: Sequelize.BIGINT.UNSIGNED,
+            references: {
+              model: {
+                tableName: "countries",
+                modelName: "Country",
+              },
+              key: "id",
+            },
+            allowNull: false,
+            onUpdate: "cascade",
+            onDelete: "cascade",
+          },
+          latitude: {
+            type: Sequelize.STRING(20),
+            required: true,
+          },
+          longitude: {
+            type: Sequelize.STRING(20),
+            required: true,
+          },
           status: {
             type: Sequelize.BOOLEAN,
             allowNull: false,

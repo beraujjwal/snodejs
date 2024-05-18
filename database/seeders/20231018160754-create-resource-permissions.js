@@ -13,7 +13,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 1,
@@ -21,7 +23,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 2,
@@ -29,7 +33,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 2,
@@ -37,7 +43,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 2,
@@ -45,7 +53,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 2,
@@ -53,7 +63,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 2,
@@ -61,7 +73,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 2,
@@ -69,7 +83,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 2,
@@ -77,7 +93,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 2,
@@ -85,7 +103,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 2,
@@ -93,7 +113,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 2,
@@ -101,7 +123,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 2,
@@ -109,7 +133,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 3,
@@ -117,7 +143,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 3,
@@ -125,7 +153,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 3,
@@ -133,7 +163,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 3,
@@ -141,7 +173,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 3,
@@ -149,7 +183,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 3,
@@ -157,7 +193,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 3,
@@ -165,7 +203,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 3,
@@ -173,7 +213,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 3,
@@ -181,7 +223,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 3,
@@ -189,7 +233,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 3,
@@ -197,7 +243,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 4,
@@ -205,7 +253,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 4,
@@ -213,7 +263,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 4,
@@ -221,7 +273,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 4,
@@ -229,7 +283,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 4,
@@ -237,7 +293,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 4,
@@ -245,7 +303,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 4,
@@ -253,7 +313,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 4,
@@ -261,7 +323,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 4,
@@ -269,7 +333,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 4,
@@ -277,7 +343,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 4,
@@ -285,7 +353,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 5,
@@ -293,7 +363,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 5,
@@ -301,7 +373,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 5,
@@ -309,7 +383,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 5,
@@ -317,7 +393,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 5,
@@ -325,7 +403,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 5,
@@ -333,7 +413,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 5,
@@ -341,7 +423,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 5,
@@ -349,7 +433,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 5,
@@ -357,7 +443,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 5,
@@ -365,7 +453,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 5,
@@ -373,7 +463,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 6,
@@ -381,7 +473,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 6,
@@ -389,7 +483,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 6,
@@ -397,7 +493,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 6,
@@ -405,7 +503,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 6,
@@ -413,7 +513,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 6,
@@ -421,7 +523,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 6,
@@ -429,7 +533,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 6,
@@ -437,7 +543,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 6,
@@ -445,7 +553,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 6,
@@ -453,7 +563,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 6,
@@ -461,7 +573,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 7,
@@ -469,7 +583,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 7,
@@ -477,7 +593,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 7,
@@ -485,7 +603,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 7,
@@ -493,7 +613,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 7,
@@ -501,7 +623,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 7,
@@ -509,7 +633,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 7,
@@ -517,7 +643,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             resourceID: 7,
@@ -525,7 +653,9 @@ module.exports = {
             status: true,
             deletedAt: null,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
         ],
         {}

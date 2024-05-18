@@ -38,6 +38,14 @@ const WorkLog = sequelize.define(
         model: "users",
         key: "id",
       },
+      onUpdate: "CASCADE",
+      onDelete: "RESTRICT",
+    },
+    status: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      comment: "This column is for checking if the resource is active or not.",
     },
   },
   {

@@ -15,6 +15,13 @@ class Utilities extends service {
     this.City = this.getModel("City");
   }
 
+  static getInstance(model) {
+    if (!this.instance) {
+      this.instance = new Utilities(model);
+    }
+    return this.instance;
+  }
+
   /**
    * @desc   Get list of countries
    *

@@ -12,7 +12,7 @@ const State = sequelize.define(
       allowNull: false,
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(150),
       required: true,
       index: true,
       allowNull: false,
@@ -31,6 +31,24 @@ const State = sequelize.define(
       onUpdate: "CASCADE",
       onDelete: "CASCADE",
     },
+    stateCode: {
+      type: DataTypes.STRING(2),
+      required: true,
+      index: true,
+      allowNull: false,
+    },
+    type: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+    },
+    latitude: {
+      type: DataTypes.STRING(15),
+      allowNull: true,
+    },
+    longitude: {
+      type: DataTypes.STRING(15),
+      allowNull: true,
+    },
     status: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -41,6 +59,7 @@ const State = sequelize.define(
   {
     timestamps: true,
     paranoid: true,
+    footprints: true,
     sequelize,
     modelName: "State",
     tableName: "states",

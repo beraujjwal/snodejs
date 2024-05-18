@@ -14,7 +14,9 @@ module.exports = {
             slug: "dashboard",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 2,
@@ -23,7 +25,9 @@ module.exports = {
             slug: "user",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 3,
@@ -32,7 +36,9 @@ module.exports = {
             slug: "user-management",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 4,
@@ -41,7 +47,9 @@ module.exports = {
             slug: "acl-management",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 5,
@@ -50,7 +58,9 @@ module.exports = {
             slug: "role-section",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 6,
@@ -59,7 +69,9 @@ module.exports = {
             slug: "resource-section",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 7,
@@ -68,7 +80,9 @@ module.exports = {
             slug: "permission-section",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 8,
@@ -77,7 +91,9 @@ module.exports = {
             slug: "menu-section",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
         ],
         {}

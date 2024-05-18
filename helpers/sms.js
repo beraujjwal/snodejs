@@ -1,9 +1,14 @@
-'use strict';
-require('dotenv').config();
-const { baseError } = require('../system/core/error/baseError');
-const { config } = require('../config/sms.config');
+"use strict";
+require("dotenv").config();
+const { config } = require("../config/sms.config");
 
-exports.sendSMS = function (smsOptions) {
-    log(smsOptions);
-    return true;
-};
+//const { Twilio } = require("twilio");
+
+const twilioClient = require("twilio")(config.accountSid, config.authToken);
+
+// const twilioClient = new Twilio({
+//   accountSid: config.accountSid,
+//   authToken: config.authToken,
+// });
+
+module.exports = { twilioClient };

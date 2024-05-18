@@ -1,8 +1,8 @@
 "use strict";
-const { controller } = require("./controller");
-const { menu } = require("../services/menu.service");
+const controller = require("./controller");
+const menu = require("../services/menu.service");
 
-const menuService = new menu("Menu");
+const menuService = menu.getInstance("Menu"); //("Menu");
 
 class MenusController extends controller {
   /**
@@ -13,6 +13,13 @@ class MenusController extends controller {
   constructor(service) {
     super(service);
   }
+
+  static getInstance(service) {
+    if (!this.instance) {
+      this.instance = new MenusController(service);
+    }
+    return this.instance;
+  }
 }
 
-module.exports = new MenusController(menuService);
+module.exports = MenusController.getInstance(menuService);

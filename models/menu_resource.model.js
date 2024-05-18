@@ -1,6 +1,5 @@
 "use strict";
 const { sequelize, DataTypes } = require("../system/core/db.connection");
-const User = require("./user.model");
 
 const MenuResource = sequelize.define(
   "MenuResource",
@@ -23,7 +22,7 @@ const MenuResource = sequelize.define(
         key: "id",
       },
       onUpdate: "CASCADE",
-      onDelete: "CASCADE",
+      onDelete: "RESTRICT",
     },
     resourceID: {
       type: DataTypes.BIGINT.UNSIGNED,
@@ -37,7 +36,7 @@ const MenuResource = sequelize.define(
         key: "id",
       },
       onUpdate: "CASCADE",
-      onDelete: "CASCADE",
+      onDelete: "RESTRICT",
     },
     status: {
       type: DataTypes.BOOLEAN,
@@ -61,20 +60,6 @@ const MenuResource = sequelize.define(
       where: {
         status: true,
       },
-      include: [
-        {
-          model: User,
-          as: "createdByUser",
-          attributes: ["id", "name", "phone", "email", "status"],
-          required: false,
-        },
-        {
-          model: User,
-          as: "updatedByUser",
-          attributes: ["id", "name", "phone", "email", "status"],
-          required: false,
-        },
-      ],
     },
   }
 );

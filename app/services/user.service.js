@@ -1,6 +1,6 @@
 "use strict";
 const { Sequelize, Op } = require("sequelize");
-const { service } = require("./service");
+const service = require("./service");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -9,18 +9,18 @@ const moment = require("moment");
 const { baseError } = require("../../system/core/error/baseError");
 const redisClient = require("../../libraries/redis.library");
 
-const { token } = require("./token.service");
-const { role } = require("./role.service");
+const token = require("./token.service");
+const role = require("./role.service");
 
-const tokenService = new token("Token");
-const roleService = new role("Role");
+const tokenService = token.getInstance("Token"); //new token("Token");
+const roleService = role.getInstance("Role"); //new role("Role");
 
 const { sentOTPMail } = require("../../libraries/email.library");
 const { sentOTPSMS } = require("../../libraries/sms.library");
 
 const { generateOTP, generateAccessToken } = require("../../helpers/utility");
 
-class user extends service {
+module.exports = class user extends service {
   /**
    * Service constructor
    * @author Ujjwal Bera
@@ -32,6 +32,14 @@ class user extends service {
     this.role = this.getModel("Role");
     this.permission = this.getModel("Permission");
     this.resource = this.getModel("Resource");
+    this.userDevice = this.getModel("UserDevice");
+  }
+
+  static getInstance(model) {
+    if (!this.instance) {
+      this.instance = new user(model);
+    }
+    return this.instance;
   }
 
   /**
@@ -569,23 +577,29 @@ class user extends service {
               status: true,
             },
           },
-          {
-            model: this.model,
-            as: "createdByUser",
-            attributes: ["id", "name", "phone", "email", "status"],
-            required: false,
-          },
-          {
-            model: this.model,
-            as: "updatedByUser",
-            attributes: ["id", "name", "phone", "email", "status"],
-            required: false,
-          },
+          // {
+          //   model: this.model,
+          //   as: "createdByUser",
+          //   attributes: ["id", "name", "phone", "email", "status"],
+          //   required: false,
+          // },
+          // {
+          //   model: this.model,
+          //   as: "updatedByUser",
+          //   attributes: ["id", "name", "phone", "email", "status"],
+          //   required: false,
+          // },
+          // {
+          //   model: this.userDevice,
+          //   as: "userDevices",
+          //   required: false,
+          // },
         ],
         transaction: transaction,
       });
       if (user) {
         user = user.toJSON();
+        console.log("user", user);
         const allRoles = user.roles;
 
         const rolesWithDetails = await Promise.all(
@@ -608,7 +622,7 @@ class user extends service {
                 include: [
                   {
                     model: this.permission.unscoped(),
-                    as: "roleResourcePermissions",
+                    as: "resourceRolePermissions",
                     attributes: {
                       exclude: [
                         "createdAt",
@@ -654,7 +668,7 @@ class user extends service {
             include: [
               {
                 model: this.permission.unscoped(),
-                as: "userResourcePermissions",
+                as: "resourceUserPermissions",
                 attributes: {
                   exclude: [
                     "createdAt",
@@ -688,6 +702,4 @@ class user extends service {
       throw new baseError(ex);
     }
   }
-}
-
-module.exports = { user };
+};

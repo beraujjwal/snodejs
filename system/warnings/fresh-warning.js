@@ -6,7 +6,7 @@ const rl = readline.createInterface({
 });
 
 rl.question(
-  "\n*** WARNING ***\nFresh migration means, it will delete all you all tables with data & run migration & seeding again. \nAre you sure you want to continue? (yes/no) ",
+  "\n*** WARNING ***\nFresh migration means, it will delete your all tables with data & run migration & seeding again. \nAre you sure you want to continue? (yes/no) ",
   (answer) => {
     if (
       answer.toLowerCase() === "yes" ||

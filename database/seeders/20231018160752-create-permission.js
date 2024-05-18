@@ -13,7 +13,9 @@ module.exports = {
             slug: "full-access",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 2,
@@ -21,7 +23,9 @@ module.exports = {
             slug: "list-view",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 3,
@@ -29,7 +33,9 @@ module.exports = {
             slug: "drop-downList",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 4,
@@ -37,7 +43,9 @@ module.exports = {
             slug: "single-details-view",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 5,
@@ -45,7 +53,9 @@ module.exports = {
             slug: "create-new",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 6,
@@ -53,7 +63,9 @@ module.exports = {
             slug: "update-existing",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 7,
@@ -61,7 +73,9 @@ module.exports = {
             slug: "delete-existing",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 8,
@@ -69,7 +83,9 @@ module.exports = {
             slug: "download-single-details",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 9,
@@ -77,7 +93,9 @@ module.exports = {
             slug: "download-list",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 10,
@@ -85,7 +103,9 @@ module.exports = {
             slug: "manage-columns",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 11,
@@ -93,7 +113,9 @@ module.exports = {
             slug: "full-deny",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
           {
             id: 12,
@@ -101,7 +123,9 @@ module.exports = {
             slug: "others",
             status: true,
             createdAt: new Date(),
+            createdBy: 1,
             updatedAt: new Date(),
+            updatedBy: 1,
           },
         ],
         {}

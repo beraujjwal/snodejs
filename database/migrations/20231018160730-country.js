@@ -19,14 +19,97 @@ module.exports = {
             unique: true,
             allowNull: false,
           },
-          code: {
+          iso3: {
+            type: Sequelize.STRING(3),
+            unique: true,
+            allowNull: false,
+          },
+          iso2: {
             type: Sequelize.STRING(2),
             unique: true,
             allowNull: false,
           },
-          phoneCode: {
-            type: Sequelize.INTEGER,
+          numericCode: {
+            type: Sequelize.STRING(5),
             allowNull: false,
+          },
+          phoneCode: {
+            type: Sequelize.STRING(20),
+            allowNull: false,
+          },
+          capital: {
+            type: Sequelize.STRING,
+            required: true,
+          },
+          currency: {
+            type: Sequelize.STRING(3),
+            required: true,
+          },
+          currencyName: {
+            type: Sequelize.STRING(50),
+            required: true,
+          },
+          currencySymbol: {
+            type: Sequelize.STRING(10),
+            required: true,
+          },
+          tld: {
+            type: Sequelize.STRING(10),
+            required: true,
+          },
+          native: {
+            type: Sequelize.STRING,
+            required: true,
+          },
+          regionID: {
+            type: Sequelize.BIGINT.UNSIGNED,
+            required: true,
+            index: true,
+            references: {
+              model: {
+                tableName: "regions",
+                modelName: "Region",
+              },
+              key: "id",
+            },
+            onUpdate: "CASCADE",
+            onDelete: "CASCADE",
+          },
+          subRegionID: {
+            type: Sequelize.BIGINT.UNSIGNED,
+            required: true,
+            index: true,
+            references: {
+              model: {
+                tableName: "sub_regions",
+                modelName: "SubRegion",
+              },
+              key: "id",
+            },
+            onUpdate: "CASCADE",
+            onDelete: "CASCADE",
+          },
+          nationality: {
+            type: Sequelize.STRING(50),
+            required: true,
+          },
+          timezones: {
+            type: Sequelize.TEXT,
+            required: false,
+            allowNull: true,
+            defaultValue: null,
+          },
+          latitude: {
+            type: Sequelize.STRING(20),
+            required: true,
+          },
+          longitude: {
+            type: Sequelize.STRING(20),
+            required: true,
+          },
+          emoji: {
+            type: Sequelize.STRING(10),
+            required: true,
           },
           status: {
             type: Sequelize.BOOLEAN,
@@ -92,7 +175,7 @@ module.exports = {
       );
       await queryInterface.addIndex(
         "countries",
-        ["name", "code", "phoneCode"],
+        ["name", "iso2", "iso3", "phoneCode", "regionID", "subRegionID"],
         { transaction }
       );
       await transaction.commit();

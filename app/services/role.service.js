@@ -1,10 +1,10 @@
 const { Sequelize, sequelize, Op } = require("sequelize");
-const { service } = require("./service");
+const service = require("./service");
 const { baseError } = require("../../system/core/error/baseError");
 const { validationError } = require("../../system/core/error/validationError");
 const roleGraph = require("../../neo4j/services/role");
 
-class role extends service {
+module.exports = class role extends service {
   /**
    * role service constructor
    * @author Ujjwal Bera
@@ -18,6 +18,13 @@ class role extends service {
 
     this.resource = this.getModel("Resource");
     this.resourcePermission = this.getModel("ResourcePermission");
+  }
+
+  static getInstance(model) {
+    if (!this.instance) {
+      this.instance = new role(model);
+    }
+    return this.instance;
   }
 
   async list(queries, transaction) {
@@ -549,6 +556,4 @@ class role extends service {
       throw new baseError(ex);
     }
   }
-}
-
-module.exports = { role };
+};

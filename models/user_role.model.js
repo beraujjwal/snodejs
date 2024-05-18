@@ -24,7 +24,7 @@ const UserRole = sequelize.define(
         key: "id",
       },
       onUpdate: "CASCADE",
-      onDelete: "CASCADE",
+      onDelete: "RESTRICT",
     },
     roleID: {
       type: DataTypes.BIGINT.UNSIGNED,
@@ -38,7 +38,7 @@ const UserRole = sequelize.define(
         key: "id",
       },
       onUpdate: "CASCADE",
-      onDelete: "CASCADE",
+      onDelete: "RESTRICT",
     },
     status: {
       type: DataTypes.BOOLEAN,
@@ -79,6 +79,7 @@ const UserRole = sequelize.define(
 UserRole.associate = function (models) {
   UserRole.belongsTo(models.User, { foreignKey: "userID" });
   UserRole.belongsTo(models.Role, { foreignKey: "roleID" });
+
   UserRole.belongsTo(models.User, {
     as: "createdByUser",
     foreignKey: "createdBy",

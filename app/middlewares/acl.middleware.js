@@ -3,9 +3,9 @@ const { middleware } = require("./middleware");
 const { baseError } = require("../../system/core/error/baseError");
 const redisClient = require("../../libraries/redis.library");
 const { sequelize } = require("../../system/core/db.connection");
-const { user } = require("../services/user.service");
+const user = require("../services/user.service");
 
-const userService = new user("User");
+const userService = user.getInstance("User"); //new user("User");
 
 class aclMiddleware extends middleware {
   /**
@@ -15,6 +15,13 @@ class aclMiddleware extends middleware {
    */
   constructor() {
     super();
+  }
+
+  static getInstance() {
+    if (!this.instance) {
+      this.instance = new aclMiddleware();
+    }
+    return this.instance;
   }
 
   /**
@@ -42,7 +49,10 @@ class aclMiddleware extends middleware {
             status: true,
             verified: true,
           };
-          user = await userService.getUserDetails({ criteria, transaction });
+          user = await userService.getUserDetails({
+            criteria,
+            transaction: null,
+          });
         } else {
           user = JSON.parse(user);
         }
@@ -51,6 +61,9 @@ class aclMiddleware extends middleware {
         const userResources = user.resources;
         let haveAccess = false;
         let runLoop = true;
+
+        //console.log("userRoles", userRoles);
+        //console.log("userResources", userResources);
         loop1: if (haveAccess === false && runLoop === true) {
           if (userResources.length > 0) {
             for await (const resource of userResources) {
@@ -79,17 +92,16 @@ class aclMiddleware extends middleware {
           if (userRoles.length > 0) {
             for await (const role of userRoles) {
               const roleResources = role.resources;
-
               if (roleResources.length > 0) {
                 for await (const resource of roleResources) {
                   if (
                     resource?.slug === "root" &&
-                    resource?.roleResourcePermissions[0]?.slug === "full-access"
+                    resource?.resourceRolePermissions[0]?.slug === "full-access"
                   ) {
                     haveAccess = true;
                     break loop1;
                   } else if (resource?.slug === module) {
-                    for await (const permission of resource?.roleResourcePermissions) {
+                    for await (const permission of resource?.resourceRolePermissions) {
                       if (permission?.slug === "full-deny") {
                         runLoop = false;
                         break loop1;
@@ -121,4 +133,4 @@ class aclMiddleware extends middleware {
   }
 }
 
-module.exports = new aclMiddleware();
+module.exports = aclMiddleware.getInstance();

@@ -79,7 +79,7 @@ class baseController extends base {
     const response = await this.service.create(req.body, transaction);
     if (!response) throw new baseError(__("ITEM_ADDED_ERROR"));
     return {
-      code: 200,
+      code: 201,
       result: response,
       message: __("ITEM_ADDED_SUCESSFULLY"),
     };
@@ -96,7 +96,7 @@ class baseController extends base {
     const response = await this.service.bulkCreate(req.body, { transaction });
     if (!response) throw new baseError(__("ITEMS_ADDED_ERROR"));
     return {
-      code: 200,
+      code: 201,
       result: response,
       message: __("ITEMS_ADDED_SUCESSFULLY"),
     };

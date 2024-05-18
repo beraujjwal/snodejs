@@ -12,6 +12,14 @@ class baseService extends base {
     super();
     this.model = this.getModel(model);
     this.name = model;
+    //console.log("baseService", this);
+  }
+
+  static getInstance(model) {
+    if (!this.instance) {
+      this.instance = new baseService(model);
+    }
+    return this.instance;
   }
 
   /**
@@ -44,35 +52,13 @@ class baseService extends base {
         filter = await this.generateQueryFilterFromQueryParams(search);
       }
 
-      // if (attributes.includes("createdBy")) {
-      //   const User = this.getModel("User");
-      //   include.push({
-      //     model: User,
-      //     as: "createdByUser",
-      //     attributes: ["id", "name", "phone", "email", "status"],
-      //     required: false,
-      //   });
-      //   delete attributes.createdBy;
-      // }
-      // if (attributes.includes("updatedBy")) {
-      //   const User = this.getModel("User");
-      //   include.push({
-      //     model: User,
-      //     as: "updatedByUser",
-      //     attributes: ["id", "name", "phone", "email", "status"],
-      //     required: false,
-      //   });
-      //   delete attributes.updatedBy;
-      // }
-
-      if (include.length < 1) include = await this.getAutoIncludes(this.model);
-
-      console.log("include", include);
+      const autoIncludes = await this.getAutoIncludes(this.model);
+      const finalIncludes = include.concat(autoIncludes);
 
       const result = await this.model.findAll({
         attributes: attributes,
         where: filter,
-        include: include,
+        include: finalIncludes,
         order: [[orderby, order]],
         limit: limit,
         offset: skip,
@@ -90,7 +76,6 @@ class baseService extends base {
         count,
       };
     } catch (ex) {
-      console.log("ex", ex);
       throw new baseError(
         ex.message || `Some error occurred while fetching ${this.name}s list.`,
         400
@@ -155,7 +140,6 @@ class baseService extends base {
     try {
       const modelAttributes = await this.getModelAttributes(this.model);
       const modelAssociations = await this.getModelAssociations(this.model);
-      console.log("modelAssociations", modelAssociations);
       let finalData = [];
 
       for (const [key, value] of Object.entries(data)) {
@@ -166,9 +150,6 @@ class baseService extends base {
         }
       }
 
-      // Object.keys(data).forEach(
-      //   (key) => data[key] === undefined && delete data[key]
-      // );
       const item = await this.model.create(finalData, { transaction });
       if (!item)
         throw new baseError(
@@ -237,8 +218,8 @@ class baseService extends base {
 
   async updateByPk(id, data, transaction) {
     try {
-      const search = { id: id, deleted: false };
-      return await this.update(search, data, transaction);
+      const filter = { id: id, deleted: false };
+      return await this.update(filter, data, transaction);
     } catch (ex) {
       throw new baseError(
         ex.message || `Some error occurred while updating the ${this.name}.`,
@@ -365,17 +346,6 @@ class baseService extends base {
   async getModelAssociations(model, name) {
     const result = [];
 
-    // console.log("name", name);
-
-    // let entries = Object.entries(
-    //   model?.associations?.roleResourcePermissions?.sequelize?.models[name]
-    //     ?._scope.attributes
-    // );
-    // let data = entries.map(([key, val] = entry) => {
-    //   return `The ${key} is ${val}`;
-    // });
-    // console.log(data);
-
     Object.keys(model.associations).forEach(async (key) => {
       if (model.associations[key].hasOwnProperty("options")) {
         const data = {
@@ -410,28 +380,23 @@ class baseService extends base {
     const includes = [];
 
     await modelAssociations.forEach(async (modelAssociation) => {
-      if (modelAssociation.type === "BelongsTo") {
-        if (modelAssociation?.auto) {
-          includes.push({
-            model: modelAssociation?.model,
-            as: modelAssociation?.as,
-            where: modelAssociation?.where || {},
-            required: modelAssociation?.required,
-          });
-        }
-      } else if (modelAssociation.type === "BelongsToMany") {
-        if (modelAssociation?.auto) {
-          includes.push({
-            model: modelAssociation?.model,
-            as: modelAssociation?.as,
-            where: modelAssociation?.where || {},
-            required: modelAssociation?.required,
-            through: modelAssociation?.through,
-          });
+      let include = null;
+      if (modelAssociation?.auto) {
+        include = {
+          model: modelAssociation?.model,
+          as: modelAssociation?.as,
+          where: modelAssociation?.where || {},
+          required: modelAssociation?.required,
+          attributes: modelAssociation?.attributes,
+        };
+
+        if (modelAssociation.type === "BelongsToMany") {
+          include["through"] = modelAssociation?.through;
         }
       }
-    });
 
+      if (include) includes.push(include);
+    });
     return includes;
   }
 
@@ -443,9 +408,7 @@ class baseService extends base {
 
   async getModelAttributes(model, name) {
     const result = [];
-
     const rawAttributes = model.rawAttributes;
-
     for (let key of Object.keys(rawAttributes)) {
       result.push(key);
     }

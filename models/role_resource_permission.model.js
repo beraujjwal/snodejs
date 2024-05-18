@@ -23,7 +23,7 @@ const RoleResourcePermission = sequelize.define(
         key: "id",
       },
       onUpdate: "CASCADE",
-      onDelete: "CASCADE",
+      onDelete: "RESTRICT",
     },
     resourceID: {
       type: DataTypes.BIGINT.UNSIGNED,
@@ -37,7 +37,7 @@ const RoleResourcePermission = sequelize.define(
         key: "id",
       },
       onUpdate: "CASCADE",
-      onDelete: "CASCADE",
+      onDelete: "RESTRICT",
     },
     permissionID: {
       type: DataTypes.BIGINT.UNSIGNED,
@@ -51,7 +51,7 @@ const RoleResourcePermission = sequelize.define(
         key: "id",
       },
       onUpdate: "CASCADE",
-      onDelete: "CASCADE",
+      onDelete: "RESTRICT",
     },
     status: {
       type: DataTypes.BOOLEAN,
@@ -96,13 +96,13 @@ const RoleResourcePermission = sequelize.define(
 );
 
 RoleResourcePermission.associate = function (models) {
-  // RoleResourcePermission.belongsTo(models.Role, { foreignKey: "roleID" });
-  // RoleResourcePermission.belongsTo(models.Resource, {
-  //   foreignKey: "resourceID",
-  // });
-  // RoleResourcePermission.belongsTo(models.Permission, {
-  //   foreignKey: "permissionID",
-  // });
+  RoleResourcePermission.belongsTo(models.Role, { foreignKey: "roleID" });
+  RoleResourcePermission.belongsTo(models.Resource, {
+    foreignKey: "resourceID",
+  });
+  RoleResourcePermission.belongsTo(models.Permission, {
+    foreignKey: "permissionID",
+  });
   // RoleResourcePermission.belongsTo(models.User, {
   //   as: "createdByUser",
   //   foreignKey: "createdBy",

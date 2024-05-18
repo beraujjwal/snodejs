@@ -71,6 +71,7 @@ const Role = sequelize.define(
   {
     timestamps: true,
     paranoid: true,
+    footprints: true,
     sequelize,
     modelName: "Role",
     tableName: "roles",
@@ -143,32 +144,77 @@ const Role = sequelize.define(
 );
 
 Role.associate = function (models) {
+  //Role have users
   // Role.belongsToMany(models.User, {
   //   through: {
   //     model: models.UserRole,
-  //     unique: true,
+  //     //unique: true,
+  //     sourceKey: "userID",
   //     scope: {
   //       status: true,
   //     },
   //   },
   //   foreignKey: "roleID",
+  //   otherKey: "userID",
   //   as: "users",
   //   //constraints: false
   // });
+
+  Role.belongsToMany(models.User, {
+    through: { model: "UserRole", scope: { status: true } },
+    as: "users",
+    foreignKey: "roleID",
+    otherKey: "userID",
+  });
+
+  //Role have resources
   // Role.belongsToMany(models.Resource, {
   //   through: {
   //     model: models.RoleResourcePermission,
-  //     unique: true,
+  //     //unique: true,
+  //     sourceKey: "resourceID",
   //     scope: {
   //       status: true,
   //     },
   //   },
   //   foreignKey: "roleID",
+  //   otherKey: "resourceID",
   //   as: "resources",
   //   constraints: false,
   // });
-  // Role.belongsTo(models.User, { as: "createdByUser", foreignKey: "createdBy" });
-  // Role.belongsTo(models.User, { as: "updatedByUser", foreignKey: "updatedBy" });
+
+  Role.belongsToMany(models.Resource, {
+    through: { model: "RoleResourcePermission", scope: { status: true } },
+    as: "resources",
+    foreignKey: "roleID",
+    otherKey: "resourceID",
+  });
+
+  //Role have permissions
+  // Role.belongsToMany(models.Permission, {
+  //   through: {
+  //     model: models.RoleResourcePermission,
+  //     //unique: true,
+  //     sourceKey: "permissionID",
+  //     scope: {
+  //       status: true,
+  //     },
+  //   },
+  //   foreignKey: "roleID",
+  //   otherKey: "permissionID",
+  //   as: "permissions",
+  //   constraints: false,
+  // });
+
+  Role.belongsToMany(models.Permission, {
+    through: { model: "RoleResourcePermission", scope: { status: true } },
+    as: "permissions",
+    foreignKey: "roleID",
+    otherKey: "permissionID",
+  });
+
+  Role.belongsTo(models.User, { as: "createdByUser", foreignKey: "createdBy" });
+  Role.belongsTo(models.User, { as: "updatedByUser", foreignKey: "updatedBy" });
 };
 
 module.exports = Role;

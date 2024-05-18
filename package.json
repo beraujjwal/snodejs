@@ -8,11 +8,12 @@
     "start": "cross-env TZ=Asia/Kolkata APP_ENV=production pm2 start index.js",
     "dev": "cross-env TZ=Asia/Kolkata APP_ENV=development nodemon index.js",
     "migrate": "npx sequelize-cli db:migrate",
-    "migrate:undo:all": "npx sequelize-cli db:migrate:undo:all",
+    "migrate:undo:all": "node system/warnings/migrate-undo-warning.js && npx sequelize-cli db:migrate:undo:all",
     "seed": "npx sequelize-cli db:seed:all",
-    "seed:undo:all": "npx sequelize-cli db:seed:undo:all",
-    "fresh": "node system/warnings/fresh-warning.js && npm run fresh:migrate",
-    "fresh:migrate": "npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all"
+    "seed:undo:all": "node system/warnings/seed-undo-warning.js && npx sequelize-cli db:seed:undo:all",
+    "fresh:migrate": "node system/warnings/fresh-warning.js && npm run fresh:migrate",
+    "fresh:all": "npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all",
+    "model:generate": "npx sequelize-cli model:generate"
   },
   "repository": {
     "type": "git",
@@ -58,6 +59,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.474.0",
     "@aws-sdk/lib-storage": "^3.474.0",
+    "@elastic/elasticsearch": "^8.13.1",
     "@sentry/node": "^7.93.0",
     "auto-bind": "^4.0.0",
     "bcryptjs": "^2.4.3",
@@ -86,11 +88,16 @@
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.3",
     "puppeteer": "^21.6.1",
+    "qrcode": "^1.5.3",
     "redis": "^4.6.10",
     "sequelize": "^6.6.2",
     "socket.io": "^4.7.4",
+    "speakeasy": "^2.0.0",
+    "twilio": "^5.0.4",
+    "ua-parser-js": "^1.0.37",
     "validatorjs": "^3.22.1",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "case": "^1.6.3",

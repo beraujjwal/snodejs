@@ -1,9 +1,9 @@
-const { controller } = require('./controller');
-const { resource } = require('../services/resource.service');
-const resourceService = new resource('Resource');
-const { baseError } = require('../../system/core/error/baseError');
+const controller = require("./controller");
+const resource = require("../services/resource.service");
+const resourceService = resource.getInstance("Resource"); //new resource("Resource");
+const { baseError } = require("../../system/core/error/baseError");
 
-class resourcesController extends controller {
+class ResourcesController extends controller {
   /**
    * Controller constructor
    * @author Ujjwal Bera
@@ -11,6 +11,13 @@ class resourcesController extends controller {
    */
   constructor(service) {
     super(service);
+  }
+
+  static getInstance(service) {
+    if (!this.instance) {
+      this.instance = new ResourcesController(service);
+    }
+    return this.instance;
   }
 
   /**
@@ -21,15 +28,18 @@ class resourcesController extends controller {
    * @author Ujjwal Bera
    */
   async findAll(req, transaction) {
-    let result = await resourceService.findAll(req.query, transaction);
+    console.log("transaction", transaction);
+    const result = await resourceService.findAll(req.query, transaction);
     if (result) {
       return {
         code: 200,
         result,
-        message: 'Resources list got successfully.'
-      }
+        message: "Resources list got successfully.",
+      };
     }
-    throw new baseError('Some error occurred while fetching list of resources.');
+    throw new baseError(
+      "Some error occurred while fetching list of resources."
+    );
   }
 
   /**
@@ -39,18 +49,17 @@ class resourcesController extends controller {
    * @param {*} next
    */
   async resourcesDDLList(req, transaction) {
-    req.query.return_type = 'ddl';
+    req.query.return_type = "ddl";
     let result = await resourceService.resourcesList(req.query, transaction);
     if (result) {
       return {
         code: 200,
         result,
-        message: 'Resources list for DDL got successfully.'
-      }
+        message: "Resources list for DDL got successfully.",
+      };
     }
-    throw new baseError('Some error occurred while fetching list of roles.');
+    throw new baseError("Some error occurred while fetching list of roles.");
   }
-
 
   /**
    * @desc Store a new resource
@@ -61,26 +70,31 @@ class resourcesController extends controller {
    */
   async create(req, transaction) {
     let { name, parent, resourcPermissions } = req.body;
-    const resource = await resourceService.create({ name, parent }, transaction);
-    if(resource){
+    const resource = await resourceService.create(
+      { name, parent },
+      transaction
+    );
+    if (resource) {
       const resourcPermissionsDataSet = [];
-      await resourcPermissions.forEach(resourcPermission => {
+      await resourcPermissions.forEach((resourcPermission) => {
         resourcPermissionsDataSet.push({
           resourceId: resource.id,
-          permissionId: resourcPermission
-        })
+          permissionId: resourcPermission,
+        });
       });
-      resourcPermissions = await resourceService.bulkCreate(resourcPermissionsDataSet, transaction);
+      resourcPermissions = await resourceService.bulkCreate(
+        resourcPermissionsDataSet,
+        transaction
+      );
     }
     if (result) {
-
       return {
         code: 200,
         result,
-        message: 'New resource created successfully.'
-      }
+        message: "New resource created successfully.",
+      };
     }
-    throw new baseError('Some error occurred while creating new resource.');
+    throw new baseError("Some error occurred while creating new resource.");
   }
 
   /**
@@ -96,9 +110,9 @@ class resourcesController extends controller {
     if (result) {
       return res
         .status(200)
-        .json(this.success(result, 'Resource details got successfully!'));
+        .json(this.success(result, "Resource details got successfully!"));
     }
-    throw new baseError('Some error occurred while fetching resource details.');
+    throw new baseError("Some error occurred while fetching resource details.");
   }
 
   /**
@@ -111,13 +125,17 @@ class resourcesController extends controller {
   async updateByPk(req, transaction) {
     let resourceId = req.params.id;
     let { name, status } = req.body;
-    let result = await resourceService.updateByPk(resourceId, { name, status}, transaction );
+    let result = await resourceService.updateByPk(
+      resourceId,
+      { name, status },
+      transaction
+    );
     if (result) {
       return res
         .status(200)
-        .json(this.success(result, 'Resource details updated successfully!'));
+        .json(this.success(result, "Resource details updated successfully!"));
     }
-    throw new baseError('Some error occurred while updating resource details.');
+    throw new baseError("Some error occurred while updating resource details.");
   }
 
   /**
@@ -130,13 +148,17 @@ class resourcesController extends controller {
   async resourceStatusUpdate(req, transaction) {
     let resourceId = req.params.id;
     let { status } = req.body;
-    let result = await resourceService.resourceStatusUpdate(resourceId, status, transaction);
+    let result = await resourceService.resourceStatusUpdate(
+      resourceId,
+      status,
+      transaction
+    );
     if (result) {
       return res
         .status(200)
-        .json(this.success(result, 'Resource details updated successfully!'));
+        .json(this.success(result, "Resource details updated successfully!"));
     }
-    throw new baseError('Some error occurred while updating resource details.');
+    throw new baseError("Some error occurred while updating resource details.");
   }
 
   /**
@@ -152,9 +174,9 @@ class resourcesController extends controller {
     if (result) {
       return res
         .status(200)
-        .json(this.success(result, 'Resource deleted successfully!'));
+        .json(this.success(result, "Resource deleted successfully!"));
     }
-    throw new baseError('Some error occurred while deleting resource.');
+    throw new baseError("Some error occurred while deleting resource.");
   }
 }
-module.exports = new resourcesController(resourceService);
+module.exports = ResourcesController.getInstance(resourceService);

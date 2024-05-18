@@ -34,7 +34,7 @@ module.exports = {
             allowNull: false,
           },
           sentTo: {
-            type: Sequelize.STRING,
+            type: Sequelize.ENUM("phone", "email", "other"), //Sequelize.STRING,
             index: true,
             allowNull: false,
           },
@@ -47,7 +47,8 @@ module.exports = {
             type: Sequelize.ENUM(
               "ACTIVATION",
               "RESET_PASSWORD",
-              "FORGOT_PASSWORD"
+              "FORGOT_PASSWORD",
+              "OTHER"
             ), //Sequelize.STRING,
             allowNull: false,
           },
@@ -65,6 +66,19 @@ module.exports = {
             type: Sequelize.DATE,
             allowNull: false,
             defaultValue: Sequelize.NOW,
+          },
+          createdBy: {
+            type: Sequelize.BIGINT.UNSIGNED,
+            allowNull: true,
+            references: {
+              model: {
+                tableName: "users",
+                modelName: "User",
+              },
+              key: "id",
+            },
+            onUpdate: "cascade",
+            onDelete: "cascade",
           },
         },
         { transaction }
