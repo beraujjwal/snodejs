@@ -11,6 +11,22 @@ const Resource = sequelize.define(
       autoIncrement: true,
       allowNull: false,
     },
+    parentID: {
+      type: DataTypes.BIGINT.UNSIGNED,
+      references: {
+        model: {
+          tableName: "resources",
+          modelName: "Resource",
+        },
+        key: "id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+      validate: {
+        isInt: true,
+        notIn: [[1]],
+      },
+    },
     name: {
       type: DataTypes.STRING,
       required: true,
@@ -55,6 +71,7 @@ const Resource = sequelize.define(
     sequelize,
     modelName: "Resource",
     tableName: "resources",
+    //attributes: ["id", "name", "slug", "status", "createdAt"],
     defaultScope: {
       attributes: {
         exclude: ["deletedAt", "deletedBy", "createdBy", "updatedBy"],
@@ -62,25 +79,27 @@ const Resource = sequelize.define(
       where: {
         status: true,
       },
-      // include: [
-      //   {
-      //     model: User,
-      //     as: "createdByUser",
-      //     attributes: ["id", "name", "phone", "email", "status"],
-      //     required: false,
-      //   },
-      //   {
-      //     model: User,
-      //     as: "updatedByUser",
-      //     attributes: ["id", "name", "phone", "email", "status"],
-      //     required: false,
-      //   },
-      // ],
     },
   }
 );
 
 Resource.associate = function (models) {
+  Resource.hasMany(Resource, {
+    as: "childrens",
+    foreignKey: "parentID",
+    attributes: ["id", "name", "slug", "status"],
+    required: false,
+    auto: true,
+  });
+
+  Resource.belongsTo(Resource, {
+    as: "parent",
+    foreignKey: "parentID",
+    attributes: ["id", "name", "slug", "status"],
+    required: false,
+    auto: true,
+  });
+
   Resource.belongsToMany(models.Permission, {
     through: {
       model: models.ResourcePermission,
@@ -182,6 +201,7 @@ Resource.associate = function (models) {
     auto: true,
     attributes: ["id", "parentID", "name", "slug", "status"],
   });
+
   Resource.belongsTo(models.User, {
     as: "createdByUser",
     foreignKey: "createdBy",
@@ -189,6 +209,7 @@ Resource.associate = function (models) {
     auto: true,
     attributes: ["id", "name", "phone", "email", "status"],
   });
+
   Resource.belongsTo(models.User, {
     as: "updatedByUser",
     foreignKey: "updatedBy",

@@ -28,7 +28,6 @@ class ResourcesController extends controller {
    * @author Ujjwal Bera
    */
   async findAll(req, transaction) {
-    console.log("transaction", transaction);
     const result = await resourceService.findAll(req.query, transaction);
     if (result) {
       return {

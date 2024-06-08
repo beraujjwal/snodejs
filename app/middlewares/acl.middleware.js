@@ -45,7 +45,7 @@ class aclMiddleware extends middleware {
         if (!user) {
           const criteria = {
             id: userData.id,
-            tokenSalt: userData.tokenSalt,
+            //tokenSalt: userData.tokenSalt,
             status: true,
             verified: true,
           };

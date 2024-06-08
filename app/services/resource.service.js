@@ -40,10 +40,13 @@ module.exports = class resource extends service {
 
       const order = ordering.toUpperCase();
       const skip = parseInt(page) * parseInt(limit) - parseInt(limit);
+      const query = [];
 
-      const query = [{ parentId: parent }];
-
-      console.log("query", query);
+      if (parent) {
+        query.push({
+          parentId: parent,
+        });
+      }
 
       if (name) {
         query.push({
@@ -68,7 +71,7 @@ module.exports = class resource extends service {
 
       const includes = await this.getAutoIncludes(this.model, this.name);
 
-      //console.log("includes", includes);
+      console.log("query", query);
 
       const result = await this.model.findAll({
         attributes: {

@@ -65,7 +65,10 @@ if (process.env.SENTRY_DNS) {
 process.env["NODE_ENV"] = process.env["APP_ENV"];
 process.env["TZ"] = process.env["APP_TIMEZONE"];
 
-const trackDeviceInfo = process.env["TRACK_DEVICE_INFO"];
+const trackDeviceInfo =
+  process.env["TRACK_DEVICE_INFO"] === "false" ? false : true;
+
+console.log(trackDeviceInfo);
 
 const hbs = engine({
   partialsDir: "resources/views/layouts/partials",

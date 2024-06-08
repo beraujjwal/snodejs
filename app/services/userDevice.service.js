@@ -2,6 +2,7 @@ const service = require("./service");
 const { baseError } = require("../../system/core/error/baseError");
 
 const resourceGraph = require("../../neo4j/services/resource");
+const { logging } = require("neo4j-driver");
 
 module.exports = class userDevice extends service {
   /**
@@ -101,7 +102,10 @@ module.exports = class userDevice extends service {
    * @returns object
    * @author Ujjwal Bera
    */
-  async create({ resourceId, permissionId, status = true }, transaction) {
+  async create(
+    { userId, ip, browser, os, deviceId, status = true },
+    transaction
+  ) {
     try {
       const resourcPermission = await super.create(
         {
@@ -131,19 +135,7 @@ module.exports = class userDevice extends service {
    */
   async updateInfo(deviceInfo) {
     try {
-      let query = {};
-      if (deviceInfo.fcmToken) {
-        query = {
-          fcmToken: deviceInfo.fcmToken,
-          browser: deviceInfo.browser,
-        };
-      } else {
-        query = {
-          mac: deviceInfo.mac,
-          browser: deviceInfo.browser,
-        };
-      }
-      let device = await this.model.findOne(query);
+      let device = await this.deviceDetails(deviceInfo);
       if (deviceInfo.accessToken && !device)
         throw new baseError(
           "You can't access our app in this session. Please login again."
@@ -154,23 +146,36 @@ module.exports = class userDevice extends service {
           "You can't access our app in this session. Please login again."
         );
 
-      let data = {};
-
-      if (name != null) {
-        data.name = name;
-      }
-
-      if (status != null) {
-        data.status = status;
-      }
-
-      let filter = { _id: resourceId };
-      await this.model.updateOne(filter, { $set: data });
-
-      return await this.resourceDetails(resourceId);
+      await device.update({ ip: device.ip });
     } catch (ex) {
       throw new baseError(
         ex.message || "An error occurred while updating a resource details.",
+        ex.status
+      );
+    }
+  }
+
+  /**
+   * @description Fatching a resource details identified by the given resource ID.
+   * @param {String} resourceId
+   * @returns object
+   * @author Ujjwal Bera
+   */
+  async deviceDetails(deviceInfo) {
+    try {
+      const device = await this.model.findOne({
+        where: {
+          deviceId: deviceInfo.deviceId,
+          browser: deviceInfo.browser,
+          os: deviceInfo.os,
+        },
+        logging: console.log,
+      });
+      if (!device) throw new baseError("Device details not found.");
+      return device;
+    } catch (ex) {
+      throw new baseError(
+        ex.message || "An error occurred while fetching a device details.",
         ex.status
       );
     }

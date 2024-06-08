@@ -124,6 +124,22 @@ const Menu = sequelize.define(
 );
 
 Menu.associate = function (models) {
+  Menu.hasMany(Menu, {
+    as: "childrens",
+    foreignKey: "parentID",
+    attributes: ["id", "name", "slug", "status"],
+    required: false,
+    auto: true,
+  });
+
+  Menu.belongsTo(Menu, {
+    as: "parent",
+    foreignKey: "parentID",
+    attributes: ["id", "name", "slug", "status"],
+    required: false,
+    auto: true,
+  });
+
   Menu.belongsToMany(models.Resource, {
     through: {
       model: models.MenuResource,

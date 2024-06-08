@@ -52,9 +52,7 @@ class authMiddleware extends middleware {
 
       if (!user) {
         user = await this.userModel.unscoped().findByPk(decoded.id, {
-          attributes: {
-            include: ["id", "name", "tokenSalt", "status", "verified"],
-          },
+          attributes: ["id", "name", "status", "verified"],
         });
         user = user.toJSON();
       } else {
@@ -67,8 +65,8 @@ class authMiddleware extends middleware {
 
       const isMultiLoginAllow = Boolean(this.getEnv("MULTI_LOGIN"));
 
-      if (!isMultiLoginAllow && user.tokenSalt !== decoded.tokenSalt)
-        throw new baseError(`Invalid authorization token.`, 401);
+      // if (!isMultiLoginAllow && user.tokenSalt !== decoded.tokenSalt)
+      //   throw new baseError(`Invalid authorization token.`, 401);
 
       global.currentLoginUserId = decoded.id;
 

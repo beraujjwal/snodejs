@@ -8,15 +8,15 @@ exports.exceptionHandler = (controllerFunction) => {
     try {
       const ua = parser(req.headers["user-agent"]);
       //console.log("ua", ua);
-      const extraData = {
+      const deviceInfo = {
         ip: req.header("x-forwarded-for") || req.socket.remoteAddress,
         browser: ua?.browser?.name || "Unknown",
         os: ua?.os?.name || "Unknown",
         deviceId: req.headers["device-id"] || "Unknown",
       };
-      //console.log("extraData", extraData);
+      //console.log("deviceInfo", deviceInfo);
       transaction = await sequelize.transaction();
-      req.extraData = extraData;
+      req.deviceInfo = deviceInfo;
       const result = await controllerFunction(req, transaction);
       const resultStructure = {
         code: result.code,

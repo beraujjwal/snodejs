@@ -53,7 +53,9 @@ class baseService extends base {
       }
 
       const autoIncludes = await this.getAutoIncludes(this.model);
-      const finalIncludes = include.concat(autoIncludes);
+      let finalIncludes = null;
+      if (include.length > 0) finalIncludes = include.concat(autoIncludes);
+      else finalIncludes = autoIncludes;
 
       const result = await this.model.findAll({
         attributes: attributes,
@@ -355,9 +357,9 @@ class baseService extends base {
           model: model.associations[key]?.target,
           where: model.associations[key]?.scope,
           as: model.associations[key]?.as,
-          auto: model.associations[key]?.options?.auto === false ? false : true,
+          auto: model.associations[key]?.options?.auto === true ? true : false,
           required:
-            model.associations[key]?.options?.required === false ? false : true,
+            model.associations[key]?.options?.required === true ? true : false,
         };
         if (model.associations[key]?.options?.attributes)
           data.attributes = model.associations[key]?.options?.attributes;
@@ -414,6 +416,11 @@ class baseService extends base {
     }
 
     return result;
+  }
+
+  async getFinalIncludes(userIncludes, autoIncludes) {
+    const userIncludeNameArr = userIncludes.map((userInclude => userInclude.as));
+    autoIncludes
   }
 }
 

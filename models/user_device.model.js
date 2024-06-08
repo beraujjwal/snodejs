@@ -38,20 +38,12 @@ const UserDevice = sequelize.define(
       type: DataTypes.STRING(50),
       allowNull: true,
     },
-    deviceFcmToken: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-    },
     deviceSalt: {
       type: DataTypes.STRING(10),
       allowNull: false,
     },
     ip: {
       type: DataTypes.STRING(20),
-      allowNull: true,
-    },
-    mac: {
-      type: DataTypes.STRING(30),
       allowNull: true,
     },
     os: {
@@ -78,10 +70,18 @@ const UserDevice = sequelize.define(
       type: DataTypes.STRING(100),
       allowNull: true,
     },
+    latitude: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+    },
+    longitude: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+    },
   },
   {
     timestamps: true,
-    paranoid: true,
+    paranoid: false,
     sequelize,
     modelName: "UserDevice",
     tableName: "user_devices",

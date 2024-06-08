@@ -36,20 +36,12 @@ module.exports = {
           type: Sequelize.STRING(50),
           allowNull: true,
         },
-        deviceFcmToken: {
-          type: Sequelize.STRING(100),
-          allowNull: true,
-        },
         deviceSalt: {
           type: Sequelize.STRING(10),
           allowNull: false,
         },
         ip: {
           type: Sequelize.STRING(20),
-          allowNull: true,
-        },
-        mac: {
-          type: Sequelize.STRING(30),
           allowNull: true,
         },
         os: {
@@ -76,9 +68,27 @@ module.exports = {
           type: Sequelize.STRING(100),
           allowNull: true,
         },
+        latitude: {
+          type: Sequelize.STRING(20),
+          allowNull: true,
+        },
+        longitude: {
+          type: Sequelize.STRING(20),
+          allowNull: true,
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          allowNull: false,
+          defaultValue: Sequelize.NOW,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          allowNull: false,
+          defaultValue: Sequelize.NOW,
+        },
       })
       .then(() =>
-        queryInterface.addIndex("user_devices", ["deviceId", "userID", "mac"])
+        queryInterface.addIndex("user_devices", ["deviceId", "userID"])
       );
   },
 
